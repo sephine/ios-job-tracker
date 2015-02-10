@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C109" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="JobBasic" representedClassName="JobTracker.JobBasic" syncable="YES">
+        <attribute name="company" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="stage" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="details" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobDetail" inverseName="basic" inverseEntity="JobDetail" syncable="YES"/>
+    </entity>
+    <entity name="JobDetail" representedClassName="JobTracker.JobDetail" syncable="YES">
+        <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="salary" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <relationship name="basic" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobBasic" inverseName="details" inverseEntity="JobBasic" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="JobBasic" positionX="-54" positionY="-9" width="128" height="103"/>
+        <element name="JobDetail" positionX="-36" positionY="27" width="128" height="88"/>
+    </elements>
+</model>
