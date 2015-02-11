@@ -10,9 +10,9 @@ import UIKit
 import CoreData
 
 enum Stage: Int {
-    case Potential = 0, Applied, ReceivedOffer, Cancelled
+    case Potential = 0, Applied, Interview, ReceivedOffer, Rejected
     
-    static let allValues = [Potential, Applied, ReceivedOffer, Cancelled]
+    static let allValues = [Potential, Applied, Interview, ReceivedOffer, Rejected]
     
     var title: String {
         switch self {
@@ -20,10 +20,12 @@ enum Stage: Int {
             return "Potential Jobs"
         case .Applied:
             return "Application Sent"
+        case .Interview:
+            return "Interview Arranged"
         case .ReceivedOffer:
             return "Offer Received"
-        case .Cancelled:
-            return "Removed"
+        case .Rejected:
+            return "Rejected"
         }
     }
 }
@@ -48,7 +50,9 @@ class JobListViewController: UITableViewController {
         
         let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
         let managedContext = appDelegate.managedObjectContext!
-        var fetchRequest = NSFetchRequest(entityName: "JobBasic")
+        let fetchRequest = NSFetchRequest(entityName: "JobBasic")
+        let sortDescriptors = [NSSortDescriptor(key: "company", ascending: true)]
+        fetchRequest.sortDescriptors = sortDescriptors
         
         var error: NSError?
         let fetchedResults = managedContext.executeFetchRequest(fetchRequest, error: &error)
@@ -67,6 +71,7 @@ class JobListViewController: UITableViewController {
         } else {
             println("Could not fetch \(error), \(error!.userInfo)")
         }
+        tableView.reloadData()
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
@@ -84,9 +89,14 @@ class JobListViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        let section = indexPath.section//
+        let row = indexPath.row//
+        
         let cell = tableView.dequeueReusableCellWithIdentifier("Cell") as UITableViewCell
         let stage = Stage(rawValue: indexPath.section)!
         let job = (jobs[stage]!)[indexPath.row]
+        let company = job.company//
+        let title = job.title//
         cell.textLabel!.text = job.company
         cell.detailTextLabel!.text = job.title
         return cell

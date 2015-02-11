@@ -16,6 +16,8 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var companyBox: UITextField!
     @IBOutlet weak var salaryBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
+    
+    var loadedBasic: JobBasic?
     var salary: NSNumber?
     
     override func viewDidLoad() {
@@ -26,6 +28,20 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+        if let basic = loadedBasic {
+            titleBox.text = basic.title
+            companyBox.text = basic.company
+            locationBox.text = basic.details.location
+            
+            salary = basic.details.salary
+            let formatter = NSNumberFormatter()
+            formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
+            salaryBox.text = formatter.stringFromNumber(salary!)
+        }
     }
     
     //only called by salary text field (the rest don't have this class set as delegate.
@@ -42,8 +58,8 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
     
     //only called by salary text field (the rest don't have this class set as delegate.
     func textFieldDidBeginEditing(textField: UITextField) {
-        if let salary = salary {
-            salaryBox.text = salary.stringValue
+        if salary != nil {
+            salaryBox.text = salary!.stringValue
         }
     }
     
@@ -73,20 +89,25 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
         let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
         let managedContext = appDelegate.managedObjectContext!
         
-        let basic = NSEntityDescription.insertNewObjectForEntityForName("JobBasic", inManagedObjectContext: managedContext) as JobBasic
+        var basic: JobBasic
+        var details: JobDetail
+        if loadedBasic != nil {
+            basic = loadedBasic!
+            details = basic.details
+        } else {
+            basic = NSEntityDescription.insertNewObjectForEntityForName("JobBasic", inManagedObjectContext: managedContext) as JobBasic
+            details = NSEntityDescription.insertNewObjectForEntityForName("JobDetail", inManagedObjectContext: managedContext) as JobDetail
+            managedContext.insertObject(basic)
+            managedContext.insertObject(details)
+            basic.stage = Stage.Potential.rawValue
+            basic.details = details
+            details.basic = basic
+        }
+        
         basic.title = titleBox.text
         basic.company = companyBox.text
-        basic.stage = Stage.Potential.rawValue
-        
-        let details = NSEntityDescription.insertNewObjectForEntityForName("JobDetail", inManagedObjectContext: managedContext) as JobDetail
         details.salary = salary!
         details.location = locationBox.text
-        
-        basic.details = details
-        details.basic = basic
-        
-        managedContext.insertObject(basic)
-        managedContext.insertObject(details)
         
         var error: NSError?
         if !managedContext.save(&error) {
