@@ -80,6 +80,9 @@ class JobListViewController: UITableViewController {
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let stage = Stage(rawValue: section)!
+        if jobs[stage]!.isEmpty {
+            return nil
+        }
         return stage.title
     }
     
@@ -101,5 +104,19 @@ class JobListViewController: UITableViewController {
         cell.detailTextLabel!.text = job.title
         return cell
     }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        performSegueWithIdentifier("showJob", sender: indexPath)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showJob" {
+            let indexPath = sender as NSIndexPath
+            let stage = Stage(rawValue: indexPath.section)!
+            let basic = (jobs[stage]!)[indexPath.row] as JobBasic
+        
+            let showJobDestination = segue.destinationViewController as ShowDetailViewController
+            showJobDestination.loadedBasic = basic
+        }
+    }
 }
-

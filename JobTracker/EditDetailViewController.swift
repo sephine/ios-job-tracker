@@ -10,10 +10,10 @@ import Foundation
 import UIKit
 import CoreData
 
-class EditDetailViewController: UIViewController, UITextFieldDelegate {
+class EditDetailViewController: UITableViewController, UITextFieldDelegate {
     
-    @IBOutlet weak var titleBox: UITextField!
     @IBOutlet weak var companyBox: UITextField!
+    @IBOutlet weak var positionBox: UITextField!
     @IBOutlet weak var salaryBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
     
@@ -33,7 +33,7 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         if let basic = loadedBasic {
-            titleBox.text = basic.title
+            positionBox.text = basic.title
             companyBox.text = basic.company
             locationBox.text = basic.details.location
             
@@ -53,6 +53,7 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
         if numberOfMatches == 0 {
             return false
         }
+        salary = (newSalary as NSString).doubleValue
         return true
     }
     
@@ -76,11 +77,11 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
         salaryBox.text = formatter.stringFromNumber(salary!)
     }
     
-    @IBAction func CancelClicked(sender: UIBarButtonItem) {
+    @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
     
-    @IBAction func SaveClicked(sender: UIBarButtonItem) {
+    @IBAction func saveClicked(sender: UIBarButtonItem) {
         saveDetails()
         navigationController?.popViewControllerAnimated(true)
     }
@@ -104,31 +105,23 @@ class EditDetailViewController: UIViewController, UITextFieldDelegate {
             details.basic = basic
         }
         
-        basic.title = titleBox.text
+        basic.title = positionBox.text
         basic.company = companyBox.text
         details.salary = salary!
         details.location = locationBox.text
+        
+        loadedBasic = basic
         
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
         }
     }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        let destination = segue.destinationViewController as ShowDetailViewController
+        destination.loadedBasic = loadedBasic
+    }
 }
 
 //TODO check for empty text boxes
-
-
-/*var salaryString = salaryBox.text
-let stringLength = countElements(salaryString)
-if stringLength > 0 {
-// add .00 on the end if necessary
-let expression = "^\\d+\\.?\\d{0,2}$"
-let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
-if regex?.numberOfMatchesInString(salaryString + ".00", options: nil, range: NSMakeRange(0, countElements(salaryString + ".00"))) == 1 {
-salaryBox.text = salaryString + ".00"
-} else if regex?.numberOfMatchesInString(salaryString + "00", options: nil, range: NSMakeRange(0, countElements(salaryString + "00"))) == 1 {
-salaryBox.text = salaryString + "00"
-} else if regex?.numberOfMatchesInString(salaryString + "0", options: nil, range: NSMakeRange(0, countElements(salaryString + "0"))) == 1 {
-salaryBox.text = salaryString + "0"
-}*/

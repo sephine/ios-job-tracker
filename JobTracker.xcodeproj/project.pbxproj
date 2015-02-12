@@ -10,13 +10,14 @@
 		B047E2801A8318E400475F31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E27F1A8318E400475F31 /* AppDelegate.swift */; };
 		B047E2831A8318E400475F31 /* JobTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B047E2811A8318E400475F31 /* JobTracker.xcdatamodeld */; };
 		B047E2851A8318E400475F31 /* JobListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2841A8318E400475F31 /* JobListViewController.swift */; };
-		B047E2881A8318E400475F31 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B047E2861A8318E400475F31 /* Main.storyboard */; };
 		B047E28A1A8318E400475F31 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B047E2891A8318E400475F31 /* Images.xcassets */; };
 		B047E28D1A8318E400475F31 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B047E28B1A8318E400475F31 /* LaunchScreen.xib */; };
 		B047E2991A8318E400475F31 /* JobTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2981A8318E400475F31 /* JobTrackerTests.swift */; };
 		B047E2AF1A84666B00475F31 /* EditDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2AE1A84666B00475F31 /* EditDetailViewController.swift */; };
 		B047E2F21A85B36E00475F31 /* JobDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2F11A85B36E00475F31 /* JobDetail.swift */; };
 		B047E2F41A85B36F00475F31 /* JobBasic.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2F31A85B36F00475F31 /* JobBasic.swift */; };
+		B0DC73151A8AE5FB00138BFE /* ShowDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */; };
+		B0F879661A8AED6F0082F3DF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0F879641A8AED6F0082F3DF /* Main.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,7 +36,6 @@
 		B047E27F1A8318E400475F31 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B047E2821A8318E400475F31 /* JobTracker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = JobTracker.xcdatamodel; sourceTree = "<group>"; };
 		B047E2841A8318E400475F31 /* JobListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobListViewController.swift; sourceTree = "<group>"; };
-		B047E2871A8318E400475F31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B047E2891A8318E400475F31 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		B047E28C1A8318E400475F31 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		B047E2921A8318E400475F31 /* JobTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = JobTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -44,6 +44,8 @@
 		B047E2AE1A84666B00475F31 /* EditDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDetailViewController.swift; sourceTree = "<group>"; };
 		B047E2F11A85B36E00475F31 /* JobDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDetail.swift; sourceTree = "<group>"; };
 		B047E2F31A85B36F00475F31 /* JobBasic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobBasic.swift; sourceTree = "<group>"; };
+		B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowDetailViewController.swift; sourceTree = "<group>"; };
+		B0F879651A8AED6F0082F3DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,10 +87,11 @@
 		B047E27C1A8318E400475F31 /* JobTracker */ = {
 			isa = PBXGroup;
 			children = (
-				B047E2861A8318E400475F31 /* Main.storyboard */,
+				B0F879641A8AED6F0082F3DF /* Main.storyboard */,
 				B047E2811A8318E400475F31 /* JobTracker.xcdatamodeld */,
 				B047E2841A8318E400475F31 /* JobListViewController.swift */,
 				B047E2AE1A84666B00475F31 /* EditDetailViewController.swift */,
+				B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */,
 				B047E2F31A85B36F00475F31 /* JobBasic.swift */,
 				B047E2F11A85B36E00475F31 /* JobDetail.swift */,
 				B047E27D1A8318E400475F31 /* Supporting Files */,
@@ -204,7 +207,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B047E2881A8318E400475F31 /* Main.storyboard in Resources */,
+				B0F879661A8AED6F0082F3DF /* Main.storyboard in Resources */,
 				B047E28D1A8318E400475F31 /* LaunchScreen.xib in Resources */,
 				B047E28A1A8318E400475F31 /* Images.xcassets in Resources */,
 			);
@@ -229,6 +232,7 @@
 				B047E2851A8318E400475F31 /* JobListViewController.swift in Sources */,
 				B047E2831A8318E400475F31 /* JobTracker.xcdatamodeld in Sources */,
 				B047E2F41A85B36F00475F31 /* JobBasic.swift in Sources */,
+				B0DC73151A8AE5FB00138BFE /* ShowDetailViewController.swift in Sources */,
 				B047E2801A8318E400475F31 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -252,20 +256,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		B047E2861A8318E400475F31 /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B047E2871A8318E400475F31 /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		B047E28B1A8318E400475F31 /* LaunchScreen.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				B047E28C1A8318E400475F31 /* Base */,
 			);
 			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+		B0F879641A8AED6F0082F3DF /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B0F879651A8AED6F0082F3DF /* Base */,
+			);
+			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

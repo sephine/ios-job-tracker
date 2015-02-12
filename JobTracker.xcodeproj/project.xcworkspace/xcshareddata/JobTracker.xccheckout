@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>A197C5FF-3EC7-4A6E-973F-99247061D7DA</string>
+	<key>IDESourceControlProjectName</key>
+	<string>JobTracker</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>0EA5B2864E64BE190013F975BA622BCF5AB91F4D</key>
+		<string>github.com:joannecdyer/ios-job-tracker.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>JobTracker.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>0EA5B2864E64BE190013F975BA622BCF5AB91F4D</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:joannecdyer/ios-job-tracker.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>0EA5B2864E64BE190013F975BA622BCF5AB91F4D</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>0EA5B2864E64BE190013F975BA622BCF5AB91F4D</string>
+			<key>IDESourceControlWCCName</key>
+			<string>JobTracker</string>
+		</dict>
+	</array>
+</dict>
+</plist>
