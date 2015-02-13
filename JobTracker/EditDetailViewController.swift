@@ -19,6 +19,9 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate {
     
     var loadedBasic: JobBasic?
     var salary: NSNumber?
+    let glassdoorPartnerID = "29976"
+    let glassdoorPartnerKey = "hfEt8lCsdp9"
+    let glassdoorAPIVersion = "1"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -84,6 +87,47 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate {
     @IBAction func saveClicked(sender: UIBarButtonItem) {
         saveDetails()
         navigationController?.popViewControllerAnimated(true)
+    }
+    
+    @IBAction func findCompanyClicked(sender: UIButton) {
+        queryGlassdoor(company: companyBox.text, location: locationBox.text)
+    }
+    
+    func queryGlassdoor(#company: String, location: String) {
+        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
+        allowedCharacters.removeCharactersInString("&=?")
+        
+        let urlFormCompany = company.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
+        let urlFormLocation = location.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
+        
+        let url = "http://api.glassdoor.com/api/api.htm?t.p=\(glassdoorPartnerID)&t.k=\(glassdoorPartnerKey)&format=json&v=\(glassdoorAPIVersion)&action=employers&q=\(urlFormCompany)&l=\(urlFormLocation)"
+        //TODO I have not supplied userIP or userAgent but it is working anyway...
+        
+        let glassdoorRequestURL = NSURL(string: url)!
+        let request = NSURLRequest(URL: glassdoorRequestURL)
+        let queue = NSOperationQueue()
+        
+        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler: { (response: NSURLResponse!, data: NSData!, error: NSError!) in
+            if error != nil {
+                //TODO what to do if the data can't be retrieved.
+                assertionFailure("glassdoor API connection failed")
+            }
+            NSOperationQueue.mainQueue().addOperationWithBlock({
+                self.fetchedData(data)
+            })
+        })
+    }
+    
+    func fetchedData(responseData: NSData) {
+        var error: NSError?
+        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as NSDictionary
+        let response = json["response"] as NSDictionary
+        let employers = response["employers"] as NSArray
+        NSLog("GlassDoor Data:")
+        for employer in employers {
+            //let name = employer["name"] as String
+            NSLog("\(employer)")
+        }
     }
     
     func saveDetails() {
