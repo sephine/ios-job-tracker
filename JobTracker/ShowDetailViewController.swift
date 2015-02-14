@@ -40,10 +40,14 @@ class ShowDetailViewController: UITableViewController {
         titleLabel.text = loadedBasic.title
         locationLabel.text = loadedBasic.details.location
         
-        let salary = loadedBasic.details.salary
-        let formatter = NSNumberFormatter()
-        formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
-        salaryLabel.text = formatter.stringFromNumber(salary)
+        let salary = loadedBasic.details.salary as NSNumber?
+        if salary == nil {
+            salaryLabel.text = ""
+        } else {
+            let salaryFormatter = NSNumberFormatter()
+            salaryFormatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
+            salaryLabel.text = salaryFormatter.stringFromNumber(salary!)
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

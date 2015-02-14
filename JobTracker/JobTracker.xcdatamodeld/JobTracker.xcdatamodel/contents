@@ -4,15 +4,26 @@
         <attribute name="company" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="stage" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="contacts" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobContact" inverseName="basic" inverseEntity="JobContact" syncable="YES"/>
         <relationship name="details" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobDetail" inverseName="basic" inverseEntity="JobDetail" syncable="YES"/>
     </entity>
+    <entity name="JobContact" representedClassName="JobTracker.JobContact" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="basic" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobBasic" inverseName="contacts" inverseEntity="JobBasic" syncable="YES"/>
+    </entity>
     <entity name="JobDetail" representedClassName="JobTracker.JobDetail" syncable="YES">
+        <attribute name="dueDate" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="glassdoorLink" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="jobListing" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="location" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="salary" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="website" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="basic" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobBasic" inverseName="details" inverseEntity="JobBasic" syncable="YES"/>
     </entity>
     <elements>
-        <element name="JobBasic" positionX="-54" positionY="-9" width="128" height="103"/>
-        <element name="JobDetail" positionX="-36" positionY="27" width="128" height="88"/>
+        <element name="JobBasic" positionX="-54" positionY="-9" width="128" height="118"/>
+        <element name="JobDetail" positionX="-36" positionY="27" width="128" height="163"/>
+        <element name="JobContact" positionX="-45" positionY="81" width="128" height="73"/>
     </elements>
 </model>

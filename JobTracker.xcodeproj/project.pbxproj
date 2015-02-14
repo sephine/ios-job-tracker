@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		585E0BB6AE2D68E0A0224718 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B72712A7F77B29077BCE048A /* libPods.a */; };
 		B047E2801A8318E400475F31 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E27F1A8318E400475F31 /* AppDelegate.swift */; };
 		B047E2831A8318E400475F31 /* JobTracker.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B047E2811A8318E400475F31 /* JobTracker.xcdatamodeld */; };
 		B047E2851A8318E400475F31 /* JobListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2841A8318E400475F31 /* JobListViewController.swift */; };
@@ -14,8 +15,12 @@
 		B047E28D1A8318E400475F31 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = B047E28B1A8318E400475F31 /* LaunchScreen.xib */; };
 		B047E2991A8318E400475F31 /* JobTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2981A8318E400475F31 /* JobTrackerTests.swift */; };
 		B047E2AF1A84666B00475F31 /* EditDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2AE1A84666B00475F31 /* EditDetailViewController.swift */; };
-		B047E2F21A85B36E00475F31 /* JobDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2F11A85B36E00475F31 /* JobDetail.swift */; };
-		B047E2F41A85B36F00475F31 /* JobBasic.swift in Sources */ = {isa = PBXBuildFile; fileRef = B047E2F31A85B36F00475F31 /* JobBasic.swift */; };
+		B088D2581A8EFFDF00E8CB99 /* JobContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B088D2571A8EFFDF00E8CB99 /* JobContact.swift */; };
+		B088D25A1A8EFFE000E8CB99 /* JobBasic.swift in Sources */ = {isa = PBXBuildFile; fileRef = B088D2591A8EFFE000E8CB99 /* JobBasic.swift */; };
+		B088D25C1A8EFFE000E8CB99 /* JobDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = B088D25B1A8EFFE000E8CB99 /* JobDetail.swift */; };
+		B0B32D7F1A8D86E00039E6BC /* CompanyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B32D7E1A8D86E00039E6BC /* CompanyTableViewController.swift */; };
+		B0B32D831A8D8EB70039E6BC /* CompanyResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */; };
+		B0B32D851A8D98D80039E6BC /* GlassdoorCompanySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B32D841A8D98D80039E6BC /* GlassdoorCompanySearch.swift */; };
 		B0DC73151A8AE5FB00138BFE /* ShowDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */; };
 		B0F879661A8AED6F0082F3DF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0F879641A8AED6F0082F3DF /* Main.storyboard */; };
 /* End PBXBuildFile section */
@@ -31,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		37266B7A5782BB84374738D6 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		9B7591EE70F26B9825751C91 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		B047E27A1A8318E400475F31 /* JobTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = JobTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B047E27E1A8318E400475F31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B047E27F1A8318E400475F31 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -42,10 +49,16 @@
 		B047E2971A8318E400475F31 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B047E2981A8318E400475F31 /* JobTrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JobTrackerTests.swift; sourceTree = "<group>"; };
 		B047E2AE1A84666B00475F31 /* EditDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditDetailViewController.swift; sourceTree = "<group>"; };
-		B047E2F11A85B36E00475F31 /* JobDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDetail.swift; sourceTree = "<group>"; };
-		B047E2F31A85B36F00475F31 /* JobBasic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobBasic.swift; sourceTree = "<group>"; };
+		B088D24E1A8DC63000E8CB99 /* JobTracker-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JobTracker-Bridging-Header.h"; sourceTree = "<group>"; };
+		B088D2571A8EFFDF00E8CB99 /* JobContact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobContact.swift; sourceTree = "<group>"; };
+		B088D2591A8EFFE000E8CB99 /* JobBasic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobBasic.swift; sourceTree = "<group>"; };
+		B088D25B1A8EFFE000E8CB99 /* JobDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDetail.swift; sourceTree = "<group>"; };
+		B0B32D7E1A8D86E00039E6BC /* CompanyTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyTableViewController.swift; sourceTree = "<group>"; };
+		B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyResultCell.swift; sourceTree = "<group>"; };
+		B0B32D841A8D98D80039E6BC /* GlassdoorCompanySearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlassdoorCompanySearch.swift; sourceTree = "<group>"; };
 		B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowDetailViewController.swift; sourceTree = "<group>"; };
 		B0F879651A8AED6F0082F3DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B72712A7F77B29077BCE048A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -53,6 +66,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				585E0BB6AE2D68E0A0224718 /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,12 +80,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2F6E306C2A261B750B5F7E77 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B72712A7F77B29077BCE048A /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A40B5A4572B6A2119ABBBFAF /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				9B7591EE70F26B9825751C91 /* Pods.debug.xcconfig */,
+				37266B7A5782BB84374738D6 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		B047E2711A8318E400475F31 = {
 			isa = PBXGroup;
 			children = (
 				B047E27C1A8318E400475F31 /* JobTracker */,
 				B047E2951A8318E400475F31 /* JobTrackerTests */,
 				B047E27B1A8318E400475F31 /* Products */,
+				A40B5A4572B6A2119ABBBFAF /* Pods */,
+				2F6E306C2A261B750B5F7E77 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -90,11 +123,16 @@
 				B0F879641A8AED6F0082F3DF /* Main.storyboard */,
 				B047E2811A8318E400475F31 /* JobTracker.xcdatamodeld */,
 				B047E2841A8318E400475F31 /* JobListViewController.swift */,
-				B047E2AE1A84666B00475F31 /* EditDetailViewController.swift */,
 				B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */,
-				B047E2F31A85B36F00475F31 /* JobBasic.swift */,
-				B047E2F11A85B36E00475F31 /* JobDetail.swift */,
+				B047E2AE1A84666B00475F31 /* EditDetailViewController.swift */,
+				B0B32D7E1A8D86E00039E6BC /* CompanyTableViewController.swift */,
+				B0B32D841A8D98D80039E6BC /* GlassdoorCompanySearch.swift */,
+				B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */,
+				B088D2591A8EFFE000E8CB99 /* JobBasic.swift */,
+				B088D25B1A8EFFE000E8CB99 /* JobDetail.swift */,
+				B088D2571A8EFFDF00E8CB99 /* JobContact.swift */,
 				B047E27D1A8318E400475F31 /* Supporting Files */,
+				B088D24E1A8DC63000E8CB99 /* JobTracker-Bridging-Header.h */,
 			);
 			path = JobTracker;
 			sourceTree = "<group>";
@@ -134,9 +172,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B047E29C1A8318E500475F31 /* Build configuration list for PBXNativeTarget "JobTracker" */;
 			buildPhases = (
+				277361774CD0273534A4A81F /* Check Pods Manifest.lock */,
 				B047E2761A8318E400475F31 /* Sources */,
 				B047E2771A8318E400475F31 /* Frameworks */,
 				B047E2781A8318E400475F31 /* Resources */,
+				F43F0CC130A17EADF010A0FA /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -222,17 +262,54 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		277361774CD0273534A4A81F /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		F43F0CC130A17EADF010A0FA /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		B047E2761A8318E400475F31 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				B047E2AF1A84666B00475F31 /* EditDetailViewController.swift in Sources */,
-				B047E2F21A85B36E00475F31 /* JobDetail.swift in Sources */,
+				B0B32D7F1A8D86E00039E6BC /* CompanyTableViewController.swift in Sources */,
+				B0B32D851A8D98D80039E6BC /* GlassdoorCompanySearch.swift in Sources */,
 				B047E2851A8318E400475F31 /* JobListViewController.swift in Sources */,
 				B047E2831A8318E400475F31 /* JobTracker.xcdatamodeld in Sources */,
-				B047E2F41A85B36F00475F31 /* JobBasic.swift in Sources */,
+				B0B32D831A8D8EB70039E6BC /* CompanyResultCell.swift in Sources */,
 				B0DC73151A8AE5FB00138BFE /* ShowDetailViewController.swift in Sources */,
+				B088D2581A8EFFDF00E8CB99 /* JobContact.swift in Sources */,
+				B088D25C1A8EFFE000E8CB99 /* JobDetail.swift in Sources */,
+				B088D25A1A8EFFE000E8CB99 /* JobBasic.swift in Sources */,
 				B047E2801A8318E400475F31 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,22 +431,26 @@
 		};
 		B047E29D1A8318E500475F31 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9B7591EE70F26B9825751C91 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = JobTracker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "JobTracker/JobTracker-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
 		B047E29E1A8318E500475F31 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 37266B7A5782BB84374738D6 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = JobTracker/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "JobTracker/JobTracker-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;

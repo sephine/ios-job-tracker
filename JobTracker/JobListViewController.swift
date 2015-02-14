@@ -95,7 +95,7 @@ class JobListViewController: UITableViewController {
         let section = indexPath.section//
         let row = indexPath.row//
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("Cell") as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("listCell") as UITableViewCell
         let stage = Stage(rawValue: indexPath.section)!
         let job = (jobs[stage]!)[indexPath.row]
         let company = job.company//

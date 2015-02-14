@@ -10,22 +10,56 @@ import Foundation
 import UIKit
 import CoreData
 
-class EditDetailViewController: UITableViewController, UITextFieldDelegate {
+class EditDetailViewController: UITableViewController, UITextFieldDelegate, CompanySelectionDelegate {
     
+
     @IBOutlet weak var companyBox: UITextField!
+    @IBOutlet weak var websiteBox: UITextField!
     @IBOutlet weak var positionBox: UITextField!
     @IBOutlet weak var salaryBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
+    @IBOutlet weak var listingBox: UITextField!
+    @IBOutlet weak var dueDateBox: UITextField!
     
     var loadedBasic: JobBasic?
     var salary: NSNumber?
-    let glassdoorPartnerID = "29976"
-    let glassdoorPartnerKey = "hfEt8lCsdp9"
-    let glassdoorAPIVersion = "1"
+    var glassdoorLink: String?
+    let datePickerView = UIDatePicker()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Job Detail"
+        
+        datePickerView.datePickerMode = UIDatePickerMode.Date
+        datePickerView.addTarget(self, action: "updateDate", forControlEvents: UIControlEvents.ValueChanged)
+        dueDateBox.inputView = datePickerView
+        
+        if let basic = loadedBasic {
+            companyBox.text = basic.company
+            websiteBox.text = basic.details.website
+            positionBox.text = basic.title
+            locationBox.text = basic.details.location
+            listingBox.text = basic.details.jobListing
+            
+            let date = basic.details.dueDate as NSDate?
+            if date == nil {
+                dueDateBox.text = ""
+            } else {
+                let dateFormatter = NSDateFormatter()
+                dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
+                dueDateBox.text = dateFormatter.stringFromDate(date!)
+                datePickerView.date = date!
+            }
+            
+            salary = basic.details.salary as NSNumber?
+            if salary == nil {
+                salaryBox.text = ""
+            } else {
+                let salaryFormatter = NSNumberFormatter()
+                salaryFormatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
+                salaryBox.text = salaryFormatter.stringFromNumber(salary!)
+            }
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -35,16 +69,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        if let basic = loadedBasic {
-            positionBox.text = basic.title
-            companyBox.text = basic.company
-            locationBox.text = basic.details.location
-            
-            salary = basic.details.salary
-            let formatter = NSNumberFormatter()
-            formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
-            salaryBox.text = formatter.stringFromNumber(salary!)
-        }
     }
     
     //only called by salary text field (the rest don't have this class set as delegate.
@@ -80,54 +104,37 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate {
         salaryBox.text = formatter.stringFromNumber(salary!)
     }
     
+    func companySelected(company: String, website: String?, glassdoorLink: String?) {
+        companyBox.text = company
+        if website != nil {
+            websiteBox.text = website
+        }
+        if glassdoorLink != nil {
+            self.glassdoorLink = glassdoorLink
+        }
+    }
+    
+    @IBAction func updateDate() {
+        let date = datePickerView.date
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
+        dueDateBox.text = dateFormatter.stringFromDate(date)
+    }
+    
+    
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
     
     @IBAction func saveClicked(sender: UIBarButtonItem) {
-        saveDetails()
-        navigationController?.popViewControllerAnimated(true)
-    }
-    
-    @IBAction func findCompanyClicked(sender: UIButton) {
-        queryGlassdoor(company: companyBox.text, location: locationBox.text)
-    }
-    
-    func queryGlassdoor(#company: String, location: String) {
-        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
-        allowedCharacters.removeCharactersInString("&=?")
-        
-        let urlFormCompany = company.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
-        let urlFormLocation = location.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
-        
-        let url = "http://api.glassdoor.com/api/api.htm?t.p=\(glassdoorPartnerID)&t.k=\(glassdoorPartnerKey)&format=json&v=\(glassdoorAPIVersion)&action=employers&q=\(urlFormCompany)&l=\(urlFormLocation)"
-        //TODO I have not supplied userIP or userAgent but it is working anyway...
-        
-        let glassdoorRequestURL = NSURL(string: url)!
-        let request = NSURLRequest(URL: glassdoorRequestURL)
-        let queue = NSOperationQueue()
-        
-        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler: { (response: NSURLResponse!, data: NSData!, error: NSError!) in
-            if error != nil {
-                //TODO what to do if the data can't be retrieved.
-                assertionFailure("glassdoor API connection failed")
-            }
-            NSOperationQueue.mainQueue().addOperationWithBlock({
-                self.fetchedData(data)
-            })
-        })
-    }
-    
-    func fetchedData(responseData: NSData) {
-        var error: NSError?
-        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as NSDictionary
-        let response = json["response"] as NSDictionary
-        let employers = response["employers"] as NSArray
-        NSLog("GlassDoor Data:")
-        for employer in employers {
-            //let name = employer["name"] as String
-            NSLog("\(employer)")
+        if companyBox.text.isEmpty {
+            let alert = UIAlertView(title: "Save Failed", message: "Please specify a company.", delegate: nil, cancelButtonTitle: "OK")
+            alert.show()
+        } else {
+            saveDetails()
+            navigationController?.popViewControllerAnimated(true)
         }
+        
     }
     
     func saveDetails() {
@@ -149,10 +156,26 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate {
             details.basic = basic
         }
         
-        basic.title = positionBox.text
-        basic.company = companyBox.text
-        details.salary = salary!
-        details.location = locationBox.text
+        basic.company = companyBox.text!
+        basic.title = positionBox.text!
+        details.website = websiteBox.text!
+        details.salary = salary
+        details.location = locationBox.text!
+        details.jobListing = listingBox.text
+        
+        if dueDateBox.text!.isEmpty {
+            details.dueDate = nil
+        } else {
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
+            details.dueDate = dateFormatter.dateFromString(dueDateBox.text!)
+        }
+        
+        if glassdoorLink == nil {
+            details.glassdoorLink = ""
+        } else {
+            details.glassdoorLink = glassdoorLink!
+        }
         
         loadedBasic = basic
         
@@ -163,8 +186,13 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate {
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        let destination = segue.destinationViewController as ShowDetailViewController
-        destination.loadedBasic = loadedBasic
+        if segue.destinationViewController is CompanyTableViewController {
+            let destination = segue.destinationViewController as CompanyTableViewController
+            destination.delegate = self
+        } else if segue.destinationViewController is ShowDetailViewController {
+            let destination = segue.destinationViewController as ShowDetailViewController
+            destination.loadedBasic = loadedBasic
+        }
     }
 }
 
