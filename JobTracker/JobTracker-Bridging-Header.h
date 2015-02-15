@@ -10,5 +10,6 @@
 #define JobTracker_BridgingHeaderFile_h
 
 #import "UIImageView+WebCache.h"
+#import <GoogleMaps/GoogleMaps.h>
 
 #endif

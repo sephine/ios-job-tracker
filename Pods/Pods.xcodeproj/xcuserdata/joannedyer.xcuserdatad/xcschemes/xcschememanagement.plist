@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Pods-Google-Maps-iOS-SDK.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-SDWebImage.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -17,12 +22,17 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>872C913F3788258AF2C12B3B</key>
+		<key>0CFBEA4EF249C447C7E6C8FF</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>B457C439672FFC46E71EE7FE</key>
+		<key>56194F371AAA9BBC95FE5A70</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>D01D8925386D925047374FD3</key>
 		<dict>
 			<key>primary</key>
 			<true/>

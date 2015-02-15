@@ -10,16 +10,22 @@ import Foundation
 import UIKit
 import CoreData
 
-class EditDetailViewController: UITableViewController, UITextFieldDelegate, CompanySelectionDelegate {
-    
+class EditDetailViewController: UITableViewController, UITextFieldDelegate, CompanySelectionDelegate, LocationSelectionDelegate {
 
     @IBOutlet weak var companyBox: UITextField!
     @IBOutlet weak var websiteBox: UITextField!
     @IBOutlet weak var positionBox: UITextField!
     @IBOutlet weak var salaryBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
+    @IBOutlet weak var locationButton: UIButton!
     @IBOutlet weak var listingBox: UITextField!
     @IBOutlet weak var dueDateBox: UITextField!
+    
+    let companyBoxTag = 100
+    let salaryBoxTag = 101
+    let locationBoxTag = 102
+    var companyJustCleared = false
+    var locationJustCleared = false
     
     var loadedBasic: JobBasic?
     var salary: NSNumber?
@@ -33,6 +39,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         datePickerView.datePickerMode = UIDatePickerMode.Date
         datePickerView.addTarget(self, action: "updateDate", forControlEvents: UIControlEvents.ValueChanged)
         dueDateBox.inputView = datePickerView
+        
+        //TODO set button image
         
         if let basic = loadedBasic {
             companyBox.text = basic.company
@@ -71,7 +79,35 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         super.viewWillAppear(animated)
     }
     
-    //only called by salary text field (the rest don't have this class set as delegate.
+    func textFieldShouldClear(textField: UITextField) -> Bool {
+        if textField.tag == companyBoxTag {
+            companyJustCleared = true
+        } else if textField.tag == locationBoxTag {
+            locationJustCleared = true
+        }
+        return true
+    }
+    
+    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+        if textField.tag == companyBoxTag {
+            if companyJustCleared {
+                companyJustCleared = false
+            } else {
+                performSegueWithIdentifier("findCompany", sender: self)
+            }
+            return false
+        } else if textField.tag == locationBoxTag {
+            if locationJustCleared {
+                locationJustCleared = false
+            } else {
+                performSegueWithIdentifier("findLocation", sender: self)
+            }
+            return false
+        }
+        return true
+    }
+    
+    //only called by salary text field, company and location text field doesn't begin editing (the rest don't have this class set as delegate.
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         let newSalary = salaryBox.text + string
         let expression = "^\\d+\\.?\\d{0,2}$"
@@ -84,14 +120,14 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         return true
     }
     
-    //only called by salary text field (the rest don't have this class set as delegate.
+    //see above
     func textFieldDidBeginEditing(textField: UITextField) {
         if salary != nil {
             salaryBox.text = salary!.stringValue
         }
     }
     
-    //only called by salary text field (the rest don't have this class set as delegate.
+    //see above
     func textFieldDidEndEditing(textField: UITextField) {
         if salaryBox.text == "" {
             salary = nil
@@ -114,13 +150,16 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         }
     }
     
+    func locationSelected(location: String) {
+        locationBox.text = location
+    }
+    
     @IBAction func updateDate() {
         let date = datePickerView.date
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
         dueDateBox.text = dateFormatter.stringFromDate(date)
     }
-    
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
@@ -188,6 +227,9 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.destinationViewController is CompanyTableViewController {
             let destination = segue.destinationViewController as CompanyTableViewController
+            destination.delegate = self
+        } else if segue.destinationViewController is LocationTableViewController {
+            let destination = segue.destinationViewController as LocationTableViewController
             destination.delegate = self
         } else if segue.destinationViewController is ShowDetailViewController {
             let destination = segue.destinationViewController as ShowDetailViewController

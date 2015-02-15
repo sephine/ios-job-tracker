@@ -122,11 +122,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "445591565.907001"
+            timestampString = "445655661.561758"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "141"
-            endingLineNumber = "141"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
             landmarkName = "saveDetails()"
             landmarkType = "5">
          </BreakpointContent>
