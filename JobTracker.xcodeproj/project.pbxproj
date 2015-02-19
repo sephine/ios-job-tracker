@@ -23,6 +23,8 @@
 		B0B32D7F1A8D86E00039E6BC /* CompanyTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B32D7E1A8D86E00039E6BC /* CompanyTableViewController.swift */; };
 		B0B32D831A8D8EB70039E6BC /* CompanyResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */; };
 		B0B32D851A8D98D80039E6BC /* GlassdoorCompanySearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0B32D841A8D98D80039E6BC /* GlassdoorCompanySearch.swift */; };
+		B0BCAC0E1A9422330040CAE9 /* ShowCompanyCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BCAC0D1A9422330040CAE9 /* ShowCompanyCell.swift */; };
+		B0BCAC121A948DAE0040CAE9 /* ShowListingCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0BCAC111A948DAE0040CAE9 /* ShowListingCell.swift */; };
 		B0DC73151A8AE5FB00138BFE /* ShowDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */; };
 		B0F879661A8AED6F0082F3DF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B0F879641A8AED6F0082F3DF /* Main.storyboard */; };
 /* End PBXBuildFile section */
@@ -60,6 +62,8 @@
 		B0B32D7E1A8D86E00039E6BC /* CompanyTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyTableViewController.swift; sourceTree = "<group>"; };
 		B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompanyResultCell.swift; sourceTree = "<group>"; };
 		B0B32D841A8D98D80039E6BC /* GlassdoorCompanySearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlassdoorCompanySearch.swift; sourceTree = "<group>"; };
+		B0BCAC0D1A9422330040CAE9 /* ShowCompanyCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowCompanyCell.swift; sourceTree = "<group>"; };
+		B0BCAC111A948DAE0040CAE9 /* ShowListingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowListingCell.swift; sourceTree = "<group>"; };
 		B0DC73141A8AE5FB00138BFE /* ShowDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowDetailViewController.swift; sourceTree = "<group>"; };
 		B0F879651A8AED6F0082F3DF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B72712A7F77B29077BCE048A /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -134,6 +138,8 @@
 				B0B32D841A8D98D80039E6BC /* GlassdoorCompanySearch.swift */,
 				B088D25D1A8F32A100E8CB99 /* GoogleLocationSearch.swift */,
 				B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */,
+				B0BCAC0D1A9422330040CAE9 /* ShowCompanyCell.swift */,
+				B0BCAC111A948DAE0040CAE9 /* ShowListingCell.swift */,
 				B088D2591A8EFFE000E8CB99 /* JobBasic.swift */,
 				B088D25B1A8EFFE000E8CB99 /* JobDetail.swift */,
 				B088D2571A8EFFDF00E8CB99 /* JobContact.swift */,
@@ -316,8 +322,10 @@
 				B0DC73151A8AE5FB00138BFE /* ShowDetailViewController.swift in Sources */,
 				B088D2581A8EFFDF00E8CB99 /* JobContact.swift in Sources */,
 				B088D25C1A8EFFE000E8CB99 /* JobDetail.swift in Sources */,
+				B0BCAC0E1A9422330040CAE9 /* ShowCompanyCell.swift in Sources */,
 				B088D25A1A8EFFE000E8CB99 /* JobBasic.swift in Sources */,
 				B047E2801A8318E400475F31 /* AppDelegate.swift in Sources */,
+				B0BCAC121A948DAE0040CAE9 /* ShowListingCell.swift in Sources */,
 				B088D2601A8F3DFC00E8CB99 /* LocationTableViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

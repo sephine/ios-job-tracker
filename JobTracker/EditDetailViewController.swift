@@ -29,7 +29,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     
     var loadedBasic: JobBasic?
     var salary: NSNumber?
-    var glassdoorLink: String?
+    var glassdoorLink = ""
     let datePickerView = UIDatePicker()
     
     override func viewDidLoad() {
@@ -48,6 +48,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             positionBox.text = basic.title
             locationBox.text = basic.details.location
             listingBox.text = basic.details.jobListing
+            glassdoorLink = basic.details.glassdoorLink
             
             let date = basic.details.dueDate as NSDate?
             if date == nil {
@@ -140,14 +141,10 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         salaryBox.text = formatter.stringFromNumber(salary!)
     }
     
-    func companySelected(company: String, website: String?, glassdoorLink: String?) {
+    func companySelected(company: String, website: String, glassdoorLink: String) {
         companyBox.text = company
-        if website != nil {
-            websiteBox.text = website
-        }
-        if glassdoorLink != nil {
-            self.glassdoorLink = glassdoorLink
-        }
+        websiteBox.text = website
+        self.glassdoorLink = glassdoorLink
     }
     
     func locationSelected(location: String) {
@@ -201,6 +198,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         details.salary = salary
         details.location = locationBox.text!
         details.jobListing = listingBox.text
+        details.glassdoorLink = glassdoorLink
         
         if dueDateBox.text!.isEmpty {
             details.dueDate = nil
@@ -208,12 +206,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             let dateFormatter = NSDateFormatter()
             dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
             details.dueDate = dateFormatter.dateFromString(dueDateBox.text!)
-        }
-        
-        if glassdoorLink == nil {
-            details.glassdoorLink = ""
-        } else {
-            details.glassdoorLink = glassdoorLink!
         }
         
         loadedBasic = basic

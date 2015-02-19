@@ -10,7 +10,7 @@ import Foundation
 import UIKit
 
 protocol CompanySelectionDelegate {
-    func companySelected(company: String, website: String?, glassdoorLink: String?)
+    func companySelected(company: String, website: String, glassdoorLink: String)
 }
 
 class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UISearchDisplayDelegate {
@@ -128,7 +128,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
         if indexPath.section == 0 {
             let cell = tableView.cellForRowAtIndexPath(indexPath)
             let company = cell?.textLabel!.text
-            delegate.companySelected(company!, website: nil, glassdoorLink: nil)
+            delegate.companySelected(company!, website: "", glassdoorLink: "")
         } else {
             let company = companies![indexPath.row] as NSDictionary
             let companyName = (company["name"] as String)
