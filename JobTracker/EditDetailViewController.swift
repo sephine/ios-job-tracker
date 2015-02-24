@@ -20,6 +20,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     @IBOutlet weak var locationButton: UIButton!
     @IBOutlet weak var listingBox: UITextField!
     @IBOutlet weak var dueDateBox: UITextField!
+    @IBOutlet weak var notesView: UITextView!
     
     let companyBoxTag = 100
     let salaryBoxTag = 101
@@ -30,6 +31,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     var loadedBasic: JobBasic?
     var salary: NSNumber?
     var glassdoorLink = ""
+    var locationLatitude: NSNumber?
+    var locationLongitude: NSNumber?
     let datePickerView = UIDatePicker()
     
     override func viewDidLoad() {
@@ -46,9 +49,12 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             companyBox.text = basic.company
             websiteBox.text = basic.details.website
             positionBox.text = basic.title
-            locationBox.text = basic.details.location
+            locationBox.text = basic.location.address
+            locationLatitude = basic.location.latitude
+            locationLongitude = basic.location.longitude
             listingBox.text = basic.details.jobListing
             glassdoorLink = basic.details.glassdoorLink
+            notesView.text = basic.details.notes
             
             let date = basic.details.dueDate as NSDate?
             if date == nil {
@@ -147,8 +153,13 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         self.glassdoorLink = glassdoorLink
     }
     
-    func locationSelected(location: String) {
-        locationBox.text = location
+    func locationSelected(address: String) {
+        locationBox.text = address
+    }
+    
+    func coordinatesCalculated(coordinates: CLLocationCoordinate2D) {
+        locationLatitude = coordinates.latitude
+        locationLongitude = coordinates.longitude
     }
     
     @IBAction func updateDate() {
@@ -179,26 +190,41 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         
         var basic: JobBasic
         var details: JobDetail
+        var location: JobLocation
         if loadedBasic != nil {
             basic = loadedBasic!
             details = basic.details
+            location = basic.location
         } else {
             basic = NSEntityDescription.insertNewObjectForEntityForName("JobBasic", inManagedObjectContext: managedContext) as JobBasic
             details = NSEntityDescription.insertNewObjectForEntityForName("JobDetail", inManagedObjectContext: managedContext) as JobDetail
+            location = NSEntityDescription.insertNewObjectForEntityForName("JobLocation", inManagedObjectContext: managedContext) as JobLocation
             managedContext.insertObject(basic)
             managedContext.insertObject(details)
+            managedContext.insertObject(location)
             basic.stage = Stage.Potential.rawValue
+            details.appliedStarted = false
+            details.interviewStarted = false
+            details.decisionStarted = false
+            details.offerStarted = false
             basic.details = details
+            basic.location = location
             details.basic = basic
+            location.basic = basic
         }
         
         basic.company = companyBox.text!
         basic.title = positionBox.text!
+        
         details.website = websiteBox.text!
         details.salary = salary
-        details.location = locationBox.text!
         details.jobListing = listingBox.text
         details.glassdoorLink = glassdoorLink
+        details.notes = notesView.text
+        
+        location.address = locationBox.text!
+        location.latitude = locationLatitude
+        location.longitude = locationLongitude
         
         if dueDateBox.text!.isEmpty {
             details.dueDate = nil
@@ -217,12 +243,15 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.destinationViewController is CompanyTableViewController {
+        if segue.identifier == "findCompany" {
             let destination = segue.destinationViewController as CompanyTableViewController
             destination.delegate = self
-        } else if segue.destinationViewController is LocationTableViewController {
+        } else if segue.identifier == "findLocation" {
             let destination = segue.destinationViewController as LocationTableViewController
             destination.delegate = self
+        } else if segue.identifier == "editApplication" {
+            let destination = segue.destinationViewController as EditApplicationViewController
+            destination.loadedBasic = loadedBasic
         } else if segue.destinationViewController is ShowDetailViewController {
             let destination = segue.destinationViewController as ShowDetailViewController
             destination.loadedBasic = loadedBasic

@@ -10,19 +10,21 @@ import UIKit
 import CoreData
 
 enum Stage: Int {
-    case Potential = 0, Applied, Interview, ReceivedOffer, Rejected
+    case Potential = 0, Applied, Interview, Decision, Offer, Rejected
     
-    static let allValues = [Potential, Applied, Interview, ReceivedOffer, Rejected]
+    static let allValues = [Potential, Applied, Interview, Decision, Offer, Rejected]
     
     var title: String {
         switch self {
         case .Potential:
-            return "Potential Jobs"
+            return "Potential Job"
         case .Applied:
             return "Application Sent"
         case .Interview:
             return "Interview Arranged"
-        case .ReceivedOffer:
+        case .Decision:
+            return "Awaiting Decision"
+        case .Offer:
             return "Offer Received"
         case .Rejected:
             return "Rejected"
@@ -33,6 +35,7 @@ enum Stage: Int {
 class JobListViewController: UITableViewController {
 
     //@IBOutlet weak var jobTableView: UITableView!
+    var nonEmptyStages = [Stage]()
     var jobs = [Stage: [JobBasic]]()
     
     override func viewDidLoad() {
@@ -58,16 +61,24 @@ class JobListViewController: UITableViewController {
         let fetchedResults = managedContext.executeFetchRequest(fetchRequest, error: &error)
         
         if let results = fetchedResults {
-            var jobBasics = [Stage: [JobBasic]]()
-            for stage in Stage.allValues {
-                jobBasics[stage] = [JobBasic]()
-            }
+            nonEmptyStages = [Stage]()
+            jobs = [Stage: [JobBasic]]()
             for result in results {
                 let basic = result as JobBasic
                 let stage = Stage(rawValue: basic.stage.integerValue)!
-                jobBasics[stage]!.append(basic)
+                if jobs.indexForKey(stage) == nil {
+                    jobs[stage] = [basic]
+                } else {
+                    jobs[stage]!.append(basic)
+                }
             }
-            jobs = jobBasics
+            //create an ordered list of the stages that need to be shown
+            for stage in Stage.allValues {
+                if jobs.indexForKey(stage) != nil {
+                    nonEmptyStages.append(stage)
+                }
+            }
+
         } else {
             println("Could not fetch \(error), \(error!.userInfo)")
         }
@@ -75,31 +86,22 @@ class JobListViewController: UITableViewController {
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return Stage.allValues.count
+        return jobs.keys.array.count
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let stage = Stage(rawValue: section)!
-        if jobs[stage]!.isEmpty {
-            return nil
-        }
-        return stage.title
+        return nonEmptyStages[section].title
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let stage = Stage(rawValue: section)!
+        let stage = nonEmptyStages[section]
         return jobs[stage]!.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let section = indexPath.section//
-        let row = indexPath.row//
-        
         let cell = tableView.dequeueReusableCellWithIdentifier("listCell") as UITableViewCell
-        let stage = Stage(rawValue: indexPath.section)!
+        let stage = nonEmptyStages[indexPath.section]
         let job = (jobs[stage]!)[indexPath.row]
-        let company = job.company//
-        let title = job.title//
         cell.textLabel!.text = job.company
         cell.detailTextLabel!.text = job.title
         return cell
@@ -112,9 +114,8 @@ class JobListViewController: UITableViewController {
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showJob" {
             let indexPath = sender as NSIndexPath
-            let stage = Stage(rawValue: indexPath.section)!
+            let stage = nonEmptyStages[indexPath.section]
             let basic = (jobs[stage]!)[indexPath.row] as JobBasic
-        
             let showJobDestination = segue.destinationViewController as ShowDetailViewController
             showJobDestination.loadedBasic = basic
         }

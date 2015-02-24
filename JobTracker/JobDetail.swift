@@ -1,9 +1,9 @@
 //
 //  JobDetail.swift
-//  JobTracker
+//  
 //
-//  Created by Joanne Dyer on 2/13/15.
-//  Copyright (c) 2015 Joanne Maynard. All rights reserved.
+//  Created by Joanne Dyer on 2/23/15.
+//
 //
 
 import Foundation
@@ -11,13 +11,16 @@ import CoreData
 
 class JobDetail: NSManagedObject {
 
-    @NSManaged var location: String
+    @NSManaged var dueDate: NSDate?
+    @NSManaged var glassdoorLink: String
+    @NSManaged var jobListing: String
+    @NSManaged var notes: String
     @NSManaged var salary: NSNumber?
     @NSManaged var website: String
-    @NSManaged var jobListing: String
-    @NSManaged var dueDate: NSDate?
-    @NSManaged var notes: String
-    @NSManaged var glassdoorLink: String
+    @NSManaged var appliedStarted: Bool
+    @NSManaged var interviewStarted: Bool
+    @NSManaged var decisionStarted: Bool
+    @NSManaged var offerStarted: Bool
     @NSManaged var basic: JobBasic
 
 }

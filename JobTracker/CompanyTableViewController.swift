@@ -24,7 +24,6 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Find Company"
-        //tableView.registerClass(CompanyManualCell.self, forCellReuseIdentifier: "companyManualCell")
     }
     
     override func didReceiveMemoryWarning() {
@@ -135,7 +134,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
             let website = (company["website"] as String)
             let glassdoorID = company["id"] as NSNumber
             let glassdoorIDString = glassdoorID.description
-            let glassdoorLink = "http://www.glassdoor.com/Job/Square-Jobs-E\(glassdoorIDString).htm"
+            let glassdoorLink = "http://www.glassdoor.com/Job/\(companyName)-Jobs-E\(glassdoorIDString).htm"
             delegate.companySelected(companyName, website: website, glassdoorLink: glassdoorLink)
         }
         navigationController?.popViewControllerAnimated(true)
@@ -144,4 +143,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
+    
+    //TODO powered by glassdoor on search results
+    //TODO attribution in About page
 }

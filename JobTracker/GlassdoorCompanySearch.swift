@@ -50,4 +50,6 @@ class GlassdoorCompanySearch {
         let companies = response["employers"] as [AnyObject]
         callbackFunction(true, companies)
     }
+
+    //TODO make keys secred, move them into seperate file?
 }

@@ -10,7 +10,8 @@ import Foundation
 import UIKit
 
 protocol LocationSelectionDelegate {
-    func locationSelected(location: String)
+    func locationSelected(address: String)
+    func coordinatesCalculated(coordinates: CLLocationCoordinate2D)
 }
 
 class LocationTableViewController: UITableViewController, UISearchBarDelegate, UISearchDisplayDelegate {
@@ -41,7 +42,7 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate, U
             connectionError = false
             tableView.reloadData()
         } else {
-            GoogleLocationSearch().queryGoogle(location: searchBar.text, callbackFunction: updateWithLocationResults)
+            GoogleLocationSearch().queryGoogle(address: searchBar.text, callbackFunction: updateWithLocationResults)
         }
     }
     
@@ -97,26 +98,51 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate, U
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("locationResultCell", forIndexPath: indexPath) as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("locationResultCell", forIndexPath: indexPath) as LocationResultCell
         if indexPath.section == 0 {
-            cell.textLabel!.text = search.text
+            cell.locationLabel.text = search.text
             return cell
         }
         let location = locations![indexPath.row] as NSDictionary
-        let locationDescription = location["description"] as String
-        cell.textLabel!.text = locationDescription
+        let address = location["description"] as String
+        cell.locationLabel.text = address
         return cell
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath)
-        let location = cell?.textLabel!.text
-        delegate.locationSelected(location!)
+        let cell = tableView.cellForRowAtIndexPath(indexPath) as LocationResultCell
+        let address = cell.locationLabel.text!
+        delegate.locationSelected(address)
+        getPlacemark(address)
         navigationController?.popViewControllerAnimated(true)
+    }
+    
+    func getPlacemark(address: String) {
+        let geocoder = CLGeocoder()
+        geocoder.geocodeAddressString(address, completionHandler: {(results, error) -> Void in
+            if error != nil {
+                //TODO what to do if the data can't be retrieved.
+            } else {
+                let placemarks = results as [CLPlacemark]
+                NSOperationQueue.mainQueue().addOperationWithBlock({
+                    self.fetchedPlacemarks(placemarks)
+                })
+            }
+        })
+    }
+    
+    func fetchedPlacemarks(placemarks: [CLPlacemark]) {
+        if placemarks.count > 0 {
+            let bestPlacemark = placemarks[0]
+            delegate.coordinatesCalculated(bestPlacemark.location.coordinate)
+        }
     }
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
     //TODO think about whether these automatically unwrapped optionals are safe!
+    
+    //TODO powered by google on search results
+    //TODO attribution in About page
 }

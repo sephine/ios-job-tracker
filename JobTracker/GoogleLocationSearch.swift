@@ -12,13 +12,13 @@ class GoogleLocationSearch {
     
     let googleServerAPIKey = "AIzaSyDxGHbRI_3_291MW8UV-9eu5h4hIEQLpJg"
     
-    func queryGoogle(#location: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
+    func queryGoogle(#address: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
         let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
         allowedCharacters.removeCharactersInString("&=?")
         
-        let urlFormLocation = location.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
+        let urlFormAddress = address.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
         
-        let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(urlFormLocation)&key=\(googleServerAPIKey)"
+        let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(urlFormAddress)&key=\(googleServerAPIKey)"
         
         let googleRequestURL = NSURL(string: url)!
         let request = NSURLRequest(URL: googleRequestURL)
