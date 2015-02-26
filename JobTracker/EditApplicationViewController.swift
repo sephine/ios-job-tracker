@@ -20,13 +20,14 @@ class EditApplicationViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Job Detail"
+        title = "Add Application"
         
         datePickerView.datePickerMode = UIDatePickerMode.Date
         datePickerView.addTarget(self, action: "updateDate", forControlEvents: UIControlEvents.ValueChanged)
         dateSentBox.inputView = datePickerView
         
         if let application = loadedBasic.application {
+            title = "Edit Application"
             notesView.text = application.notes
             
             let date = application.dateSent as NSDate?
@@ -49,6 +50,8 @@ class EditApplicationViewController: UITableViewController {
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
     }
+    
+    
     
     @IBAction func updateDate() {
         let date = datePickerView.date

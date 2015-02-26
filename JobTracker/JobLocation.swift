@@ -14,6 +14,5 @@ class JobLocation: NSManagedObject {
     @NSManaged var longitude: NSNumber?
     @NSManaged var latitude: NSNumber?
     @NSManaged var address: String
-    @NSManaged var basic: JobBasic
 
 }

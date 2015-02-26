@@ -13,7 +13,7 @@ import MapKit
 
 enum ShowCellType {
     //CompanyDetails should only be used in the intial set up of the cells, otherwise Company should be used and it will automatically choose the right cell type.
-    case Company, CompanyDetails, Location, CompanyWebsite, JobListing, GlassdoorLink, Notes, Application
+    case Company, CompanyDetails, Location, CompanyWebsite, JobListing, GlassdoorLink, Notes, Applied, Interview
 }
 
 class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, StageSelectionDelegate {
@@ -24,7 +24,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     var stageVC: StageViewController!
     //var stageView: UIView!
     var loadedBasic: JobBasic!
-    var cellTypeArray = [(ShowCellType, String?)]()
+    var cellTypeArray: [(type: ShowCellType, interviewNumber: Int?, website: String?)] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -40,11 +40,11 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         hiddenTextField.inputView = stageVC.view
         
         //initially load all types of resizable cells so they can successfully have their heights changed when the table is reloaded. This data will never show.
-        cellTypeArray = [(ShowCellType, String?)]()
-        cellTypeArray.append((.CompanyDetails, nil))
-        cellTypeArray.append((.Location, nil))
-        cellTypeArray.append((.Notes, nil))
-        cellTypeArray.append((.Application, nil))
+        cellTypeArray = []
+        cellTypeArray.append(type: .CompanyDetails, interviewNumber: nil, website: nil)
+        cellTypeArray.append(type: .Location, interviewNumber: nil, website: nil)
+        cellTypeArray.append(type: .Notes, interviewNumber: nil, website: nil)
+        cellTypeArray.append(type: .Applied, interviewNumber: nil, website: nil)
         tableView.estimatedRowHeight = 44.0 //69.0
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.layoutIfNeeded()
@@ -74,7 +74,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cellType = cellTypeArray[indexPath.row].0
+        let cellType = cellTypeArray[indexPath.row].type
         switch cellType {
         case .Company:
             return getCompanyCell()
@@ -90,14 +90,17 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             return getGlassdoorCell()
         case .Notes:
             return getNotesCell()
-        case .Application:
-            return getApplicationCell()
+        case .Applied:
+            return getAppliedCell()
+        case .Interview:
+            let interviewNumber = cellTypeArray[indexPath.row].interviewNumber!
+            return getInterviewCell(interviewNumber)
         }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         self.view.endEditing(false)
-        let website = cellTypeArray[indexPath.row].1
+        let website = cellTypeArray[indexPath.row].website
         if website != nil && website != "" {
             performSegueWithIdentifier("showWeb", sender: indexPath)
         }
@@ -107,38 +110,41 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
         title = stage.title
         
-        cellTypeArray = [(ShowCellType, String?)]()
-        cellTypeArray.append((.Company, nil))
+        cellTypeArray = []
+        cellTypeArray.append(type: .Company, interviewNumber: nil, website: nil)
         
         let address = loadedBasic.location.address
         if !address.isEmpty {
-            cellTypeArray.append((.Location, nil))
+            cellTypeArray.append(type: .Location, interviewNumber: nil, website: nil)
         }
         
-        let website = loadedBasic.details.website
-        if !website.isEmpty {
-            cellTypeArray.append((.CompanyWebsite, website))
+        let website: String? = loadedBasic.details.website
+        if !website!.isEmpty {
+            cellTypeArray.append(type: .CompanyWebsite, interviewNumber: nil, website: website)
         }
         
-        let listing = loadedBasic.details.jobListing
-        if !listing.isEmpty {
-            cellTypeArray.append((.JobListing, listing))
+        let listing: String? = loadedBasic.details.jobListing
+        if !listing!.isEmpty {
+            cellTypeArray.append(type: .JobListing, interviewNumber: nil, website: listing)
         }
         
-        let glassdoor = loadedBasic.details.glassdoorLink
-        if !glassdoor.isEmpty {
-            cellTypeArray.append((.GlassdoorLink, glassdoor))
+        let glassdoor: String? = loadedBasic.details.glassdoorLink
+        if !glassdoor!.isEmpty {
+            cellTypeArray.append(type: .GlassdoorLink, interviewNumber: nil, website: glassdoor)
         }
-        
-        let dateSent = loadedBasic.application?.dateSent
-        if dateSent != nil {
-            cellTypeArray.append((.Application, nil))
-        }
-        
         let notes = loadedBasic.details.notes
-        let applicationNotes = loadedBasic.application?.notes
-        if !notes.isEmpty || (applicationNotes != nil && !applicationNotes!.isEmpty) {
-            cellTypeArray.append((.Notes, nil))
+        if !notes.isEmpty {
+            cellTypeArray.append(type: .Notes, interviewNumber: nil, website: nil)
+        }
+        let dateSent = loadedBasic.application?.dateSent
+        let appliedNotes = loadedBasic.application?.notes
+        if dateSent != nil || (appliedNotes != nil && !appliedNotes!.isEmpty) {
+            cellTypeArray.append(type: .Applied, interviewNumber: nil, website: nil)
+        }
+        for item in loadedBasic.interviews {
+            let interview = item as JobInterview
+            let interviewNumber: Int? = interview.interviewNumber.integerValue
+            cellTypeArray.append(type: .Interview, interviewNumber: interviewNumber, website: nil)
         }
         
         tableView.reloadData()
@@ -222,27 +228,15 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     
     func getNotesCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showNotesCell") as ShowResultCell
-        
-        var detailsArray = [String]()
-        let potentialNotes = loadedBasic.details.notes
-        if !potentialNotes.isEmpty {
-            detailsArray.append("\(potentialNotes)")
-        }
-        
-        let applicationNotes = loadedBasic.application?.notes
-        if applicationNotes != nil && !applicationNotes!.isEmpty {
-            detailsArray.append("\(Stage.Applied.title):\n\(applicationNotes!)")
-        }
-        
-        let detailsString = join("\n\n", detailsArray)
-        
-        cell.secondaryLabel!.text = detailsString
+        cell.secondaryLabel!.text = loadedBasic.details.notes
         return cell
     }
     
-    func getApplicationCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showApplicationCell") as ShowResultCell
+    func getAppliedCell() -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         let dateSent = loadedBasic.application?.dateSent
+        let notes = loadedBasic.application?.notes
+        
         var dateSentString: String?
         if dateSent != nil {
             let dateFormatter = NSDateFormatter()
@@ -254,8 +248,58 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         if dateSentString != nil {
             detailsArray.append("Sent: \(dateSentString!)")
         }
+        if notes != nil && !notes!.isEmpty {
+            detailsArray.append("\(notes!)")
+        }
+        
         let detailsString = join("\n", detailsArray)
         
+        cell.mainLabel.text = "Application Details"
+        cell.secondaryLabel!.text = detailsString
+        return cell
+    }
+    
+    func getInterviewCell(interviewNumber: Int) -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
+        
+        var interview: JobInterview!
+        for interviewItem in loadedBasic.interviews {
+            let interviewItem = interviewItem as JobInterview
+            if interviewItem.interviewNumber == interviewNumber {
+                interview = interviewItem
+                break
+            }
+        }
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        let startsString = dateFormatter.stringFromDate(interview.starts)
+        let endsString = dateFormatter.stringFromDate(interview.ends)
+        
+        var detailsArray = [String]()
+        detailsArray.append(interview.title)
+        
+        let address = interview.interviewLocation.address
+        if !address.isEmpty {
+            detailsArray.append(address)
+        }
+        
+        detailsArray.append("Starts: \(startsString)")
+        detailsArray.append("Ends: \(endsString)")
+        
+        if !interview.notes.isEmpty {
+            detailsArray.append(interview.notes)
+        }
+        
+        let detailsString = join("\n", detailsArray)
+        
+        if loadedBasic.highestInterviewNumber.integerValue == 1 {
+            cell.mainLabel.text = "Interview Details"
+        } else {
+            let position = Common.positionStringFromNumber(interviewNumber)!
+            cell.mainLabel.text = "\(position) Interview Details"
+        }
         cell.secondaryLabel!.text = detailsString
         return cell
     }
@@ -274,31 +318,14 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         if newStage == .Applied {
             performSegueWithIdentifier("editApplication", sender: self)
+        } else if newStage == .Interview {
+            performSegueWithIdentifier("editInterview", sender: self)
         } else {
             let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
             let managedContext = appDelegate.managedObjectContext!
             
             let currentStage = Stage(rawValue: loadedBasic.stage.integerValue)!
             switch newStage {
-            case .Interview:
-                let interview = NSEntityDescription.insertNewObjectForEntityForName("JobInterview", inManagedObjectContext: managedContext) as JobInterview
-                managedContext.insertObject(interview)
-                
-                if loadedBasic.interviews == nil {
-                    loadedBasic.interviews = NSSet()
-                }
-                loadedBasic.interviews!.setByAddingObject(interview)
-                interview.basic = loadedBasic
-                loadedBasic.details.interviewStarted = true
-                
-                if currentStage == .Interview {
-                    let oldInterviewNumber = loadedBasic.highestInterviewNumber!.integerValue
-                    loadedBasic.highestInterviewNumber = oldInterviewNumber + 1
-                    interview.interviewNumber = oldInterviewNumber + 1
-                } else {
-                    loadedBasic.highestInterviewNumber = 1
-                    interview.interviewNumber = 1
-                }
             case .Decision:
                 let decision = NSEntityDescription.insertNewObjectForEntityForName("JobDecision", inManagedObjectContext: managedContext) as JobDecision
                 managedContext.insertObject(decision)
@@ -344,9 +371,9 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             loadedBasic.application = nil
             loadedBasic.details.appliedStarted = false
         case .Interview:
-            let numberOfInterviews = loadedBasic.highestInterviewNumber!.integerValue
+            let numberOfInterviews = loadedBasic.highestInterviewNumber.integerValue
             if numberOfInterviews >= 2 {
-                let interviewSet = loadedBasic.interviews!.mutableCopy() as NSMutableSet
+                let interviewSet = loadedBasic.interviews.mutableCopy() as NSMutableSet
                 var itemToRemove: JobInterview!
                 for interview in interviewSet {
                     let interview = interview as JobInterview
@@ -361,8 +388,8 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
                 let i = loadedBasic.interviews
                 let j = loadedBasic.highestInterviewNumber
             } else {
-                loadedBasic.interviews = nil
-                loadedBasic.highestInterviewNumber = nil
+                loadedBasic.interviews = NSSet()
+                loadedBasic.highestInterviewNumber = 0
                 loadedBasic.details.interviewStarted = false
             }
         case .Decision:
@@ -394,7 +421,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showWeb" {
             let indexPath = sender as NSIndexPath
-            let website = cellTypeArray[indexPath.row].1
+            let website = cellTypeArray[indexPath.row].website
             let destination = segue.destinationViewController as WebViewController
             destination.website = website
         } else if segue.identifier == "showMap" {
@@ -405,6 +432,9 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             destination.loadedBasic = loadedBasic
         } else if segue.identifier == "editApplication" {
             let destination = segue.destinationViewController as EditApplicationViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "editInterview" {
+            let destination = segue.destinationViewController as EditInterviewViewController
             destination.loadedBasic = loadedBasic
         }
     }

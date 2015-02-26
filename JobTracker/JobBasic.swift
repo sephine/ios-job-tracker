@@ -14,12 +14,12 @@ class JobBasic: NSManagedObject {
     @NSManaged var company: String
     @NSManaged var title: String
     @NSManaged var stage: NSNumber
-    @NSManaged var highestInterviewNumber: NSNumber?
+    @NSManaged var highestInterviewNumber: NSNumber
     @NSManaged var details: JobDetail
     @NSManaged var contacts: JobContact?
     @NSManaged var location: JobLocation
     @NSManaged var application: JobApplication?
-    @NSManaged var interviews: NSSet?
+    @NSManaged var interviews: NSSet
     @NSManaged var decision: JobDecision?
     @NSManaged var offer: JobOffer?
     @NSManaged var rejected: JobRejected?

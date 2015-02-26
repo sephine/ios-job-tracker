@@ -26,12 +26,9 @@ class StageViewController: UIViewController {
     var buttonStageArray = [(Stage, String)]()
     var lastItemIsPreviousStage = true
     var heightConstraint: NSLayoutConstraint!
-    var positionStringsFromNumbers: [Int: String]!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        positionStringsFromNumbers = [1: "First", 2: "Second", 3: "Third", 4: "Fourth", 5: "Fifth", 6: "Sixth", 7: "Seventh", 8: "Eighth", 9: "Ninth", 10: "Tenth"]
         
         view.autoresizingMask = UIViewAutoresizing.FlexibleWidth
         
@@ -67,12 +64,12 @@ class StageViewController: UIViewController {
             buttonStageArray = [(Stage.Rejected, Stage.Rejected.title), (Stage.Offer, Stage.Offer.title), (Stage.Decision, Stage.Decision.title), (Stage.Interview, Stage.Interview.title), (Stage.Potential, "Return to \(Stage.Potential.title)")]
         case .Interview:
             buttonStageArray = [(Stage.Rejected, Stage.Rejected.title), (Stage.Offer, Stage.Offer.title), (Stage.Decision, Stage.Decision.title)]
-            if interviewNumber!.integerValue < 10 { //max of ten interview stages
-                buttonStageArray += [(Stage.Interview, "\(positionStringsFromNumbers[(interviewNumber!.integerValue + 1)]!) Interview Arranged")]
+            if interviewNumber.integerValue < 10 { //max of ten interview stages
+                buttonStageArray += [(Stage.Interview, "\(Common.positionStringFromNumber(interviewNumber.integerValue + 1)!) Interview Arranged")]
             }
             
-            if interviewNumber!.integerValue != 1 {
-                buttonStageArray += [(Stage.Interview, "Return to \(positionStringsFromNumbers[(interviewNumber!.integerValue - 1)]!) Interview Arranged")]
+            if interviewNumber.integerValue > 1 {
+                buttonStageArray += [(Stage.Interview, "Return to \(Common.positionStringFromNumber(interviewNumber.integerValue - 1)!) Interview Arranged")]
             } else if details.appliedStarted {
                 buttonStageArray += [(Stage.Applied, "Return to \(Stage.Applied.title)")]
             } else {
@@ -81,10 +78,10 @@ class StageViewController: UIViewController {
         case .Decision:
             buttonStageArray = [(Stage.Rejected, Stage.Rejected.title), (Stage.Offer, Stage.Offer.title)]
             if details.interviewStarted {
-                if interviewNumber! == 1 {
+                if interviewNumber == 1 {
                     buttonStageArray += [(Stage.Interview, "Return to \(Stage.Interview.title)")]
                 } else {
-                    buttonStageArray += [(Stage.Interview, "Return to \(positionStringsFromNumbers[(interviewNumber!.integerValue)]!) Interview Arranged")]
+                    buttonStageArray += [(Stage.Interview, "Return to \(Common.positionStringFromNumber(interviewNumber.integerValue)!) Interview Arranged")]
                 }
             } else if details.appliedStarted {
                 buttonStageArray += [(Stage.Applied, "Return to \(Stage.Applied.title)")]
@@ -96,10 +93,10 @@ class StageViewController: UIViewController {
             if details.decisionStarted {
                 buttonStageArray += [(Stage.Decision, "Return to \(Stage.Decision.title)")]
             } else if details.interviewStarted {
-                if interviewNumber! == 1 {
+                if interviewNumber == 1 {
                     buttonStageArray += [(Stage.Interview, "Return to \(Stage.Interview.title)")]
                 } else {
-                    buttonStageArray += [(Stage.Interview, "Return to \(positionStringsFromNumbers[(interviewNumber!.integerValue)]!) Interview Arranged")]
+                    buttonStageArray += [(Stage.Interview, "Return to \(Common.positionStringFromNumber(interviewNumber.integerValue)!) Interview Arranged")]
                 }
             } else if details.appliedStarted {
                 buttonStageArray += [(Stage.Applied, "Return to \(Stage.Applied.title)")]
@@ -112,10 +109,10 @@ class StageViewController: UIViewController {
             } else if details.decisionStarted {
                 buttonStageArray = [(Stage.Decision, "Return to \(Stage.Decision.title)")]
             } else if details.interviewStarted {
-                if interviewNumber! == 1 {
+                if interviewNumber == 1 {
                     buttonStageArray = [(Stage.Interview, "Return to \(Stage.Interview.title)")]
                 } else {
-                    buttonStageArray = [(Stage.Interview, "Return to \(positionStringsFromNumbers[(interviewNumber!.integerValue)]! ) Interview Arranged")]
+                    buttonStageArray = [(Stage.Interview, "Return to \(Common.positionStringFromNumber(interviewNumber.integerValue)! ) Interview Arranged")]
                 }
             } else if details.appliedStarted {
                 buttonStageArray = [(Stage.Applied, "Return to \(Stage.Applied.title)")]

@@ -9,29 +9,6 @@
 import UIKit
 import CoreData
 
-enum Stage: Int {
-    case Potential = 0, Applied, Interview, Decision, Offer, Rejected
-    
-    static let allValues = [Potential, Applied, Interview, Decision, Offer, Rejected]
-    
-    var title: String {
-        switch self {
-        case .Potential:
-            return "Potential Job"
-        case .Applied:
-            return "Application Sent"
-        case .Interview:
-            return "Interview Arranged"
-        case .Decision:
-            return "Awaiting Decision"
-        case .Offer:
-            return "Offer Received"
-        case .Rejected:
-            return "Rejected"
-        }
-    }
-}
-
 class JobListViewController: UITableViewController {
 
     //@IBOutlet weak var jobTableView: UITableView!
@@ -40,7 +17,6 @@ class JobListViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Job List"
     }
 
     override func didReceiveMemoryWarning() {

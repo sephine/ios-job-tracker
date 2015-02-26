@@ -35,9 +35,14 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     var locationLongitude: NSNumber?
     let datePickerView = UIDatePicker()
     
+    var goToDetailsSectionData: [(title: String, segueID: String, interviewNumber: Int?)] = []
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Job Detail"
+        title = "Add Job"
+        
+        //the first section of the tableview is static, the second will be set up dynamically
+        setUpGoToDetailsSectionData()
         
         datePickerView.datePickerMode = UIDatePickerMode.Date
         datePickerView.addTarget(self, action: "updateDate", forControlEvents: UIControlEvents.ValueChanged)
@@ -46,6 +51,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         //TODO set button image
         
         if let basic = loadedBasic {
+            title = "Edit Job"
             companyBox.text = basic.company
             websiteBox.text = basic.details.website
             positionBox.text = basic.title
@@ -86,11 +92,74 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         super.viewWillAppear(animated)
     }
     
+    func setUpGoToDetailsSectionData() {
+        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "goToDetailsCell")
+        
+        if loadedBasic != nil {
+            if loadedBasic!.details.appliedStarted {
+                goToDetailsSectionData.append(title: "Application Details", segueID: "editApplication", interviewNumber: nil)
+            }
+            if loadedBasic!.details.interviewStarted {
+                let numberOfInterviews = loadedBasic!.highestInterviewNumber.integerValue
+                if numberOfInterviews == 1 {
+                    let interviewNumber: Int? = 1
+                    goToDetailsSectionData.append(title: "Interview Details", segueID: "editInterview", interviewNumber: interviewNumber)
+                } else {
+                    for i in 1...numberOfInterviews {
+                        let interviewNumber: Int? = i
+                        let position = Common.positionStringFromNumber(i)!
+                        goToDetailsSectionData.append(title: "\(position) Interview Details", segueID: "editInterview", interviewNumber: interviewNumber)
+                    }
+                }
+            }
+        }
+    }
+    
+    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if section == 0 {
+            return super.tableView(tableView, numberOfRowsInSection: section)
+        }
+        let i = goToDetailsSectionData.count
+        return goToDetailsSectionData.count
+    }
+    
+    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        if indexPath.section == 0 {
+            return super.tableView(tableView, cellForRowAtIndexPath: indexPath)
+        }
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier("goToDetailsCell") as UITableViewCell
+        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
+        
+        let detailsTuple = goToDetailsSectionData[indexPath.row]
+        cell.textLabel!.text = detailsTuple.title
+        return cell
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 1 {
+            let detailsTuple = goToDetailsSectionData[indexPath.row]
+            performSegueWithIdentifier(detailsTuple.segueID, sender: indexPath)
+        }
+    }
+    
+    /*override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        //check if the details cells at the bottom should be hidden
+        let hideApplicationDetails = loadedBasic == nil || !loadedBasic!.details.appliedStarted
+        if indexPath.section == 1 && (indexPath.row == 0 && hideApplicationDetails) {
+            return 0
+        } else {
+            return super.tableView(tableView, heightForRowAtIndexPath: indexPath)
+        }
+    }*/
+    
     func textFieldShouldClear(textField: UITextField) -> Bool {
         if textField.tag == companyBoxTag {
             companyJustCleared = true
         } else if textField.tag == locationBoxTag {
             locationJustCleared = true
+            locationLatitude = nil
+            locationLongitude = nil
         }
         return true
     }
@@ -158,8 +227,10 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     }
     
     func coordinatesCalculated(coordinates: CLLocationCoordinate2D) {
-        locationLatitude = coordinates.latitude
-        locationLongitude = coordinates.longitude
+        if !locationBox.text.isEmpty {
+            locationLatitude = coordinates.latitude
+            locationLongitude = coordinates.longitude
+        }
     }
     
     @IBAction func updateDate() {
@@ -210,7 +281,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             basic.details = details
             basic.location = location
             details.basic = basic
-            location.basic = basic
         }
         
         basic.company = companyBox.text!
@@ -252,6 +322,12 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         } else if segue.identifier == "editApplication" {
             let destination = segue.destinationViewController as EditApplicationViewController
             destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "editInterview" {
+            let destination = segue.destinationViewController as EditInterviewViewController
+            destination.loadedBasic = loadedBasic
+            let indexPath = sender as NSIndexPath
+            let detailsTuple = goToDetailsSectionData[indexPath.row]
+            destination.interviewNumberToLoad = detailsTuple.interviewNumber
         } else if segue.destinationViewController is ShowDetailViewController {
             let destination = segue.destinationViewController as ShowDetailViewController
             destination.loadedBasic = loadedBasic
