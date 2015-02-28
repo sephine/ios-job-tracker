@@ -14,6 +14,25 @@ class Common {
         let positions = [1: "First", 2: "Second", 3: "Third", 4: "Fourth", 5: "Fifth", 6: "Sixth", 7: "Seventh", 8: "Eighth", 9: "Ninth", 10: "Tenth"]
         return positions[number]
     }
+    
+    class func standardCurrencyFormatter() -> NSNumberFormatter {
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
+        return formatter
+    }
+    
+    class func standardDateFormatter() -> NSDateFormatter {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
+        return dateFormatter
+    }
+    
+    class func standardDateAndTimeFormatter() -> NSDateFormatter {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
+        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        return dateFormatter
+    }
 }
 
 enum Stage: Int {

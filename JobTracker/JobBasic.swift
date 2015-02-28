@@ -25,4 +25,14 @@ class JobBasic: NSManagedObject {
     @NSManaged var rejected: JobRejected?
     
     //TODO should location be optional?
+    
+    func getInterviewFromNumber(interviewNumber: Int) -> JobInterview? {
+        for interviewItem in interviews {
+            let interviewItem = interviewItem as JobInterview
+            if interviewItem.interviewNumber == interviewNumber {
+                return interviewItem
+            }
+        }
+        return nil
+    }
 }

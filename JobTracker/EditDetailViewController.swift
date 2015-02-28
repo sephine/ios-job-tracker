@@ -9,8 +9,9 @@
 import Foundation
 import UIKit
 import CoreData
+import EventKitUI
 
-class EditDetailViewController: UITableViewController, UITextFieldDelegate, CompanySelectionDelegate, LocationSelectionDelegate {
+class EditDetailViewController: UITableViewController, UITextFieldDelegate, CompanySelectionDelegate, LocationSelectionDelegate, EventLoadingDelegate {
 
     @IBOutlet weak var companyBox: UITextField!
     @IBOutlet weak var websiteBox: UITextField!
@@ -35,7 +36,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     var locationLongitude: NSNumber?
     let datePickerView = UIDatePicker()
     
-    var goToDetailsSectionData: [(title: String, segueID: String, interviewNumber: Int?)] = []
+    var goToDetailsSectionData: [(title: String, segueID: String, interview: JobInterview?)] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,6 +84,37 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         }
     }
     
+    func setControlValuesToLoadedData() {
+        if let basic = loadedBasic {
+            title = "Edit Job"
+            companyBox.text = basic.company
+            websiteBox.text = basic.details.website
+            positionBox.text = basic.title
+            locationBox.text = basic.location.address
+            locationLatitude = basic.location.latitude
+            locationLongitude = basic.location.longitude
+            listingBox.text = basic.details.jobListing
+            glassdoorLink = basic.details.glassdoorLink
+            notesView.text = basic.details.notes
+            
+            let date = basic.details.dueDate as NSDate?
+            if date == nil {
+                dueDateBox.text = ""
+            } else {
+                dueDateBox.text = Common.standardDateFormatter().stringFromDate(date!)
+                datePickerView.date = date!
+            }
+            
+            salary = basic.details.salary as NSNumber?
+            if salary == nil {
+                salaryBox.text = ""
+            } else {
+                salaryBox.text = Common.standardCurrencyFormatter().stringFromNumber(salary!)
+            }
+        }
+
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -97,18 +129,18 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         
         if loadedBasic != nil {
             if loadedBasic!.details.appliedStarted {
-                goToDetailsSectionData.append(title: "Application Details", segueID: "editApplication", interviewNumber: nil)
+                goToDetailsSectionData.append(title: "Application Details", segueID: "editApplication", interview: nil)
             }
             if loadedBasic!.details.interviewStarted {
                 let numberOfInterviews = loadedBasic!.highestInterviewNumber.integerValue
                 if numberOfInterviews == 1 {
-                    let interviewNumber: Int? = 1
-                    goToDetailsSectionData.append(title: "Interview Details", segueID: "editInterview", interviewNumber: interviewNumber)
+                    let interview: JobInterview? = loadedBasic!.getInterviewFromNumber(1)
+                    goToDetailsSectionData.append(title: "Interview Details", segueID: "editInterview", interview: interview)
                 } else {
                     for i in 1...numberOfInterviews {
-                        let interviewNumber: Int? = i
                         let position = Common.positionStringFromNumber(i)!
-                        goToDetailsSectionData.append(title: "\(position) Interview Details", segueID: "editInterview", interviewNumber: interviewNumber)
+                        let interview: JobInterview? = loadedBasic!.getInterviewFromNumber(i)
+                        goToDetailsSectionData.append(title: "\(position) Interview Details", segueID: "editInterview", interview: interview)
                     }
                 }
             }
@@ -119,7 +151,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         if section == 0 {
             return super.tableView(tableView, numberOfRowsInSection: section)
         }
-        let i = goToDetailsSectionData.count
         return goToDetailsSectionData.count
     }
     
@@ -139,19 +170,22 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 1 {
             let detailsTuple = goToDetailsSectionData[indexPath.row]
-            performSegueWithIdentifier(detailsTuple.segueID, sender: indexPath)
+            if detailsTuple.segueID == "editInterview" && !detailsTuple.interview!.eventID.isEmpty {
+                segueToCalendarEventForInterview(detailsTuple.interview!)
+            } else {
+                performSegueWithIdentifier(detailsTuple.segueID, sender: indexPath)
+            }
         }
     }
     
-    /*override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        //check if the details cells at the bottom should be hidden
-        let hideApplicationDetails = loadedBasic == nil || !loadedBasic!.details.appliedStarted
-        if indexPath.section == 1 && (indexPath.row == 0 && hideApplicationDetails) {
-            return 0
-        } else {
-            return super.tableView(tableView, heightForRowAtIndexPath: indexPath)
-        }
-    }*/
+    func segueToCalendarEventForInterview(interview: JobInterview) {
+        EventManager.sharedInstance.loadingDelegate = self
+        EventManager.sharedInstance.loadEventInEventEditVC(interviewToUpdate: interview, viewController: self)
+    }
+    
+    func eventLoaded() {
+        
+    }
     
     func textFieldShouldClear(textField: UITextField) -> Bool {
         if textField.tag == companyBoxTag {
@@ -327,7 +361,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             destination.loadedBasic = loadedBasic
             let indexPath = sender as NSIndexPath
             let detailsTuple = goToDetailsSectionData[indexPath.row]
-            destination.interviewNumberToLoad = detailsTuple.interviewNumber
+            let interview = detailsTuple.interview!
+            destination.loadedInterview = interview
         } else if segue.destinationViewController is ShowDetailViewController {
             let destination = segue.destinationViewController as ShowDetailViewController
             destination.loadedBasic = loadedBasic

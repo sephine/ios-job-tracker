@@ -40,6 +40,10 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         hiddenTextField.inputView = stageVC.view
         
         //initially load all types of resizable cells so they can successfully have their heights changed when the table is reloaded. This data will never show.
+        loadTableWithDummyData()
+    }
+    
+    func loadTableWithDummyData() {
         cellTypeArray = []
         cellTypeArray.append(type: .CompanyDetails, interviewNumber: nil, website: nil)
         cellTypeArray.append(type: .Location, interviewNumber: nil, website: nil)
@@ -60,7 +64,54 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         super.viewWillAppear(animated)
         
         self.navigationController?.toolbarHidden = false
-        refreshPage()
+        reloadCellTypeArray()
+    }
+    
+    func reloadCellTypeArray() {
+        let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
+        title = stage.title
+        
+        cellTypeArray = []
+        cellTypeArray.append(type: .Company, interviewNumber: nil, website: nil)
+        
+        let address = loadedBasic.location.address
+        if !address.isEmpty {
+            cellTypeArray.append(type: .Location, interviewNumber: nil, website: nil)
+        }
+        
+        let website: String? = loadedBasic.details.website
+        if !website!.isEmpty {
+            cellTypeArray.append(type: .CompanyWebsite, interviewNumber: nil, website: website)
+        }
+        
+        let listing: String? = loadedBasic.details.jobListing
+        if !listing!.isEmpty {
+            cellTypeArray.append(type: .JobListing, interviewNumber: nil, website: listing)
+        }
+        
+        let glassdoor: String? = loadedBasic.details.glassdoorLink
+        if !glassdoor!.isEmpty {
+            cellTypeArray.append(type: .GlassdoorLink, interviewNumber: nil, website: glassdoor)
+        }
+        let notes = loadedBasic.details.notes
+        if !notes.isEmpty {
+            cellTypeArray.append(type: .Notes, interviewNumber: nil, website: nil)
+        }
+        let dateSent = loadedBasic.application?.dateSent
+        let appliedNotes = loadedBasic.application?.notes
+        if dateSent != nil || (appliedNotes != nil && !appliedNotes!.isEmpty) {
+            cellTypeArray.append(type: .Applied, interviewNumber: nil, website: nil)
+        }
+        let numberOfInterviews = loadedBasic.highestInterviewNumber
+        for var i = 1; i <= numberOfInterviews.integerValue; i++ {
+            let interviewNumber: Int? = i
+            cellTypeArray.append(type: .Interview, interviewNumber: interviewNumber, website: nil)
+        }
+        
+        tableView.reloadData()
+        
+        //adding an empty footer ensures that the table view doesn't show empty rows
+        tableView.tableFooterView = UIView(frame: CGRectZero)
     }
     
     override func viewWillDisappear(animated: Bool) {
@@ -106,53 +157,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    func refreshPage() {
-        let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
-        title = stage.title
-        
-        cellTypeArray = []
-        cellTypeArray.append(type: .Company, interviewNumber: nil, website: nil)
-        
-        let address = loadedBasic.location.address
-        if !address.isEmpty {
-            cellTypeArray.append(type: .Location, interviewNumber: nil, website: nil)
-        }
-        
-        let website: String? = loadedBasic.details.website
-        if !website!.isEmpty {
-            cellTypeArray.append(type: .CompanyWebsite, interviewNumber: nil, website: website)
-        }
-        
-        let listing: String? = loadedBasic.details.jobListing
-        if !listing!.isEmpty {
-            cellTypeArray.append(type: .JobListing, interviewNumber: nil, website: listing)
-        }
-        
-        let glassdoor: String? = loadedBasic.details.glassdoorLink
-        if !glassdoor!.isEmpty {
-            cellTypeArray.append(type: .GlassdoorLink, interviewNumber: nil, website: glassdoor)
-        }
-        let notes = loadedBasic.details.notes
-        if !notes.isEmpty {
-            cellTypeArray.append(type: .Notes, interviewNumber: nil, website: nil)
-        }
-        let dateSent = loadedBasic.application?.dateSent
-        let appliedNotes = loadedBasic.application?.notes
-        if dateSent != nil || (appliedNotes != nil && !appliedNotes!.isEmpty) {
-            cellTypeArray.append(type: .Applied, interviewNumber: nil, website: nil)
-        }
-        for item in loadedBasic.interviews {
-            let interview = item as JobInterview
-            let interviewNumber: Int? = interview.interviewNumber.integerValue
-            cellTypeArray.append(type: .Interview, interviewNumber: interviewNumber, website: nil)
-        }
-        
-        tableView.reloadData()
-        
-        //adding an empty footer ensures that the table view doesn't show empty rows
-        tableView.tableFooterView = UIView(frame: CGRectZero)
-    }
-    
     func getCompanyCell() -> ShowResultCell {
         let company = loadedBasic.company as String
         let title = loadedBasic.title as String
@@ -179,16 +183,12 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         var salaryString: String?
         if salary != nil {
-            let salaryFormatter = NSNumberFormatter()
-            salaryFormatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
-            salaryString = salaryFormatter.stringFromNumber(salary!)
+            salaryString = Common.standardCurrencyFormatter().stringFromNumber(salary!)
         }
         
         var dueDateString: String?
         if dueDate != nil {
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-            dueDateString = dateFormatter.stringFromDate(dueDate!)
+            dueDateString = Common.standardDateFormatter().stringFromDate(dueDate!)
         }
         
         var detailsArray = [String]()
@@ -239,9 +239,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         var dateSentString: String?
         if dateSent != nil {
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-            dateSentString = dateFormatter.stringFromDate(dateSent!)
+            dateSentString = Common.standardDateFormatter().stringFromDate(dateSent!)
         }
         
         var detailsArray = [String]()
@@ -262,25 +260,15 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     func getInterviewCell(interviewNumber: Int) -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
-        var interview: JobInterview!
-        for interviewItem in loadedBasic.interviews {
-            let interviewItem = interviewItem as JobInterview
-            if interviewItem.interviewNumber == interviewNumber {
-                interview = interviewItem
-                break
-            }
-        }
+        let interview = loadedBasic.getInterviewFromNumber(interviewNumber)!
         
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
-        let startsString = dateFormatter.stringFromDate(interview.starts)
-        let endsString = dateFormatter.stringFromDate(interview.ends)
+        let startsString = Common.standardDateAndTimeFormatter().stringFromDate(interview.starts)
+        let endsString = Common.standardDateAndTimeFormatter().stringFromDate(interview.ends)
         
         var detailsArray = [String]()
         detailsArray.append(interview.title)
         
-        let address = interview.interviewLocation.address
+        let address = interview.location.address
         if !address.isEmpty {
             detailsArray.append(address)
         }
@@ -355,7 +343,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             }
             
             stageVC.loadedBasic = loadedBasic
-            refreshPage()
+            reloadCellTypeArray()
         }
         
         //TODO change to proper stage change
@@ -415,7 +403,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         let l = loadedBasic.highestInterviewNumber
         
         stageVC.loadedBasic = loadedBasic
-        refreshPage()
+        reloadCellTypeArray()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -438,24 +426,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             destination.loadedBasic = loadedBasic
         }
     }
-    
-    /*func setUpConstraints() {
-        
-        let stageView = stageVC.view
-        //stageView.setTranslatesAutoresizingMaskIntoConstraints(false)
-        
-        stageVC.view.autoresizingMask = UIViewAutoresizing.FlexibleWidth
-        
-        let heightConstraint = NSLayoutConstraint(item: stageView, attribute: NSLayoutAttribute.Height, relatedBy: NSLayoutRelation.Equal, toItem: nil, attribute: NSLayoutAttribute.NotAnAttribute, multiplier: 1.0, constant: 198.0)//160
-        stageView.addConstraint(heightConstraint)
-        /*let leadingConstraint = NSLayoutConstraint(item: stageView, attribute: NSLayoutAttribute.Leading, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.Leading, multiplier: 1.0, constant: 0)
-        view.addConstraint(leadingConstraint)
-        let trailingConstraint = NSLayoutConstraint(item: stageView, attribute: NSLayoutAttribute.Trailing, relatedBy: NSLayoutRelation.Equal, toItem: view, attribute: NSLayoutAttribute.Trailing, multiplier: 1.0, constant: 0)
-        view.addConstraint(trailingConstraint)
-        let bottomConstraint = NSLayoutConstraint(item: stageView, attribute: NSLayoutAttribute.Bottom, relatedBy: NSLayoutRelation.Equal, toItem: bottomLayoutGuide, attribute: NSLayoutAttribute.Top, multiplier: 1.0, constant: 0)
-        view.addConstraint(bottomConstraint)*/
-        
-    }*/
 }
 
 //TODO some of the stored data is empty strings and sometimes nil, tidy it up.

@@ -17,7 +17,7 @@ class JobInterview: NSManagedObject {
     @NSManaged var starts: NSDate
     @NSManaged var ends: NSDate
     @NSManaged var notes: String
-    @NSManaged var interviewLocation: JobLocation
+    @NSManaged var location: JobLocation
     @NSManaged var basic: JobBasic
 
 }

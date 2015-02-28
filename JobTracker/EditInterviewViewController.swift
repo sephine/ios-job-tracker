@@ -9,9 +9,11 @@
 import Foundation
 import UIKit
 import CoreData
+import EventKitUI
 
-class EditInterviewViewController: UITableViewController, UITextFieldDelegate, LocationSelectionDelegate {
+class EditInterviewViewController: UITableViewController, UITextFieldDelegate, LocationSelectionDelegate, EventCreationDelegate {
 
+    @IBOutlet weak var addEventCell: ShowResultCell!
     @IBOutlet weak var titleBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
     @IBOutlet weak var startsBox: UITextField!
@@ -20,9 +22,8 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     @IBOutlet weak var notesView: UITextView!
 
     var loadedBasic: JobBasic!
-    var interviewNumberToLoad: Int?
-    
     var loadedInterview: JobInterview?
+    
     var locationLatitude: NSNumber?
     var locationLongitude: NSNumber?
     
@@ -34,9 +35,15 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if !EventManager.sharedInstance.accessToCalendarGranted {
+            addEventCell.userInteractionEnabled = false
+            addEventCell.mainLabel.enabled = false
+        }
+        
         setUpDatePickers()
         
-        if interviewNumberToLoad == nil {
+        if loadedInterview == nil {
             if loadedBasic.highestInterviewNumber == 0 {
                 title = "Add Interview"
             } else {
@@ -49,22 +56,10 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
             if loadedBasic.highestInterviewNumber.integerValue == 1 {
                 title = "Edit Interview"
             } else {
-                title = "Edit Interview \(interviewNumberToLoad!)"
-            }
-            let interviews = loadedBasic.interviews
-            for interviewItem in interviews {
-                let interviewItem = interviewItem as JobInterview
-                if interviewItem.interviewNumber == interviewNumberToLoad! {
-                    loadedInterview = interviewItem
-                    break
-                }
+                title = "Edit Interview \(loadedInterview!.interviewNumber)"
             }
             
-            if !loadedInterview!.eventID.isEmpty {
-                setControlValuesToDataLoadedFromCalendar()
-            } else {
-                setControlValuesToLocallySavedData()
-            }
+            setControlValuesToLocallySavedData()
         }
     }
     
@@ -125,15 +120,11 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         locationLongitude = loadedBasic.location.longitude
     }
     
-    func setControlValuesToDataLoadedFromCalendar() {
-        //TODO
-    }
-    
     func setControlValuesToLocallySavedData() {
         titleBox.text = loadedInterview!.title
-        locationBox.text = loadedInterview!.interviewLocation.address
-        locationLatitude = loadedInterview!.interviewLocation.latitude
-        locationLongitude = loadedInterview!.interviewLocation.longitude
+        locationBox.text = loadedInterview!.location.address
+        locationLatitude = loadedInterview!.location.latitude
+        locationLongitude = loadedInterview!.location.longitude
         
         let starts = loadedInterview!.starts as NSDate?
         if starts == nil {
@@ -193,66 +184,113 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         //TODO updating end date when start date updated.
     }
     
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0 {
+            createCalendarEvent()
+        }
+    }
+    
+    func createCalendarEvent() {
+        let store = EventManager.sharedInstance.store
+        let event = EKEvent(eventStore: store)
+        event.calendar = store.defaultCalendarForNewEvents
+        event.title = titleBox.text
+        event.location = locationBox.text!
+        event.startDate = Common.standardDateAndTimeFormatter().dateFromString(startsBox.text)!
+        event.endDate = Common.standardDateAndTimeFormatter().dateFromString(endsBox.text)!
+        event.notes = notesView.text
+        let i = event.notes
+        
+        EventManager.sharedInstance.creationDelegate = self
+        EventManager.sharedInstance.createEventInEventEditVC(event, viewController: self)
+    }
+    
+    func eventCreated(#event: EKEvent, wasSaved: Bool) {
+        if wasSaved {
+            saveDetailsFollowingCreationOfEvent(event)
+        }
+    }
+    
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
     
     @IBAction func saveClicked(sender: UIBarButtonItem) {
-        saveDetails()
-        navigationController?.popViewControllerAnimated(true)
+        saveDetailsFromControlData()
     }
-
-    func saveDetails() {
-        //TODO
-        
+    
+    func saveDetailsFollowingCreationOfEvent(event: EKEvent) {
         let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
         let managedContext = appDelegate.managedObjectContext!
         
+        let interview = createOrLoadInterview()
+        
+        interview.eventID = event.eventIdentifier
+        interview.title = event.title
+        interview.starts = event.startDate
+        interview.ends = event.endDate
+        interview.notes = event.notes
+        
+        interview.location.address = event.location
+        interview.location.latitude = nil
+        interview.location.longitude = nil
+        
+        var error: NSError?
+        if !managedContext.save(&error) {
+            println("Could not save \(error), \(error?.userInfo)")
+        }
+        
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
+    func saveDetailsFromControlData() {
+        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        let managedContext = appDelegate.managedObjectContext!
+        
+        let interview = createOrLoadInterview()
+        
+        interview.eventID = ""
+        interview.title = titleBox.text
+        interview.starts = dateFormatter.dateFromString(startsBox.text)!
+        interview.ends = dateFormatter.dateFromString(endsBox.text)!
+        interview.notes = notesView.text
+        
+        interview.location.address = locationBox.text!
+        interview.location.latitude = locationLatitude
+        interview.location.longitude = locationLongitude
+        
+        var error: NSError?
+        if !managedContext.save(&error) {
+            println("Could not save \(error), \(error?.userInfo)")
+        }
+        
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
+    func createOrLoadInterview() -> JobInterview {
         var interview: JobInterview
-        var interviewLocation: JobLocation
         if loadedInterview != nil {
             interview = loadedInterview!
-            interviewLocation = loadedInterview!.interviewLocation
         } else {
+            let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+            let managedContext = appDelegate.managedObjectContext!
+            
             interview = NSEntityDescription.insertNewObjectForEntityForName("JobInterview", inManagedObjectContext: managedContext) as JobInterview
-            interviewLocation = NSEntityDescription.insertNewObjectForEntityForName("JobLocation", inManagedObjectContext: managedContext) as JobLocation
+            let interviewLocation = NSEntityDescription.insertNewObjectForEntityForName("JobLocation", inManagedObjectContext: managedContext) as JobLocation
             managedContext.insertObject(interview)
             managedContext.insertObject(interviewLocation)
             
             let newInterviewNumber = loadedBasic.highestInterviewNumber.integerValue + 1
             loadedBasic.highestInterviewNumber = newInterviewNumber
             interview.interviewNumber = newInterviewNumber
-
+            
             loadedBasic.interviews.setByAddingObject(interview)
             interview.basic = loadedBasic
-            interview.interviewLocation = interviewLocation
+            interview.location = interviewLocation
             loadedBasic.details.interviewStarted = true
             loadedBasic.stage = Stage.Interview.rawValue
         }
-        
-        interview.title = titleBox.text
-        interview.notes = notesView.text
-        
-        interview.starts = dateFormatter.dateFromString(startsBox.text)!
-        interview.ends = dateFormatter.dateFromString(endsBox.text)!
-        
-        interviewLocation.address = locationBox.text!
-        interviewLocation.latitude = locationLatitude
-        interviewLocation.longitude = locationLongitude
-        
-        //TODO if calendar is not none set eventID to empty, else
-        interview.eventID = saveToCalendarAndGetEventID()
-        
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
-        }
-
-    }
-    
-    func saveToCalendarAndGetEventID() -> String {
-        //TODO
-        return ""
+        return interview
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
