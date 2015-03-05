@@ -244,9 +244,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     }
     
     func saveDetailsFromControlData() {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        let managedContext = appDelegate.managedObjectContext!
-        
+        let managedContext = Common.managedContext
         let interview = createOrLoadInterview()
         
         interview.eventID = ""

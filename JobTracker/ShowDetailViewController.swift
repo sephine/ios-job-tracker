@@ -350,9 +350,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func goToPreviousStage(previousStage: Stage) {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        let managedContext = appDelegate.managedObjectContext!
-        
         let currentStage = Stage(rawValue: loadedBasic.stage.integerValue)!
         switch currentStage {
         case .Applied:
@@ -395,7 +392,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         loadedBasic.stage = previousStage.rawValue
         
         var error: NSError?
-        if !managedContext.save(&error) {
+        if !Common.managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
         }
         

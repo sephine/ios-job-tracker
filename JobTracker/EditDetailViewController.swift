@@ -290,9 +290,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     }
     
     func saveDetails() {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        let managedContext = appDelegate.managedObjectContext!
-        
+        let managedContext = Common.managedContext
         var basic: JobBasic
         var details: JobDetail
         var location: JobLocation

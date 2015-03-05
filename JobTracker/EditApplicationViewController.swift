@@ -70,9 +70,7 @@ class EditApplicationViewController: UITableViewController {
     }
     
     func saveDetails() {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        let managedContext = appDelegate.managedObjectContext!
-        
+        let managedContext = Common.managedContext
         var application: JobApplication
         if loadedBasic.application != nil {
             application = loadedBasic.application!
