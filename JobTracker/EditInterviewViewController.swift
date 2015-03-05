@@ -70,6 +70,18 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        //show toolbar only on edit interview (not create new)
+        if loadedInterview != nil {
+            self.navigationController?.toolbarHidden = false
+        } else {
+            self.navigationController?.toolbarHidden = true
+        }
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.toolbarHidden = true
     }
 
     func textFieldShouldClear(textField: UITextField) -> Bool {
@@ -219,6 +231,16 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         saveDetailsFromControlData()
     }
     
+    @IBAction func deleteClicked(sender: UIBarButtonItem) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        let deleteAction = UIAlertAction(title: "Delete Interview", style: .Destructive, handler: { (action) in self.deleteInterview()
+        })
+        alertController.addAction(deleteAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
     func saveDetailsFollowingCreationOfEvent(event: EKEvent) {
         let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
         let managedContext = appDelegate.managedObjectContext!
@@ -289,6 +311,43 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
             loadedBasic.stage = Stage.Interview.rawValue
         }
         return interview
+    }
+    
+    func deleteInterview() {
+        if loadedInterview != nil {
+            let numberOfInterviews = loadedBasic.interviews.count
+            if numberOfInterviews >= 2 {
+                let interviewSet = loadedBasic.interviews.mutableCopy() as NSMutableSet
+                var itemToRemove: JobInterview!
+                for interview in interviewSet {
+                    let interview = interview as JobInterview
+                    if interview.interviewNumber == numberOfInterviews {
+                        itemToRemove = interview
+                        break
+                    }
+                }
+                interviewSet.removeObject(itemToRemove)
+                loadedBasic.interviews = interviewSet
+                loadedBasic.highestInterviewNumber = numberOfInterviews - 1
+            } else {
+                loadedBasic.interviews = NSSet()
+                loadedBasic.highestInterviewNumber = 0
+                loadedBasic.details.interviewStarted = false
+                if loadedBasic.stage == Stage.Interview.rawValue {
+                    if loadedBasic.application != nil {
+                        loadedBasic.stage = Stage.Applied.rawValue
+                    } else {
+                        loadedBasic.stage = Stage.Potential.rawValue
+                    }
+                }
+            }
+            
+            var error: NSError?
+            if !Common.managedContext.save(&error) {
+                println("Could not save \(error), \(error?.userInfo)")
+            }
+            navigationController?.popViewControllerAnimated(true)
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

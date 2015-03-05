@@ -17,7 +17,7 @@ class JobDetail: NSManagedObject {
     @NSManaged var notes: String
     @NSManaged var salary: NSNumber?
     @NSManaged var website: String
-    @NSManaged var appliedStarted: Bool
+    @NSManaged var appliedStarted: Bool //TODO can this be removed, just check if application is nil, and below too
     @NSManaged var interviewStarted: Bool
     @NSManaged var decisionStarted: Bool
     @NSManaged var offerStarted: Bool

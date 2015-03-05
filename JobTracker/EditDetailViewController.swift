@@ -24,8 +24,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     @IBOutlet weak var notesView: UITextView!
     
     let companyBoxTag = 100
-    let salaryBoxTag = 101
-    let locationBoxTag = 102
+    let salaryBoxTag = 103
+    let locationBoxTag = 104
     var companyJustCleared = false
     var locationJustCleared = false
     
@@ -122,11 +122,13 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        setUpGoToDetailsSectionData()
     }
     
     func setUpGoToDetailsSectionData() {
         tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "goToDetailsCell")
         
+        goToDetailsSectionData = []
         if loadedBasic != nil {
             if loadedBasic!.details.appliedStarted {
                 goToDetailsSectionData.append(title: "Application Details", segueID: "editApplication", interview: nil)

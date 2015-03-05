@@ -370,8 +370,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
                 interviewSet.removeObject(itemToRemove)
                 loadedBasic.interviews = interviewSet
                 loadedBasic.highestInterviewNumber = numberOfInterviews - 1
-                let i = loadedBasic.interviews
-                let j = loadedBasic.highestInterviewNumber
             } else {
                 loadedBasic.interviews = NSSet()
                 loadedBasic.highestInterviewNumber = 0

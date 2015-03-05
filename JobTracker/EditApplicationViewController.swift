@@ -49,9 +49,19 @@ class EditApplicationViewController: UITableViewController {
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        //show toolbar only on edit application (not create new)
+        if loadedBasic.application != nil {
+            self.navigationController?.toolbarHidden = false
+        } else {
+            self.navigationController?.toolbarHidden = true
+        }
     }
     
-    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.toolbarHidden = true
+    }
     
     @IBAction func updateDate() {
         let date = datePickerView.date
@@ -67,6 +77,16 @@ class EditApplicationViewController: UITableViewController {
     @IBAction func saveClicked(sender: UIBarButtonItem) {
         saveDetails()
         navigationController?.popViewControllerAnimated(true)
+    }
+    
+    @IBAction func deleteClicked(sender: UIBarButtonItem) {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .ActionSheet)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+        alertController.addAction(cancelAction)
+        let deleteAction = UIAlertAction(title: "Delete Application", style: .Destructive, handler: { (action) in self.deleteApplication()
+        })
+        alertController.addAction(deleteAction)
+        self.presentViewController(alertController, animated: true, completion: nil)
     }
     
     func saveDetails() {
@@ -96,6 +116,22 @@ class EditApplicationViewController: UITableViewController {
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
+        }
+    }
+    
+    func deleteApplication() {
+        if let application = loadedBasic.application {
+            loadedBasic.application = nil
+            loadedBasic.details.appliedStarted = false
+            if loadedBasic.stage == Stage.Applied.rawValue {
+                loadedBasic.stage = Stage.Potential.rawValue
+            }
+
+            var error: NSError?
+            if !Common.managedContext.save(&error) {
+                println("Could not save \(error), \(error?.userInfo)")
+            }
+            navigationController?.popViewControllerAnimated(true)
         }
     }
     

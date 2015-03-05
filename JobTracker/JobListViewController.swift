@@ -17,7 +17,9 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         super.viewDidLoad()
         
         let fetchRequest = NSFetchRequest(entityName: "JobBasic")
-        let sortDescriptors = [NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")]
+        let sectionSortDescriptor = NSSortDescriptor(key: "stage", ascending: true)
+        let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
+        let sortDescriptors = [sectionSortDescriptor, companySortDescriptor]
         fetchRequest.sortDescriptors = sortDescriptors
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: "stage", cacheName: "Root")
         fetchedResultsController.delegate = self
