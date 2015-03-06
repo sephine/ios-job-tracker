@@ -44,21 +44,10 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         setUpDatePickers()
         
         if loadedInterview == nil {
-            if loadedBasic.highestInterviewNumber == 0 {
-                title = "Add Interview"
-            } else {
-                let newInterviewNumber = loadedBasic.highestInterviewNumber.integerValue + 1
-                title = "Add Interview \(newInterviewNumber)"
-            }
-            
+            title = "Add Interview"
             setControlValuesToDefaults()
         } else {
-            if loadedBasic.highestInterviewNumber.integerValue == 1 {
-                title = "Edit Interview"
-            } else {
-                title = "Edit Interview \(loadedInterview!.interviewNumber)"
-            }
-            
+            title = "Edit Interview"
             setControlValuesToLocallySavedData()
         }
     }
@@ -211,7 +200,6 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         event.startDate = Common.standardDateAndTimeFormatter().dateFromString(startsBox.text)!
         event.endDate = Common.standardDateAndTimeFormatter().dateFromString(endsBox.text)!
         event.notes = notesView.text
-        let i = event.notes
         
         EventManager.sharedInstance.creationDelegate = self
         EventManager.sharedInstance.createEventInEventEditVC(event, viewController: self)
@@ -257,6 +245,8 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         interview.location.latitude = nil
         interview.location.longitude = nil
         
+        loadedBasic.updateStageToFurthestStageReached()
+        
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
@@ -279,6 +269,8 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         interview.location.latitude = locationLatitude
         interview.location.longitude = locationLongitude
         
+        loadedBasic.updateStageToFurthestStageReached()
+        
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
@@ -300,47 +292,19 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
             managedContext.insertObject(interview)
             managedContext.insertObject(interviewLocation)
             
-            let newInterviewNumber = loadedBasic.highestInterviewNumber.integerValue + 1
-            loadedBasic.highestInterviewNumber = newInterviewNumber
-            interview.interviewNumber = newInterviewNumber
-            
             loadedBasic.interviews.setByAddingObject(interview)
             interview.basic = loadedBasic
             interview.location = interviewLocation
-            loadedBasic.details.interviewStarted = true
-            loadedBasic.stage = Stage.Interview.rawValue
         }
         return interview
     }
     
     func deleteInterview() {
         if loadedInterview != nil {
-            let numberOfInterviews = loadedBasic.interviews.count
-            if numberOfInterviews >= 2 {
-                let interviewSet = loadedBasic.interviews.mutableCopy() as NSMutableSet
-                var itemToRemove: JobInterview!
-                for interview in interviewSet {
-                    let interview = interview as JobInterview
-                    if interview.interviewNumber == numberOfInterviews {
-                        itemToRemove = interview
-                        break
-                    }
-                }
-                interviewSet.removeObject(itemToRemove)
-                loadedBasic.interviews = interviewSet
-                loadedBasic.highestInterviewNumber = numberOfInterviews - 1
-            } else {
-                loadedBasic.interviews = NSSet()
-                loadedBasic.highestInterviewNumber = 0
-                loadedBasic.details.interviewStarted = false
-                if loadedBasic.stage == Stage.Interview.rawValue {
-                    if loadedBasic.application != nil {
-                        loadedBasic.stage = Stage.Applied.rawValue
-                    } else {
-                        loadedBasic.stage = Stage.Potential.rawValue
-                    }
-                }
-            }
+            let mutableInterviews = loadedBasic.interviews.mutableCopy() as NSMutableSet
+            mutableInterviews.removeObject(loadedInterview!)
+            loadedBasic.interviews = mutableInterviews
+            loadedBasic.updateStageToFurthestStageReached()
             
             var error: NSError?
             if !Common.managedContext.save(&error) {
@@ -359,6 +323,4 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
             destination.loadedBasic = loadedBasic
         }
     }
-    
-    //TODO consider saving data formatters seperately
 }

@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "258"
-            endingLineNumber = "258"
+            startingLineNumber = "188"
+            endingLineNumber = "188"
             landmarkName = "companySelected(_:website:glassdoorLink:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -106,11 +106,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "446756227.175898"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "67"
-            endingLineNumber = "67"
+            startingLineNumber = "62"
+            endingLineNumber = "62"
             landmarkName = "viewDidLoad()"
             landmarkType = "5">
          </BreakpointContent>
@@ -138,11 +138,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "214"
-            endingLineNumber = "214"
+            startingLineNumber = "144"
+            endingLineNumber = "144"
             landmarkName = "textFieldShouldBeginEditing(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -154,11 +154,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
             landmarkName = "EditDetailViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -170,11 +170,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446509272.05678"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "30"
-            endingLineNumber = "30"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
             landmarkName = "viewDidLoad()"
             landmarkType = "5">
          </BreakpointContent>
@@ -330,11 +330,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "264"
-            endingLineNumber = "264"
+            startingLineNumber = "194"
+            endingLineNumber = "194"
             landmarkName = "EditDetailViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -378,11 +378,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777610.323953"
+            timestampString = "447305435.676932"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "66"
-            endingLineNumber = "66"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -410,43 +410,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777739.675845"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "154"
-            endingLineNumber = "154"
-            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777739.675845"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "295"
-            endingLineNumber = "295"
-            landmarkName = "stageClicked(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777610.323953"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
             landmarkName = "ShowDetailViewController"
             landmarkType = "3">
             <Locations>
@@ -488,11 +456,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "447223200.235956"
+            timestampString = "447305435.676932"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "405"
-            endingLineNumber = "405"
+            startingLineNumber = "338"
+            endingLineNumber = "338"
             landmarkName = "prepareForSegue(_:sender:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -536,11 +504,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "349"
-            endingLineNumber = "349"
+            startingLineNumber = "275"
+            endingLineNumber = "275"
             landmarkName = "prepareForSegue(_:sender:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -552,44 +520,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "351"
-            endingLineNumber = "351"
+            startingLineNumber = "277"
+            endingLineNumber = "277"
             landmarkName = "prepareForSegue(_:sender:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "447223200.235956"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "401"
-            endingLineNumber = "401"
-            landmarkName = "goToPreviousStage(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777739.675845"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "349"
-            endingLineNumber = "349"
-            landmarkName = "stageSelected(_:isPrevious:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -632,27 +568,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "447219673.817916"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "359"
-            endingLineNumber = "359"
-            landmarkName = "goToPreviousStage(_:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446509272.05678"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "23"
+            endingLineNumber = "23"
             landmarkName = "ShowDetailViewController"
             landmarkType = "3">
             <Locations>
@@ -768,12 +688,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777739.675845"
+            timestampString = "447305435.676932"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "128"
-            endingLineNumber = "128"
-            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
+            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -784,28 +704,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777739.675845"
+            timestampString = "447305435.676932"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "124"
-            endingLineNumber = "124"
-            landmarkName = "tableView(_:numberOfRowsInSection:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/ShowDetailViewController.swift"
-            timestampString = "446777739.675845"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "236"
-            endingLineNumber = "236"
-            landmarkName = "getAppliedCell()"
+            startingLineNumber = "305"
+            endingLineNumber = "305"
+            landmarkName = "getAddInterviewCell()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -816,11 +720,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditInterviewViewController.swift"
-            timestampString = "447223200.235956"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "180"
-            endingLineNumber = "180"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
             landmarkName = "updateStartDate()"
             landmarkType = "5">
          </BreakpointContent>
@@ -832,11 +736,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "329"
-            endingLineNumber = "329"
+            startingLineNumber = "255"
+            endingLineNumber = "255"
             landmarkName = "saveDetails()"
             landmarkType = "5">
          </BreakpointContent>
@@ -848,11 +752,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditInterviewViewController.swift"
-            timestampString = "447223200.235956"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "189"
-            endingLineNumber = "189"
+            startingLineNumber = "178"
+            endingLineNumber = "178"
             landmarkName = "updateEndDate()"
             landmarkType = "5">
          </BreakpointContent>
@@ -870,86 +774,6 @@
             startingLineNumber = "47"
             endingLineNumber = "47"
             landmarkName = "viewDidLoad()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "173"
-            endingLineNumber = "173"
-            landmarkName = "tableView(_:didSelectRowAtIndexPath:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "156"
-            endingLineNumber = "156"
-            landmarkName = "tableView(_:numberOfRowsInSection:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "164"
-            endingLineNumber = "164"
-            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
-            landmarkName = "setUpGoToDetailsSectionData()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222583.202643"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
-            landmarkName = "tableView(_:cellForRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1054,11 +878,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditInterviewViewController.swift"
-            timestampString = "447223200.235956"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "214"
-            endingLineNumber = "214"
+            startingLineNumber = "202"
+            endingLineNumber = "202"
             landmarkName = "createCalendarEvent()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1070,11 +894,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EventManager.swift"
-            timestampString = "446780471.347266"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
             landmarkName = "eventEditViewController(_:didCompleteWithAction:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1086,11 +910,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/JobListViewController.swift"
-            timestampString = "447221480.572606"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "tableView(_:commitEditingStyle:forRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1102,11 +926,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/JobListViewController.swift"
-            timestampString = "447221480.572606"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "47"
-            endingLineNumber = "47"
+            startingLineNumber = "81"
+            endingLineNumber = "81"
             landmarkName = "tableView(_:titleForHeaderInSection:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1118,11 +942,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/JobListViewController.swift"
-            timestampString = "447221480.572606"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
             landmarkName = "tableView(_:numberOfRowsInSection:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1134,11 +958,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/JobListViewController.swift"
-            timestampString = "447221480.572606"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "59"
-            endingLineNumber = "59"
+            startingLineNumber = "93"
+            endingLineNumber = "93"
             landmarkName = "tableView(_:cellForRowAtIndexPath:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1166,11 +990,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/JobListViewController.swift"
-            timestampString = "447221480.572606"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
+            startingLineNumber = "77"
+            endingLineNumber = "77"
             landmarkName = "numberOfSectionsInTableView(_:)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1182,11 +1006,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "JobTracker/EditDetailViewController.swift"
-            timestampString = "447222498.549881"
+            timestampString = "447301844.382413"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "124"
-            endingLineNumber = "124"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "5">
          </BreakpointContent>

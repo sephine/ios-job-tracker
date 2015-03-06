@@ -14,14 +14,14 @@ protocol EventCreationDelegate {
 }
 
 protocol EventLoadingDelegate {
-    func eventLoaded()
+    func eventLoaded(#wasDeleted: Bool)
 }
 
 class EventManager: NSObject, EKEventEditViewDelegate {
     
     let store = EKEventStore()
-    var creationDelegate: EventCreationDelegate!
-    var loadingDelegate: EventLoadingDelegate!
+    var creationDelegate: EventCreationDelegate?
+    var loadingDelegate: EventLoadingDelegate?
     var accessToCalendarGranted = false
     
     private var event: EKEvent!
@@ -65,7 +65,11 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         interview.location.longitude = nil
         interview.starts = event.startDate
         interview.ends = event.endDate
-        interview.notes = event.notes
+        if event.hasNotes {
+            interview.notes = event.notes
+        } else {
+            interview.notes = ""
+        }
         
         var error: NSError?
         if !managedContext.save(&error) {
@@ -104,16 +108,18 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         viewController.dismissViewControllerAnimated(true, completion: nil)
         if creatingEvent {
             if action.value == EKEventEditViewActionSaved.value {
-                creationDelegate.eventCreated(event: event, wasSaved: true)
+                creationDelegate?.eventCreated(event: event, wasSaved: true)
             } else {
-                creationDelegate.eventCreated(event: event, wasSaved: false)
+                creationDelegate?.eventCreated(event: event, wasSaved: false)
             }
         } else {
             updateInterviewToMatchEvent(event, interview: interviewToUpdate)
             if action.value == EKEventEditViewActionDeleted.value {
                 interviewToUpdate.eventID = ""
+                loadingDelegate?.eventLoaded(wasDeleted: true)
+            } else {
+                loadingDelegate?.eventLoaded(wasDeleted: false)
             }
-            loadingDelegate.eventLoaded()
         }
         
     }

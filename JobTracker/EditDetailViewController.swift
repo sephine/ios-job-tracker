@@ -11,7 +11,7 @@ import UIKit
 import CoreData
 import EventKitUI
 
-class EditDetailViewController: UITableViewController, UITextFieldDelegate, CompanySelectionDelegate, LocationSelectionDelegate, EventLoadingDelegate {
+class EditDetailViewController: UITableViewController, UITextFieldDelegate, CompanySelectionDelegate, LocationSelectionDelegate {
 
     @IBOutlet weak var companyBox: UITextField!
     @IBOutlet weak var websiteBox: UITextField!
@@ -36,14 +36,9 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     var locationLongitude: NSNumber?
     let datePickerView = UIDatePicker()
     
-    var goToDetailsSectionData: [(title: String, segueID: String, interview: JobInterview?)] = []
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Add Job"
-        
-        //the first section of the tableview is static, the second will be set up dynamically
-        setUpGoToDetailsSectionData()
         
         datePickerView.datePickerMode = UIDatePickerMode.Date
         datePickerView.addTarget(self, action: "updateDate", forControlEvents: UIControlEvents.ValueChanged)
@@ -122,71 +117,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
-        setUpGoToDetailsSectionData()
-    }
-    
-    func setUpGoToDetailsSectionData() {
-        tableView.registerClass(UITableViewCell.self, forCellReuseIdentifier: "goToDetailsCell")
-        
-        goToDetailsSectionData = []
-        if loadedBasic != nil {
-            if loadedBasic!.details.appliedStarted {
-                goToDetailsSectionData.append(title: "Application Details", segueID: "editApplication", interview: nil)
-            }
-            if loadedBasic!.details.interviewStarted {
-                let numberOfInterviews = loadedBasic!.highestInterviewNumber.integerValue
-                if numberOfInterviews == 1 {
-                    let interview: JobInterview? = loadedBasic!.getInterviewFromNumber(1)
-                    goToDetailsSectionData.append(title: "Interview Details", segueID: "editInterview", interview: interview)
-                } else {
-                    for i in 1...numberOfInterviews {
-                        let position = Common.positionStringFromNumber(i)!
-                        let interview: JobInterview? = loadedBasic!.getInterviewFromNumber(i)
-                        goToDetailsSectionData.append(title: "\(position) Interview Details", segueID: "editInterview", interview: interview)
-                    }
-                }
-            }
-        }
-    }
-    
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
-            return super.tableView(tableView, numberOfRowsInSection: section)
-        }
-        return goToDetailsSectionData.count
-    }
-    
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
-            return super.tableView(tableView, cellForRowAtIndexPath: indexPath)
-        }
-        
-        let cell = tableView.dequeueReusableCellWithIdentifier("goToDetailsCell") as UITableViewCell
-        cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
-        
-        let detailsTuple = goToDetailsSectionData[indexPath.row]
-        cell.textLabel!.text = detailsTuple.title
-        return cell
-    }
-    
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section == 1 {
-            let detailsTuple = goToDetailsSectionData[indexPath.row]
-            if detailsTuple.segueID == "editInterview" && !detailsTuple.interview!.eventID.isEmpty {
-                segueToCalendarEventForInterview(detailsTuple.interview!)
-            } else {
-                performSegueWithIdentifier(detailsTuple.segueID, sender: indexPath)
-            }
-        }
-    }
-    
-    func segueToCalendarEventForInterview(interview: JobInterview) {
-        EventManager.sharedInstance.loadingDelegate = self
-        EventManager.sharedInstance.loadEventInEventEditVC(interviewToUpdate: interview, viewController: self)
-    }
-    
-    func eventLoaded() {
-        
     }
     
     func textFieldShouldClear(textField: UITextField) -> Bool {
@@ -308,10 +238,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             managedContext.insertObject(details)
             managedContext.insertObject(location)
             basic.stage = Stage.Potential.rawValue
-            details.appliedStarted = false
-            details.interviewStarted = false
-            details.decisionStarted = false
-            details.offerStarted = false
             basic.details = details
             basic.location = location
             details.basic = basic
@@ -353,16 +279,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         } else if segue.identifier == "findLocation" {
             let destination = segue.destinationViewController as LocationTableViewController
             destination.delegate = self
-        } else if segue.identifier == "editApplication" {
-            let destination = segue.destinationViewController as EditApplicationViewController
-            destination.loadedBasic = loadedBasic
-        } else if segue.identifier == "editInterview" {
-            let destination = segue.destinationViewController as EditInterviewViewController
-            destination.loadedBasic = loadedBasic
-            let indexPath = sender as NSIndexPath
-            let detailsTuple = goToDetailsSectionData[indexPath.row]
-            let interview = detailsTuple.interview!
-            destination.loadedInterview = interview
         } else if segue.destinationViewController is ShowDetailViewController {
             let destination = segue.destinationViewController as ShowDetailViewController
             destination.loadedBasic = loadedBasic
@@ -371,3 +287,4 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
 }
 
 //TODO check for empty text boxes
+//TODO tab through boxes

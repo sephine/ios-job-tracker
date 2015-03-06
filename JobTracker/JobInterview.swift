@@ -11,7 +11,6 @@ import CoreData
 
 class JobInterview: NSManagedObject {
 
-    @NSManaged var interviewNumber: NSNumber
     @NSManaged var eventID: String
     @NSManaged var title: String
     @NSManaged var starts: NSDate
@@ -19,5 +18,11 @@ class JobInterview: NSManagedObject {
     @NSManaged var notes: String
     @NSManaged var location: JobLocation
     @NSManaged var basic: JobBasic
-
+    
+    var completed: Bool {
+        if ends.timeIntervalSinceNow < 0 {
+            return true
+        }
+        return false
+    }
 }

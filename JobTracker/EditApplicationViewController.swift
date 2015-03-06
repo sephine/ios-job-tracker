@@ -97,8 +97,6 @@ class EditApplicationViewController: UITableViewController {
         } else {
             application = NSEntityDescription.insertNewObjectForEntityForName("JobApplication", inManagedObjectContext: managedContext) as JobApplication
             managedContext.insertObject(application)
-            loadedBasic.details.appliedStarted = true
-            loadedBasic.stage = Stage.Applied.rawValue
             loadedBasic.application = application
             application.basic = loadedBasic
         }
@@ -113,6 +111,8 @@ class EditApplicationViewController: UITableViewController {
             application.dateSent = dateFormatter.dateFromString(dateSentBox.text!)
         }
         
+        loadedBasic.updateStageToFurthestStageReached()
+        
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
@@ -122,10 +122,7 @@ class EditApplicationViewController: UITableViewController {
     func deleteApplication() {
         if let application = loadedBasic.application {
             loadedBasic.application = nil
-            loadedBasic.details.appliedStarted = false
-            if loadedBasic.stage == Stage.Applied.rawValue {
-                loadedBasic.stage = Stage.Potential.rawValue
-            }
+            loadedBasic.updateStageToFurthestStageReached()
 
             var error: NSError?
             if !Common.managedContext.save(&error) {

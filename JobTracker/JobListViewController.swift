@@ -28,6 +28,8 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         if !fetchedResultsController.performFetch(&error) {
             NSLog("Could not fetch results \(error), \(error?.userInfo)")
         }
+        
+        checkForPassedInterviewsAndUpdateStages()
     }
 
     override func didReceiveMemoryWarning() {
@@ -37,6 +39,38 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    
+    //check if any of the stages have moved from PreInteview to PostInterview since last opened.
+    func checkForPassedInterviewsAndUpdateStages() {
+        let sections = fetchedResultsController.sections!
+        for section in sections {
+            let section = section as NSFetchedResultsSectionInfo
+            let stageNumber = section.name!.toInt()!
+            let stage = Stage(rawValue: stageNumber)!
+            
+            if stage == .PreInterview {
+                for basic in section.objects {
+                    let basic = basic as JobBasic
+                    var allComplete = true
+                    for interview in basic.interviews {
+                        if !(interview as JobInterview).completed {
+                            allComplete = false
+                            break
+                        }
+                    }
+                    if allComplete {
+                        basic.stage = Stage.PostInterview.rawValue
+                    }
+                }
+                
+                var error: NSError?
+                if !Common.managedContext.save(&error) {
+                    println("Could not save \(error), \(error?.userInfo)")
+                }
+                return
+            }
+        }
     }
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
