@@ -101,7 +101,8 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == UITableViewCellEditingStyle.Delete {
-            deleteJob(indexPath)
+            let job = fetchedResultsController.objectAtIndexPath(indexPath) as JobBasic
+            deleteJob(job)
         }
     }
     
@@ -115,8 +116,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         cell.positionLabel.text = job.title
     }
     
-    func deleteJob(indexPath: NSIndexPath) {
-        let job = fetchedResultsController.objectAtIndexPath(indexPath) as JobBasic
+    func deleteJob(job: JobBasic) {
         Common.managedContext.deleteObject(job)
         var error: NSError?
         if !Common.managedContext.save(&error) {

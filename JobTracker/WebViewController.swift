@@ -17,6 +17,7 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     var backItem: UIBarButtonItem!
     var forwardItem: UIBarButtonItem!
     var firstLoad = true
+    var haveTriedGoogling = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,11 +25,13 @@ class WebViewController: UIViewController, UIWebViewDelegate {
         //stops an inset being added when the app is brought back from being in the background.
         automaticallyAdjustsScrollViewInsets = false
         
+        var url: NSURL?
         if !website.hasPrefix("http://") {
-            website = "http://" + website
+            url = NSURL(string: "http://\(website)")
+        } else {
+            url = NSURL(string: website)
         }
         
-        let url = NSURL(string: website)
         let request = NSURLRequest(URL: url!)
         containedWebView.loadRequest(request)
         
@@ -63,10 +66,6 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     }
     
     func webViewDidFinishLoad(webView: UIWebView) {
-        //let width = Int(webView.frame.size.width)
-        //webView.stringByEvaluatingJavaScriptFromString("document.querySelector('meta[name=viewport]').setAttribute('content', 'width=\(width);', false)")
-
-        
         navigationBar.title = webView.stringByEvaluatingJavaScriptFromString("document.title")
         if navigationBar.leftBarButtonItem == nil &&
             (containedWebView.canGoBack || containedWebView.canGoForward) {
@@ -89,7 +88,16 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     }
     
     func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
-        //TODO google if fails?
+        if !haveTriedGoogling {
+            let googleSearchString = "http://google.com/search?q=\(website)"
+            let url = NSURL(string: googleSearchString)
+            let request = NSURLRequest(URL: url!)
+            containedWebView.loadRequest(request)
+            haveTriedGoogling = true
+        } else {
+            navigationBar.title = "Failed To Load Page"
+            //TODO do something with error?
+        }
     }
     
     func backSelected() {

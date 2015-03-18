@@ -12,16 +12,25 @@ import CoreData
 import MapKit
 
 enum ShowCellType {
-    //CompanyDetails should only be used in the intial set up of the cells, otherwise Company should be used and it will automatically choose the right cell type.
-    case Company, CompanyDetails, Location, CompanyWebsite, JobListing, GlassdoorLink, Notes
+    case Company, Location, CompanyWebsite, JobListing, GlassdoorLink, Notes, Contacts
+}
+
+enum ShowSectionType {
+    case Basic, Application, Interview, Offer, Rejected
 }
 
 class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var rejectOrRestoreButton: UIBarButtonItem!
     
     var loadedBasic: JobBasic!
     var cellTypeArray: [(type: ShowCellType, interview: JobInterview?, website: String?)] = []
+    var sectionTypeArray: [ShowSectionType] = []
+    
+    var stage: Stage {
+        return Stage(rawValue: loadedBasic.stage.integerValue)!
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,19 +38,30 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         //stops an inset being added when the app is brought back from being in the background.
         automaticallyAdjustsScrollViewInsets = false
         
-        //initially load all types of resizable cells so they can successfully have their heights changed when the table is reloaded. This data will never show.
         loadTableWithDummyData()
+        checkForUpdatedInterviewEvents()
     }
     
+    //initially load all types of resizable cells so they can successfully have their heights changed when the table is reloaded. This data will never show.
     func loadTableWithDummyData() {
+        sectionTypeArray = []
+        sectionTypeArray.append(.Basic)
         cellTypeArray = []
-        cellTypeArray.append(type: .CompanyDetails, interview: nil, website: nil)
+        cellTypeArray.append(type: .Company, interview: nil, website: nil)
         cellTypeArray.append(type: .Location, interview: nil, website: nil)
         cellTypeArray.append(type: .Notes, interview: nil, website: nil)
-        tableView.estimatedRowHeight = 44.0 //69.0
+        tableView.estimatedRowHeight = 44.0
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.layoutIfNeeded()
         tableView.reloadData()
+    }
+    
+    //some interviews might have changed from being scheduled to being completed.
+    func checkForUpdatedInterviewEvents() {
+        for interview in loadedBasic.interviews {
+            let interview = interview as JobInterview
+            EventManager.sharedInstance.syncInterviewWithCalendarEvent(interview: interview)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -52,15 +72,48 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
+        title = loadedBasic.company
+        if stage == .Rejected {
+            rejectOrRestoreButton.title = "Restore"
+        } else {
+            rejectOrRestoreButton.title = "Reject"
+        }
+        
+        reloadSectionTypeArray()
+        reloadCellTypeArray()
+        
         //TODO check toolbar is needed
         self.navigationController?.toolbarHidden = false
-        reloadCellTypeArray()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.navigationController?.toolbarHidden = true
+    }
+    
+    func reloadSectionTypeArray() {
+        sectionTypeArray = []
+        sectionTypeArray.append(.Basic)
+        if stage == .Rejected {
+            //there should be no option to add applications etc when rejected, should just show current ones.
+            if loadedBasic.application != nil {
+                sectionTypeArray.append(.Application)
+            }
+            if loadedBasic.interviews.count != 0 {
+                sectionTypeArray.append(.Interview)
+            }
+            if loadedBasic.offer != nil {
+                sectionTypeArray.append(.Offer)
+            }
+            sectionTypeArray.append(.Rejected)
+        } else {
+            sectionTypeArray.append(.Application)
+            sectionTypeArray.append(.Interview)
+            sectionTypeArray.append(.Offer)
+        }
     }
     
     func reloadCellTypeArray() {
-        let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
-        title = loadedBasic.company
-        
         cellTypeArray = []
         cellTypeArray.append(type: .Company, interview: nil, website: nil)
         
@@ -83,6 +136,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         if !glassdoor!.isEmpty {
             cellTypeArray.append(type: .GlassdoorLink, interview: nil, website: glassdoor)
         }
+        cellTypeArray.append(type: .Contacts, interview: nil, website: nil)
         let notes = loadedBasic.details.notes
         if !notes.isEmpty {
             cellTypeArray.append(type: .Notes, interview: nil, website: nil)
@@ -94,52 +148,53 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.tableFooterView = UIView(frame: CGRectZero)
     }
     
-    override func viewWillDisappear(animated: Bool) {
-        super.viewWillDisappear(animated)
-        self.navigationController?.toolbarHidden = true
-        self.view.endEditing(false)
-    }
-    
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return 4
+        return sectionTypeArray.count
     }
     
     func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        switch section {
-        case 0:
+        let sectionType = sectionTypeArray[section]
+        switch sectionType {
+        case .Basic:
             return "Job Details"
-        case 1:
+        case .Application:
             return "Application"
-        case 2:
+        case .Interview:
             return "Interviews"
-        default:
-            return "Offers"
+        case .Offer:
+            return "Offer"
+        case .Rejected:
+            return "Rejection"
         }
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        switch section {
-        case 0:
+        let sectionType = sectionTypeArray[section]
+        switch sectionType {
+        case .Basic:
             return cellTypeArray.count
-        case 1:
+        case .Application:
             return 1
-        case 2:
+        case .Interview:
+            if stage == .Rejected {
+                return loadedBasic.interviews.count
+            }
             return loadedBasic.interviews.count + 1
-        default:
-            //TODO
-            return 0
+        case .Offer:
+            return 1
+        case .Rejected:
+            return 1
         }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        switch indexPath.section {
-        case 0:
+        let sectionType = sectionTypeArray[indexPath.section]
+        switch sectionType {
+        case .Basic:
             let cellType = cellTypeArray[indexPath.row].type
             switch cellType {
             case .Company:
                 return getCompanyCell()
-            case .CompanyDetails:
-                return getCompanyDetailsCell()
             case .Location:
                 return getLocationCell()
             case .CompanyWebsite:
@@ -150,43 +205,64 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
                 return getGlassdoorCell()
             case .Notes:
                 return getNotesCell()
+            case .Contacts:
+                return getContactsCell()
             }
-        case 1:
+        case .Application:
             if loadedBasic.application == nil {
                 return getAddApplicationCell()
             }
             return getViewApplicationCell()
-        default:
+        case .Interview:
+            if stage == .Rejected {
+                let interview = loadedBasic.orderedInterviews[indexPath.row]
+                return getViewInterviewCell(interview)
+            }
             if indexPath.row == 0 {
                 return getAddInterviewCell()
             }
             let interview = loadedBasic.orderedInterviews[indexPath.row - 1]
             return getViewInterviewCell(interview)
+        case .Offer:
+            if loadedBasic.offer == nil {
+                return getAddOfferCell()
+            }
+            return getViewOfferCell()
+        case .Rejected:
+            return getViewRejectedCell()
         }
     }
     
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.view.endEditing(false)
-        switch indexPath.section {
-        case 0:
+        let sectionType = sectionTypeArray[indexPath.section]
+        switch sectionType {
+        case .Basic:
             let selectedTuple = cellTypeArray[indexPath.row]
             let website = selectedTuple.website
             if website != nil && website != "" {
                 performSegueWithIdentifier("showWeb", sender: indexPath)
             }
-        case 1:
+        case .Application:
             performSegueWithIdentifier("editApplication", sender: self)
-        default:
-            if indexPath.row == 0 {
-                performSegueWithIdentifier("editInterview", sender: nil)
-            } else {
-                let interview = loadedBasic.orderedInterviews[indexPath.row - 1]
-                if interview.eventID.isEmpty {
-                    performSegueWithIdentifier("editInterview", sender: indexPath)
-                } else {
-                    segueToCalendarEventForInterview(interview)
+        case .Interview:
+            var offset = 0
+            if stage != .Rejected {
+                if indexPath.row == 0 {
+                    performSegueWithIdentifier("editInterview", sender: nil)
+                    return
                 }
+                offset = 1
             }
+            let interview = loadedBasic.orderedInterviews[indexPath.row - offset]
+            if interview.eventID.isEmpty {
+                performSegueWithIdentifier("editInterview", sender: indexPath)
+            } else {
+                segueToCalendarEventForInterview(interview)
+            }
+        case .Offer:
+            performSegueWithIdentifier("editOffer", sender: self)
+        case .Rejected:
+            performSegueWithIdentifier("editReject", sender: self)
         }
     }
     
@@ -195,43 +271,29 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func getCompanyCell() -> ShowResultCell {
-        let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
-        let title = loadedBasic.title as String
-        let salary = loadedBasic.details.salary as NSNumber?
-        let dueDate = loadedBasic.details.dueDate as NSDate?
-        
-        if title.isEmpty && salary == nil && dueDate == nil {
-            let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyCell") as ShowResultCell
-            
-            cell.mainLabel.text = stage.title
-            return cell
-        } else {
-            return getCompanyDetailsCell()
-        }
-    }
-    
-    func getCompanyDetailsCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyWithDetailCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyCell") as ShowResultCell
         
         let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
+        let company = loadedBasic.company
         let title = loadedBasic.title as String
         let salary = loadedBasic.details.salary as NSNumber?
         let dueDate = loadedBasic.details.dueDate as NSDate?
         
         var salaryString: String?
         if salary != nil {
-            salaryString = Common.standardCurrencyFormatter().stringFromNumber(salary!)
+            salaryString = Common.standardCurrencyFormatter.stringFromNumber(salary!)
         }
         
         var dueDateString: String?
         if dueDate != nil {
-            dueDateString = Common.standardDateFormatter().stringFromDate(dueDate!)
+            dueDateString = Common.standardDateFormatter.stringFromDate(dueDate!)
         }
         
         var detailsArray = [String]()
         if !title.isEmpty {
             detailsArray.append(title)
         }
+        detailsArray.append(company)
         if salaryString != nil {
             detailsArray.append(salaryString!)
         }
@@ -269,6 +331,18 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
+    func getContactsCell() -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showContactsCell") as ShowResultCell
+        
+        let numberOfContacts = loadedBasic.contacts.count
+        if numberOfContacts == 0 {
+            cell.secondaryLabel!.text = "None"
+        } else {
+            cell.secondaryLabel!.text = "\(numberOfContacts) Contacts"
+        }
+        return cell
+    }
+    
     func getAddApplicationCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
         cell.mainLabel.text = "Add Application"
@@ -278,20 +352,14 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     func getViewApplicationCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
-        let dateSent = loadedBasic.application?.dateSent
-        let notes = loadedBasic.application?.notes
-        
-        var dateSentString: String?
-        if dateSent != nil {
-            dateSentString = Common.standardDateFormatter().stringFromDate(dateSent!)
-        }
+        let dateSent = loadedBasic.application!.dateSent
+        let dateSentString = Common.standardDateFormatter.stringFromDate(dateSent)
+        let notes = loadedBasic.application!.notes
         
         var detailsArray = [String]()
-        if dateSentString != nil {
-            detailsArray.append("Sent: \(dateSentString!)")
-        }
-        if notes != nil && !notes!.isEmpty {
-            detailsArray.append("\(notes!)")
+        detailsArray.append("Sent: \(dateSentString)")
+        if !notes.isEmpty {
+            detailsArray.append("\(notes)")
         }
         
         let detailsString = join("\n", detailsArray)
@@ -308,8 +376,8 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     func getViewInterviewCell(interview: JobInterview) -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
-        let startsString = Common.standardDateAndTimeFormatter().stringFromDate(interview.starts)
-        let endsString = Common.standardDateAndTimeFormatter().stringFromDate(interview.ends)
+        let startsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.starts)
+        let endsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.ends)
         
         var detailsArray = [String]()
         detailsArray.append(interview.title)
@@ -331,6 +399,76 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
+    func getAddOfferCell() -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
+        cell.mainLabel.text = "Add Offer"
+        return cell
+    }
+    
+    func getViewOfferCell() -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
+        
+        let dateReceived = loadedBasic.offer!.dateReceived
+        let dateReceivedString = Common.standardDateFormatter.stringFromDate(dateReceived)
+        let salary = loadedBasic.offer!.salary as NSNumber?
+        let notes = loadedBasic.offer!.notes
+        
+        var salaryString: String?
+        if salary != nil {
+            salaryString = Common.standardCurrencyFormatter.stringFromNumber(salary!)
+        }
+        
+        var detailsArray = [String]()
+        detailsArray.append("Received: \(dateReceivedString)")
+        if salaryString != nil {
+            detailsArray.append(salaryString!)
+        }
+        if !notes.isEmpty {
+            detailsArray.append("\(notes)")
+        }
+        
+        let detailsString = join("\n", detailsArray)
+        cell.mainLabel.text = detailsString
+        return cell
+    }
+    
+    func getViewRejectedCell() -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
+        
+        let dateRejected = loadedBasic.rejected!.dateRejected
+        let dateRejectedString = Common.standardDateFormatter.stringFromDate(dateRejected)
+        let notes = loadedBasic.rejected!.notes
+        
+        var detailsArray = [String]()
+        detailsArray.append("Rejected: \(dateRejectedString)")
+        if !notes.isEmpty {
+            detailsArray.append("\(notes)")
+        }
+        
+        let detailsString = join("\n", detailsArray)
+        cell.mainLabel.text = detailsString
+        return cell
+    }
+    
+    
+    @IBAction func rejectOrRestoreButtonClicked(sender: UIBarButtonItem) {
+        if stage != .Rejected {
+            performSegueWithIdentifier("editReject", sender: self)
+        } else {
+            loadedBasic.rejected = nil
+            loadedBasic.updateStageToFurthestStageReached()
+            
+            var error: NSError?
+            if !Common.managedContext.save(&error) {
+                println("Could not save \(error), \(error?.userInfo)")
+            }
+
+            reloadSectionTypeArray()
+            reloadCellTypeArray()
+            rejectOrRestoreButton.title = "Reject"
+        }
+    }
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showWeb" {
             let indexPath = sender as NSIndexPath
@@ -339,6 +477,9 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             destination.website = website
         } else if segue.identifier == "showMap" {
             let destination = segue.destinationViewController as MapViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "showContacts" {
+            let destination = segue.destinationViewController as ShowContactsViewController
             destination.loadedBasic = loadedBasic
         } else if segue.identifier == "editJob" {
             let destination = segue.destinationViewController as EditDetailViewController
@@ -354,8 +495,16 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
                 let interview = loadedBasic.orderedInterviews[indexPath.row - 1]
                 destination.loadedInterview = interview
             }
+        } else if segue.identifier == "editOffer" {
+            let destination = segue.destinationViewController as EditOfferViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "editReject" {
+            let destination = segue.destinationViewController as EditRejectViewController
+            destination.loadedBasic = loadedBasic
         }
     }
 }
 
 //TODO some of the stored data is empty strings and sometimes nil, tidy it up.
+
+//TODO stop the notes from going on forever perhaps?

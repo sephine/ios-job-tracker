@@ -47,67 +47,37 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         //TODO set button image
         
         if let basic = loadedBasic {
-            title = "Edit Job"
-            companyBox.text = basic.company
-            websiteBox.text = basic.details.website
-            positionBox.text = basic.title
-            locationBox.text = basic.location.address
-            locationLatitude = basic.location.latitude
-            locationLongitude = basic.location.longitude
-            listingBox.text = basic.details.jobListing
-            glassdoorLink = basic.details.glassdoorLink
-            notesView.text = basic.details.notes
-            
-            let date = basic.details.dueDate as NSDate?
-            if date == nil {
-                dueDateBox.text = ""
-            } else {
-                let dateFormatter = NSDateFormatter()
-                dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-                dueDateBox.text = dateFormatter.stringFromDate(date!)
-                datePickerView.date = date!
-            }
-            
-            salary = basic.details.salary as NSNumber?
-            if salary == nil {
-                salaryBox.text = ""
-            } else {
-                let salaryFormatter = NSNumberFormatter()
-                salaryFormatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
-                salaryBox.text = salaryFormatter.stringFromNumber(salary!)
-            }
+            setControlValuesToLoadedData()
         }
     }
     
     func setControlValuesToLoadedData() {
-        if let basic = loadedBasic {
-            title = "Edit Job"
-            companyBox.text = basic.company
-            websiteBox.text = basic.details.website
-            positionBox.text = basic.title
-            locationBox.text = basic.location.address
-            locationLatitude = basic.location.latitude
-            locationLongitude = basic.location.longitude
-            listingBox.text = basic.details.jobListing
-            glassdoorLink = basic.details.glassdoorLink
-            notesView.text = basic.details.notes
+        let basic = loadedBasic!
+        title = "Edit Job"
+        companyBox.text = basic.company
+        websiteBox.text = basic.details.website
+        positionBox.text = basic.title
+        locationBox.text = basic.location.address
+        locationLatitude = basic.location.latitude
+        locationLongitude = basic.location.longitude
+        listingBox.text = basic.details.jobListing
+        glassdoorLink = basic.details.glassdoorLink
+        notesView.text = basic.details.notes
             
-            let date = basic.details.dueDate as NSDate?
-            if date == nil {
-                dueDateBox.text = ""
-            } else {
-                dueDateBox.text = Common.standardDateFormatter().stringFromDate(date!)
-                datePickerView.date = date!
-            }
-            
-            salary = basic.details.salary as NSNumber?
-            if salary == nil {
-                salaryBox.text = ""
-            } else {
-                salaryBox.text = Common.standardCurrencyFormatter().stringFromNumber(salary!)
-            }
+        let date = basic.details.dueDate as NSDate?
+        if date == nil {
+            dueDateBox.text = ""
+        } else {
+            dueDateBox.text = Common.standardDateFormatter.stringFromDate(date!)
+            datePickerView.date = date!
         }
-
+            
+        salary = basic.details.salary as NSNumber?
+        if salary == nil {
+            salaryBox.text = ""
+        } else {
+            salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -176,10 +146,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             return
         }
         salary = (salaryBox.text as NSString).doubleValue
-            
-        let formatter = NSNumberFormatter()
-        formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
-        salaryBox.text = formatter.stringFromNumber(salary!)
+        salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
     }
     
     func companySelected(company: String, website: String, glassdoorLink: String) {
@@ -201,9 +168,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     
     @IBAction func updateDate() {
         let date = datePickerView.date
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-        dueDateBox.text = dateFormatter.stringFromDate(date)
+        dueDateBox.text = Common.standardDateFormatter.stringFromDate(date)
     }
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
@@ -218,7 +183,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             saveDetails()
             navigationController?.popViewControllerAnimated(true)
         }
-        
     }
     
     func saveDetails() {
@@ -259,9 +223,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         if dueDateBox.text!.isEmpty {
             details.dueDate = nil
         } else {
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-            details.dueDate = dateFormatter.dateFromString(dueDateBox.text!)
+            details.dueDate = Common.standardDateFormatter.dateFromString(dueDateBox.text!)
         }
         
         loadedBasic = basic
@@ -279,6 +241,9 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         } else if segue.identifier == "findLocation" {
             let destination = segue.destinationViewController as LocationTableViewController
             destination.delegate = self
+        } else if segue.identifier == "showContacts" {
+            let destination = segue.destinationViewController as ShowContactsViewController
+            destination.loadedBasic = loadedBasic
         } else if segue.destinationViewController is ShowDetailViewController {
             let destination = segue.destinationViewController as ShowDetailViewController
             destination.loadedBasic = loadedBasic

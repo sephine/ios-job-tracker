@@ -11,7 +11,7 @@ import CoreData
 
 class JobApplication: NSManagedObject {
 
-    @NSManaged var dateSent: NSDate?
+    @NSManaged var dateSent: NSDate
     @NSManaged var notes: String
     @NSManaged var basic: JobBasic
 

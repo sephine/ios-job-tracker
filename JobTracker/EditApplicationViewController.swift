@@ -30,15 +30,12 @@ class EditApplicationViewController: UITableViewController {
             title = "Edit Application"
             notesView.text = application.notes
             
-            let date = application.dateSent as NSDate?
-            if date == nil {
-                dateSentBox.text = ""
-            } else {
-                let dateFormatter = NSDateFormatter()
-                dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-                dateSentBox.text = dateFormatter.stringFromDate(date!)
-                datePickerView.date = date!
-            }
+            let savedDate = application.dateSent as NSDate
+            dateSentBox.text = Common.standardDateFormatter.stringFromDate(savedDate)
+            datePickerView.date = savedDate
+        } else {
+            let today = datePickerView.date
+            dateSentBox.text = Common.standardDateFormatter.stringFromDate(today)
         }
     }
     
@@ -63,11 +60,9 @@ class EditApplicationViewController: UITableViewController {
         self.navigationController?.toolbarHidden = true
     }
     
-    @IBAction func updateDate() {
+    func updateDate() {
         let date = datePickerView.date
-        let dateFormatter = NSDateFormatter()
-        dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-        dateSentBox.text = dateFormatter.stringFromDate(date)
+        dateSentBox.text = Common.standardDateFormatter.stringFromDate(date)
     }
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
@@ -102,14 +97,7 @@ class EditApplicationViewController: UITableViewController {
         }
         
         application.notes = notesView.text
-        
-        if dateSentBox.text!.isEmpty {
-            application.dateSent = nil
-        } else {
-            let dateFormatter = NSDateFormatter()
-            dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
-            application.dateSent = dateFormatter.dateFromString(dateSentBox.text!)
-        }
+        application.dateSent = Common.standardDateFormatter.dateFromString(dateSentBox.text!)!
         
         loadedBasic.updateStageToFurthestStageReached()
         

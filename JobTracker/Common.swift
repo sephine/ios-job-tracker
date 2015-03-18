@@ -13,19 +13,19 @@ struct Common {
     
     static var managedContext: NSManagedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
     
-    static func standardCurrencyFormatter() -> NSNumberFormatter {
+    static var standardCurrencyFormatter: NSNumberFormatter {
         let formatter = NSNumberFormatter()
         formatter.numberStyle = NSNumberFormatterStyle.CurrencyStyle
         return formatter
     }
     
-    static func standardDateFormatter() -> NSDateFormatter {
+    static var standardDateFormatter: NSDateFormatter {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle
         return dateFormatter
     }
     
-    static func standardDateAndTimeFormatter() -> NSDateFormatter {
+    static var standardDateAndTimeFormatter: NSDateFormatter {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
         dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle

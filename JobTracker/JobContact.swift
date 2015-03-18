@@ -11,7 +11,11 @@ import CoreData
 
 class JobContact: NSManagedObject {
 
-    @NSManaged var name: String
+    @NSManaged var first: String
+    @NSManaged var last: String
+    @NSManaged var company: String
+    @NSManaged var contactID: NSNumber
     @NSManaged var basic: JobBasic
-
+    
+    //TODO change
 }

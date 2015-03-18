@@ -15,7 +15,7 @@ class JobBasic: NSManagedObject {
     @NSManaged var title: String
     @NSManaged var stage: NSNumber
     @NSManaged var details: JobDetail
-    @NSManaged var contacts: JobContact?
+    @NSManaged var contacts: NSSet
     @NSManaged var location: JobLocation
     @NSManaged var application: JobApplication?
     @NSManaged var interviews: NSSet
@@ -26,6 +26,12 @@ class JobBasic: NSManagedObject {
         let sortDescriptor = NSSortDescriptor(key: "ends", ascending: true)
         let sortedArray = interviews.sortedArrayUsingDescriptors([sortDescriptor])
         return sortedArray as [JobInterview]
+    }
+    
+    var orderedContacts: [JobContact] {
+        let sortDescriptor = NSSortDescriptor(key: "last", ascending: true)
+        let sortedArray = contacts.sortedArrayUsingDescriptors([sortDescriptor])
+        return sortedArray as [JobContact]
     }
     
     //used to get the correct current stage after deletion for example. Will still need to be saved.

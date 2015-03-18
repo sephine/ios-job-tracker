@@ -37,22 +37,32 @@ class EventManager: NSObject, EKEventEditViewDelegate {
     }
     
     override private init() {
-        //use singleton instance
+        super.init()
+        setAccessToCalendar()
     }
     
-    func updateCalendarAccess() {
-        store.requestAccessToEntityType(EKEntityTypeEvent, completion: { (granted: Bool, error: NSError?) in
-            if granted {
-                self.accessToCalendarGranted = true
-            } else {
-                self.accessToCalendarGranted = false
-            }
-        })
+    func setAccessToCalendar() {
+        if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.Authorized {
+            accessToCalendarGranted = true
+        } else {
+            accessToCalendarGranted = false
+        }
+    }
+    
+    func askForCalendarAccessWithCompletion(completion: () -> Void) {
+        if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.NotDetermined {
+            store.requestAccessToEntityType(EKEntityTypeEvent, completion: { (granted, error) in
+                self.setAccessToCalendar()
+                completion()
+            })
+        }
     }
     
     func syncInterviewWithCalendarEvent(#interview: JobInterview) {
-        let event = store.eventWithIdentifier(interview.eventID)
-        updateInterviewToMatchEvent(event, interview: interview)
+        if accessToCalendarGranted && !interview.eventID.isEmpty {
+            let event = store.eventWithIdentifier(interview.eventID)
+            updateInterviewToMatchEvent(event, interview: interview)
+        }
     }
     
     private func updateInterviewToMatchEvent(event: EKEvent, interview: JobInterview) {
@@ -113,14 +123,15 @@ class EventManager: NSObject, EKEventEditViewDelegate {
                 creationDelegate?.eventCreated(event: event, wasSaved: false)
             }
         } else {
-            updateInterviewToMatchEvent(event, interview: interviewToUpdate)
-            if action.value == EKEventEditViewActionDeleted.value {
-                interviewToUpdate.eventID = ""
-                loadingDelegate?.eventLoaded(wasDeleted: true)
-            } else {
-                loadingDelegate?.eventLoaded(wasDeleted: false)
+            if accessToCalendarGranted {
+                updateInterviewToMatchEvent(event, interview: interviewToUpdate)
+                if action.value == EKEventEditViewActionDeleted.value {
+                    interviewToUpdate.eventID = ""
+                    loadingDelegate?.eventLoaded(wasDeleted: true)
+                } else {
+                    loadingDelegate?.eventLoaded(wasDeleted: false)
+                }
             }
         }
-        
     }
 }

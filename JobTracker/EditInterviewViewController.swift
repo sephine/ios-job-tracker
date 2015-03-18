@@ -13,6 +13,8 @@ import EventKitUI
 
 class EditInterviewViewController: UITableViewController, UITextFieldDelegate, LocationSelectionDelegate, EventCreationDelegate {
 
+    
+
     @IBOutlet weak var addEventCell: ShowResultCell!
     @IBOutlet weak var titleBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
@@ -29,12 +31,14 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     
     let startDatePickerView = UIDatePicker()
     let endDatePickerView = UIDatePicker()
-    let dateFormatter = NSDateFormatter()
     var locationJustCleared = false
     var timeInterval: NSTimeInterval!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //ask for access to calendar if it hasn't already been done
+        EventManager.sharedInstance.askForCalendarAccessWithCompletion(accessRequestCompleted)
         
         if !EventManager.sharedInstance.accessToCalendarGranted {
             addEventCell.userInteractionEnabled = false
@@ -49,6 +53,14 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         } else {
             title = "Edit Interview"
             setControlValuesToLocallySavedData()
+        }
+    }
+    
+    func accessRequestCompleted() {
+        if EventManager.sharedInstance.accessToCalendarGranted {
+            addEventCell.userInteractionEnabled = true
+            addEventCell.mainLabel.enabled = true
+            tableView.reloadData()
         }
     }
     
@@ -71,6 +83,14 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     override func viewWillDisappear(animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.toolbarHidden = true
+    }
+    
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        let accessGranted = EventManager.sharedInstance.accessToCalendarGranted
+        if section == 0 && !accessGranted {
+            return "Requires access to your calendar"
+        }
+        return nil
     }
 
     func textFieldShouldClear(textField: UITextField) -> Bool {
@@ -109,9 +129,9 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         dateComponents.hour += 1
         let initialEnds = calendar.dateFromComponents(dateComponents)!
         
-        startsBox.text = dateFormatter.stringFromDate(initialStarts)
+        startsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(initialStarts)
         startDatePickerView.date = initialStarts
-        endsBox.text = dateFormatter.stringFromDate(initialEnds)
+        endsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(initialEnds)
         endDatePickerView.date = initialEnds
         timeInterval = endDatePickerView.date.timeIntervalSinceDate(startDatePickerView.date)
         
@@ -128,20 +148,12 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         locationLongitude = loadedInterview!.location.longitude
         
         let starts = loadedInterview!.starts as NSDate?
-        if starts == nil {
-            startsBox.text = ""
-        } else {
-            startsBox.text = dateFormatter.stringFromDate(starts!)
-            startDatePickerView.date = starts!
-        }
+        startsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(starts!)
+        startDatePickerView.date = starts!
         
         let ends = loadedInterview!.ends as NSDate?
-        if ends == nil {
-            endsBox.text = ""
-        } else {
-            endsBox.text = dateFormatter.stringFromDate(ends!)
-            endDatePickerView.date = ends!
-        }
+        endsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(ends!)
+        endDatePickerView.date = ends!
         
         timeInterval = endDatePickerView.date.timeIntervalSinceDate(startDatePickerView.date)
         
@@ -160,14 +172,11 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         endDatePickerView.addTarget(self, action: "updateEndDate", forControlEvents: UIControlEvents.ValueChanged)
         endDatePickerView.minuteInterval = 5
         endsBox.inputView = endDatePickerView
-        
-        dateFormatter.dateStyle = NSDateFormatterStyle.MediumStyle
-        dateFormatter.timeStyle = NSDateFormatterStyle.ShortStyle
     }
 
     func updateStartDate() {
         let date = startDatePickerView.date
-        startsBox.text = dateFormatter.stringFromDate(date)
+        startsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(date)
         
         let newEndDate = date.dateByAddingTimeInterval(timeInterval)
         endDatePickerView.date = newEndDate
@@ -176,13 +185,12 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     
     func updateEndDate() {
         let date = endDatePickerView.date
-        endsBox.text = dateFormatter.stringFromDate(date)
+        endsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(date)
         
         //work out difference between start and end date.
         timeInterval = endDatePickerView.date.timeIntervalSinceDate(startDatePickerView.date)
         
         //TODO why is box becoming center aligned?
-        //TODO updating end date when start date updated.
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -197,8 +205,8 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         event.calendar = store.defaultCalendarForNewEvents
         event.title = titleBox.text
         event.location = locationBox.text!
-        event.startDate = Common.standardDateAndTimeFormatter().dateFromString(startsBox.text)!
-        event.endDate = Common.standardDateAndTimeFormatter().dateFromString(endsBox.text)!
+        event.startDate = Common.standardDateAndTimeFormatter.dateFromString(startsBox.text)!
+        event.endDate = Common.standardDateAndTimeFormatter.dateFromString(endsBox.text)!
         event.notes = notesView.text
         
         EventManager.sharedInstance.creationDelegate = self
@@ -230,9 +238,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     }
     
     func saveDetailsFollowingCreationOfEvent(event: EKEvent) {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        let managedContext = appDelegate.managedObjectContext!
-        
+        let managedContext = Common.managedContext
         let interview = createOrLoadInterview()
         
         interview.eventID = event.eventIdentifier
@@ -261,8 +267,8 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         
         interview.eventID = ""
         interview.title = titleBox.text
-        interview.starts = dateFormatter.dateFromString(startsBox.text)!
-        interview.ends = dateFormatter.dateFromString(endsBox.text)!
+        interview.starts = Common.standardDateAndTimeFormatter.dateFromString(startsBox.text)!
+        interview.ends = Common.standardDateAndTimeFormatter.dateFromString(endsBox.text)!
         interview.notes = notesView.text
         
         interview.location.address = locationBox.text!
