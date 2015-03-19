@@ -184,7 +184,7 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         if indexPath.section == 0 {
             let accessGranted = ContactManager.sharedInstance.accessToAddressBookGranted
             cell.userInteractionEnabled = accessGranted
-            cell.textLabel!.enabled = accessGranted
+            cell.mainLabel.enabled = accessGranted
             
             if indexPath.row == 0 {
                 cell.mainLabel.text = "Create New Contact"
@@ -195,11 +195,11 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
             if contacts[indexPath.row].person != nil {
                 cell.accessoryType = UITableViewCellAccessoryType.DisclosureIndicator
                 cell.selectionStyle = UITableViewCellSelectionStyle.Default
-                cell.textLabel!.enabled = true
+                cell.mainLabel.enabled = true
             } else {
                 cell.accessoryType = UITableViewCellAccessoryType.None
                 cell.selectionStyle = UITableViewCellSelectionStyle.None
-                cell.textLabel!.enabled = false
+                cell.mainLabel.enabled = false
             }
             
             let contactTuple = contacts[indexPath.row]

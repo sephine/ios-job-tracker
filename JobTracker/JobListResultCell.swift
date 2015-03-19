@@ -12,5 +12,6 @@ class JobListResultCell: UITableViewCell {
     
     @IBOutlet weak var companyLabel: UILabel!
     @IBOutlet weak var positionLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
     
 }

@@ -67,7 +67,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if indexPath.section == 0 {
+        if indexPath.section == 0 || (companies != nil && indexPath.row == companies!.count) {
             return 44
         }
         return 78
@@ -96,13 +96,22 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
         }
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
         self.tableView.backgroundView = nil
-        if companies == nil {
+        if companies == nil || companies!.count == 0 {
             return 0
         }
-        return companies!.count
+        return companies!.count + 1
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        //show glassdoor attribution on last row
+        if indexPath.section == 1 && indexPath.row == companies!.count {
+            let attributionCell = tableView.dequeueReusableCellWithIdentifier("glassdoorAttributionCell") as AttributionCell
+            attributionCell.logo.image = UIImage(named: "glassdoor_logo_80.png")
+            //TODO change to glassdoor logo
+            attributionCell.logo.contentMode = .Left
+            return attributionCell
+        }
+        
         if indexPath.section == 0 {
             let cell = tableView.dequeueReusableCellWithIdentifier("companyManualCell", forIndexPath: indexPath) as UITableViewCell
             cell.textLabel!.text = search.text
@@ -128,7 +137,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
             let cell = tableView.cellForRowAtIndexPath(indexPath)
             let company = cell?.textLabel!.text
             delegate.companySelected(company!, website: "", glassdoorLink: "")
-        } else {
+        } else if indexPath.row < companies!.count {
             let company = companies![indexPath.row] as NSDictionary
             let companyName = (company["name"] as String)
             let website = (company["website"] as String)

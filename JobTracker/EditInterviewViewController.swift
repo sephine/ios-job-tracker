@@ -92,6 +92,26 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         }
         return nil
     }
+    
+    //sets it up so that wherever in the cell they select the textbox starts editing.
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0 {
+            createCalendarEvent()
+        } else if indexPath.section == 1 {
+            switch indexPath.row {
+            case 0:
+                titleBox.becomeFirstResponder()
+            case 2:
+                startsBox.becomeFirstResponder()
+            case 3:
+                endsBox.becomeFirstResponder()
+            case 4:
+                notesView.becomeFirstResponder()
+            default:
+                break
+            }
+        }
+    }
 
     func textFieldShouldClear(textField: UITextField) -> Bool {
         locationJustCleared = true
@@ -157,8 +177,6 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         
         timeInterval = endDatePickerView.date.timeIntervalSinceDate(startDatePickerView.date)
         
-        //TODO calendarBox, as there is no eventID this will be something like None
-        
         notesView.text = loadedInterview!.notes
     }
     
@@ -191,12 +209,6 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         timeInterval = endDatePickerView.date.timeIntervalSinceDate(startDatePickerView.date)
         
         //TODO why is box becoming center aligned?
-    }
-    
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section == 0 {
-            createCalendarEvent()
-        }
     }
     
     func createCalendarEvent() {

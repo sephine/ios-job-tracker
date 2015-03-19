@@ -23,14 +23,34 @@ class JobBasic: NSManagedObject {
     @NSManaged var rejected: JobRejected?
     
     var orderedInterviews: [JobInterview] {
-        let sortDescriptor = NSSortDescriptor(key: "ends", ascending: true)
+        let sortDescriptor = NSSortDescriptor(key: "starts", ascending: true)
         let sortedArray = interviews.sortedArrayUsingDescriptors([sortDescriptor])
         return sortedArray as [JobInterview]
     }
     
     var orderedContacts: [JobContact] {
-        let sortDescriptor = NSSortDescriptor(key: "last", ascending: true)
-        let sortedArray = contacts.sortedArrayUsingDescriptors([sortDescriptor])
+        let sortedArray = contacts.allObjects.sorted({ (one, two) -> Bool in
+            let one = one as JobContact
+            let two = two as JobContact
+            
+            var oneSortText: String
+            if !one.last.isEmpty {
+                oneSortText = one.last
+            } else if !one.first.isEmpty {
+                oneSortText = one.first
+            } else {
+                oneSortText = one.company
+            }
+            var twoSortText: String
+            if !two.last.isEmpty {
+                twoSortText = two.last
+            } else if !two.first.isEmpty {
+                twoSortText = two.first
+            } else {
+                twoSortText = two.company
+            }
+            return oneSortText < twoSortText
+        })
         return sortedArray as [JobContact]
     }
     

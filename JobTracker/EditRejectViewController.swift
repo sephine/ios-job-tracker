@@ -33,6 +33,16 @@ class EditRejectViewController: UITableViewController {
         super.viewWillAppear(animated)
     }
     
+    //sets it up so that wherever in the cell they select the textbox starts editing.
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        switch indexPath.row {
+        case 0:
+            notesView.becomeFirstResponder()
+        default:
+            break
+        }
+    }
+    
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }

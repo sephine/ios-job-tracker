@@ -114,6 +114,81 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         let job = fetchedResultsController.objectAtIndexPath(indexPath) as JobBasic
         cell.companyLabel.text = job.company
         cell.positionLabel.text = job.title
+        
+        let stage = Stage(rawValue: job.stage.integerValue)!
+        var dateText: String
+        var displayRedText = false
+        switch stage {
+        case .Potential:
+            let dueDate = job.details.dueDate
+            if dueDate != nil {
+                let dueDateString = Common.standardDateFormatter.stringFromDate(dueDate!)
+                dateText = "Deadline \(dueDateString)"
+                
+                if isDateWithinAWeekOfToday(date: dueDate!) {
+                    displayRedText = true
+                }
+            } else {
+                dateText = "No Deadline"
+            }
+        case .Applied:
+            let dateApplied = job.application!.dateSent
+            let dateAppliedString = Common.standardDateFormatter.stringFromDate(dateApplied)
+            dateText = "Applied \(dateAppliedString)"
+        case .PreInterview:
+            var nextInterviewDate: NSDate?
+            for interview in job.orderedInterviews {
+                if !interview.completed {
+                    nextInterviewDate = interview.starts
+                    break
+                }
+            }
+            let nextInterviewDateString = Common.standardDateFormatter.stringFromDate(nextInterviewDate!)
+            dateText = "Scheduled \(nextInterviewDateString)"
+            
+            if isDateWithinAWeekOfToday(date: nextInterviewDate!) {
+                displayRedText = true
+            }
+        case .PostInterview:
+            let lastInterviewDate = job.orderedInterviews.last!.ends
+            let lastInterviewDateString = Common.standardDateFormatter.stringFromDate(lastInterviewDate)
+            dateText = "Completed \(lastInterviewDateString)"
+        case .Offer:
+            let dateReceived = job.offer!.dateReceived
+            let dateReceivedString = Common.standardDateFormatter.stringFromDate(dateReceived)
+            dateText = "Received \(dateReceivedString)"
+        case .Rejected:
+            let dateRejected = job.rejected!.dateRejected
+            let dateRejectedString = Common.standardDateFormatter.stringFromDate(dateRejected)
+            dateText = "Rejected \(dateRejectedString)"
+        }
+        
+        cell.dateLabel.text = dateText
+        if displayRedText {
+            cell.dateLabel.textColor = UIColor.redColor()
+        } else {
+            cell.dateLabel.textColor = UIColor.darkGrayColor()
+        }
+        
+        //TODO red makes it seem like the date is in the past! consider orange
+        //TODO could get a library that displays dates like 5 days time, a month ago etc
+    }
+    
+    func isDateWithinAWeekOfToday(#date: NSDate) -> Bool {
+        let today = NSDate()
+        let calendar = NSCalendar.currentCalendar()
+        
+        //use the start of the dates so that the time of day does not affect the number of days difference.
+        let startOfDate = calendar.startOfDayForDate(date)
+        let startOfToday = calendar.startOfDayForDate(today)
+        
+        let components = calendar.components(.CalendarUnitDay, fromDate: startOfToday, toDate: startOfDate, options: nil)
+        let daysDifference = components.day
+        
+        if daysDifference >= 0 && daysDifference < 7 {
+            return true
+        }
+        return false
     }
     
     func deleteJob(job: JobBasic) {
@@ -171,3 +246,5 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
 }
+
+//TODO order by dates not by company names??

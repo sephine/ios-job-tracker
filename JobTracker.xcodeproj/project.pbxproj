@@ -28,6 +28,10 @@
 		B04C475B1AAA8E0400C235B1 /* JobRejected.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04C475A1AAA8E0400C235B1 /* JobRejected.swift */; };
 		B04C475D1AAE51CA00C235B1 /* ShowContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04C475C1AAE51CA00C235B1 /* ShowContactsViewController.swift */; };
 		B04C475F1AAFBF2000C235B1 /* ContactManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04C475E1AAFBF2000C235B1 /* ContactManager.swift */; };
+		B04E91741ABA7663008A01E2 /* powered-by-google-on-white.png in Resources */ = {isa = PBXBuildFile; fileRef = B04E91721ABA7663008A01E2 /* powered-by-google-on-white.png */; };
+		B04E91751ABA7663008A01E2 /* powered-by-google-on-white@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B04E91731ABA7663008A01E2 /* powered-by-google-on-white@2x.png */; };
+		B04E91781ABA7787008A01E2 /* AttributionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B04E91771ABA7787008A01E2 /* AttributionCell.swift */; };
+		B04E917A1ABB5CA3008A01E2 /* glassdoor_logo_80.png in Resources */ = {isa = PBXBuildFile; fileRef = B04E91791ABB5CA3008A01E2 /* glassdoor_logo_80.png */; };
 		B0568B3D1A98334400261B4F /* ShowResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0568B3C1A98334400261B4F /* ShowResultCell.swift */; };
 		B0568B491A9A7D1100261B4F /* EditApplicationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0568B481A9A7D1100261B4F /* EditApplicationViewController.swift */; };
 		B0568B4B1A9A83AB00261B4F /* JobApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0568B4A1A9A83AB00261B4F /* JobApplication.swift */; };
@@ -82,6 +86,10 @@
 		B04C475A1AAA8E0400C235B1 /* JobRejected.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobRejected.swift; sourceTree = "<group>"; };
 		B04C475C1AAE51CA00C235B1 /* ShowContactsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowContactsViewController.swift; sourceTree = "<group>"; };
 		B04C475E1AAFBF2000C235B1 /* ContactManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactManager.swift; sourceTree = "<group>"; };
+		B04E91721ABA7663008A01E2 /* powered-by-google-on-white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "powered-by-google-on-white.png"; sourceTree = "<group>"; };
+		B04E91731ABA7663008A01E2 /* powered-by-google-on-white@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "powered-by-google-on-white@2x.png"; sourceTree = "<group>"; };
+		B04E91771ABA7787008A01E2 /* AttributionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AttributionCell.swift; sourceTree = "<group>"; };
+		B04E91791ABB5CA3008A01E2 /* glassdoor_logo_80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = glassdoor_logo_80.png; sourceTree = "<group>"; };
 		B0568B3C1A98334400261B4F /* ShowResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowResultCell.swift; sourceTree = "<group>"; };
 		B0568B481A9A7D1100261B4F /* EditApplicationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditApplicationViewController.swift; sourceTree = "<group>"; };
 		B0568B4A1A9A83AB00261B4F /* JobApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobApplication.swift; sourceTree = "<group>"; };
@@ -144,6 +152,7 @@
 				B0568B3C1A98334400261B4F /* ShowResultCell.swift */,
 				B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */,
 				B0BCAC201A97EA6C0040CAE9 /* LocationResultCell.swift */,
+				B04E91771ABA7787008A01E2 /* AttributionCell.swift */,
 			);
 			name = "Custom Cells";
 			sourceTree = "<group>";
@@ -215,6 +224,7 @@
 				B023B1801AA806780082C5B0 /* Custom Cells */,
 				B023B1821AA806CF0082C5B0 /* Core Data Types */,
 				B023B1831AA8072C0082C5B0 /* Helper Classes */,
+				B04E91761ABA767A008A01E2 /* Images */,
 				B047E27D1A8318E400475F31 /* Supporting Files */,
 				B088D24E1A8DC63000E8CB99 /* JobTracker-Bridging-Header.h */,
 			);
@@ -247,6 +257,16 @@
 				B047E2971A8318E400475F31 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B04E91761ABA767A008A01E2 /* Images */ = {
+			isa = PBXGroup;
+			children = (
+				B04E91721ABA7663008A01E2 /* powered-by-google-on-white.png */,
+				B04E91731ABA7663008A01E2 /* powered-by-google-on-white@2x.png */,
+				B04E91791ABB5CA3008A01E2 /* glassdoor_logo_80.png */,
+			);
+			name = Images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -332,8 +352,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B0F879661A8AED6F0082F3DF /* Main.storyboard in Resources */,
+				B04E91751ABA7663008A01E2 /* powered-by-google-on-white@2x.png in Resources */,
+				B04E91741ABA7663008A01E2 /* powered-by-google-on-white.png in Resources */,
 				B047E28D1A8318E400475F31 /* LaunchScreen.xib in Resources */,
 				B047E28A1A8318E400475F31 /* Images.xcassets in Resources */,
+				B04E917A1ABB5CA3008A01E2 /* glassdoor_logo_80.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -392,6 +415,7 @@
 				B023B1731A9D6C630082C5B0 /* JobInterview.swift in Sources */,
 				B0BCAC231A9802040040CAE9 /* JobLocation.swift in Sources */,
 				B04C47571AAA7F1200C235B1 /* JobOffer.swift in Sources */,
+				B04E91781ABA7787008A01E2 /* AttributionCell.swift in Sources */,
 				B04C475D1AAE51CA00C235B1 /* ShowContactsViewController.swift in Sources */,
 				B023B17D1A9FF9650082C5B0 /* EventManager.swift in Sources */,
 				B0568B4B1A9A83AB00261B4F /* JobApplication.swift in Sources */,

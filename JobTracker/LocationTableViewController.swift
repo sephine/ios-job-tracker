@@ -91,13 +91,21 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate, U
         }
         self.tableView.separatorStyle = UITableViewCellSeparatorStyle.SingleLine
         self.tableView.backgroundView = nil
-        if locations == nil {
+        if locations == nil || locations!.count == 0 {
             return 0
         }
-        return locations!.count
+        return locations!.count + 1
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        //show google attribution on last row
+        if indexPath.section == 1 && indexPath.row == locations!.count {
+            let attributionCell = tableView.dequeueReusableCellWithIdentifier("googleAttributionCell") as AttributionCell
+            attributionCell.logo.image = UIImage(named: "powered-by-google-on-white.png")
+            attributionCell.logo.contentMode = .Center
+            return attributionCell
+        }
+        
         let cell = tableView.dequeueReusableCellWithIdentifier("locationResultCell", forIndexPath: indexPath) as LocationResultCell
         if indexPath.section == 0 {
             cell.locationLabel.text = search.text
@@ -110,11 +118,13 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate, U
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let cell = tableView.cellForRowAtIndexPath(indexPath) as LocationResultCell
-        let address = cell.locationLabel.text!
-        delegate.locationSelected(address)
-        getPlacemark(address)
-        navigationController?.popViewControllerAnimated(true)
+        if indexPath.section == 0 || indexPath.row < locations!.count {
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as LocationResultCell
+            let address = cell.locationLabel.text!
+            delegate.locationSelected(address)
+            getPlacemark(address)
+            navigationController?.popViewControllerAnimated(true)
+        }
     }
     
     func getPlacemark(address: String) {
@@ -142,6 +152,8 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate, U
         navigationController?.popViewControllerAnimated(true)
     }
     //TODO think about whether these automatically unwrapped optionals are safe!
+    
+    //TODO can maybe have autocomplete back on for location search
     
     //TODO powered by google on search results
     //TODO attribution in About page

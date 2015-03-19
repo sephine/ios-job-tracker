@@ -131,32 +131,46 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
     //When a user edits the address book within the app our stored data may become incorrect and will need to be updated.
     func findAddressBookPersonMatchingIDAndUpdateName(#contact: JobContact) -> ABRecord? {
         let person: ABRecord? = ABAddressBookGetPersonWithRecordID(addressBook, contact.contactID.intValue).takeUnretainedValue()
-        if person != nil {
-            let first = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
-            let last = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as String?
-            let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
         
-            if first != nil {
-                contact.first = first!
-            } else {
-                contact.first = ""
-            }
-            if last != nil {
-                contact.last = last!
-            } else {
-                contact.last = ""
-            }
-            if company != nil {
-                contact.company = company!
-            } else {
-                contact.company = ""
-            }
+        if person == nil {
+            return nil
+        }
         
+        let first = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
+        let last = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as String?
+        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+            
+        //if the user has deleted all the above fields, it is not longer a viable contact for our app and must be changed to not found.
+        if first == nil && last == nil && company == nil {
+            contact.contactID = -1
             var error: NSError?
             if !Common.managedContext.save(&error) {
                 println("Could not save \(error), \(error?.userInfo)")
             }
+            return nil
         }
+        
+        if first != nil {
+            contact.first = first!
+        } else {
+            contact.first = ""
+        }
+        if last != nil {
+            contact.last = last!
+        } else {
+            contact.last = ""
+        }
+        if company != nil {
+            contact.company = company!
+        } else {
+            contact.company = ""
+        }
+        
+        var error: NSError?
+        if !Common.managedContext.save(&error) {
+            println("Could not save \(error), \(error?.userInfo)")
+        }
+
         return person
     }
     

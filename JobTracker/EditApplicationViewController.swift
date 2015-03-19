@@ -60,6 +60,21 @@ class EditApplicationViewController: UITableViewController {
         self.navigationController?.toolbarHidden = true
     }
     
+    //sets it up so that wherever in the cell they select the textbox starts editing.
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        switch indexPath.row {
+        case 0:
+            dateSentBox.becomeFirstResponder()
+        case 1:
+            //TODO remove if you remove sent to cell.
+            break
+        case 2:
+            notesView.becomeFirstResponder()
+        default:
+            break
+        }
+    }
+    
     func updateDate() {
         let date = datePickerView.date
         dateSentBox.text = Common.standardDateFormatter.stringFromDate(date)
@@ -128,5 +143,4 @@ class EditApplicationViewController: UITableViewController {
     }
 }
 
-//TODO check for empty text boxes
 

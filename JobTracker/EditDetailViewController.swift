@@ -89,6 +89,26 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         super.viewWillAppear(animated)
     }
     
+    //sets it up so that wherever in the cell they select the textbox starts editing.
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        switch indexPath.row {
+        case 1:
+            websiteBox.becomeFirstResponder()
+        case 2:
+            positionBox.becomeFirstResponder()
+        case 3:
+            salaryBox.becomeFirstResponder()
+        case 5:
+            listingBox.becomeFirstResponder()
+        case 6:
+            dueDateBox.becomeFirstResponder()
+        case 7:
+            notesView.becomeFirstResponder()
+        default:
+            break
+        }
+    }
+    
     func textFieldShouldClear(textField: UITextField) -> Bool {
         if textField.tag == companyBoxTag {
             companyJustCleared = true

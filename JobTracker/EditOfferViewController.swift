@@ -71,6 +71,20 @@ class EditOfferViewController: UITableViewController {
         self.navigationController?.toolbarHidden = true
     }
     
+    //sets it up so that wherever in the cell they select the textbox starts editing.
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        switch indexPath.row {
+        case 0:
+            dateReceivedBox.becomeFirstResponder()
+        case 1:
+            salaryBox.becomeFirstResponder()
+        case 2:
+            notesView.becomeFirstResponder()
+        default:
+            break
+        }
+    }
+    
     //only called by salary text field
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         let newSalary = salaryBox.text + string

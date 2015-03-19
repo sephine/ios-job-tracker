@@ -37,23 +37,21 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
 
         //stops an inset being added when the app is brought back from being in the background.
         automaticallyAdjustsScrollViewInsets = false
-        
-        loadTableWithDummyData()
-        checkForUpdatedInterviewEvents()
-    }
-    
-    //initially load all types of resizable cells so they can successfully have their heights changed when the table is reloaded. This data will never show.
-    func loadTableWithDummyData() {
-        sectionTypeArray = []
-        sectionTypeArray.append(.Basic)
-        cellTypeArray = []
-        cellTypeArray.append(type: .Company, interview: nil, website: nil)
-        cellTypeArray.append(type: .Location, interview: nil, website: nil)
-        cellTypeArray.append(type: .Notes, interview: nil, website: nil)
+
+        //set up the table view so it resizes cells properly
         tableView.estimatedRowHeight = 44.0
         tableView.rowHeight = UITableViewAutomaticDimension
-        tableView.layoutIfNeeded()
-        tableView.reloadData()
+        
+        reloadSectionTypeArray()
+        reloadCellTypeArray()
+        
+        //individually reloading the sections seems to solve the problem where cells that appear off the screen aren't the correct height.
+        for i in 0..<sectionTypeArray.count {
+            let indexSet = NSIndexSet(index: i)
+            tableView.reloadSections(indexSet, withRowAnimation: .None)
+        }
+        
+        checkForUpdatedInterviewEvents()
     }
     
     //some interviews might have changed from being scheduled to being completed.
@@ -81,8 +79,8 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         reloadSectionTypeArray()
         reloadCellTypeArray()
+        tableView.reloadData()
         
-        //TODO check toolbar is needed
         self.navigationController?.toolbarHidden = false
     }
     
@@ -141,8 +139,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         if !notes.isEmpty {
             cellTypeArray.append(type: .Notes, interview: nil, website: nil)
         }
-        
-        tableView.reloadData()
         
         //adding an empty footer ensures that the table view doesn't show empty rows
         tableView.tableFooterView = UIView(frame: CGRectZero)
@@ -465,6 +461,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
 
             reloadSectionTypeArray()
             reloadCellTypeArray()
+            tableView.reloadData()
             rejectOrRestoreButton.title = "Reject"
         }
     }
@@ -507,4 +504,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
 
 //TODO some of the stored data is empty strings and sometimes nil, tidy it up.
 
-//TODO stop the notes from going on forever perhaps?
+
+
+

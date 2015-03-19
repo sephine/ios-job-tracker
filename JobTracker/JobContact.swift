@@ -16,6 +16,5 @@ class JobContact: NSManagedObject {
     @NSManaged var company: String
     @NSManaged var contactID: NSNumber
     @NSManaged var basic: JobBasic
-    
-    //TODO change
+
 }
