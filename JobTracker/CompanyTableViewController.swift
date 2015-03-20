@@ -13,7 +13,7 @@ protocol CompanySelectionDelegate {
     func companySelected(company: String, website: String, glassdoorLink: String)
 }
 
-class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UISearchDisplayDelegate {
+class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var search: UISearchBar!
     var delegate: CompanySelectionDelegate!
@@ -24,6 +24,9 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Find Company"
+        
+        //adding an empty footer ensures that the table view doesn't show empty rows
+        self.tableView.tableFooterView = UIView(frame: CGRectZero)
     }
     
     override func didReceiveMemoryWarning() {
@@ -137,6 +140,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
             let cell = tableView.cellForRowAtIndexPath(indexPath)
             let company = cell?.textLabel!.text
             delegate.companySelected(company!, website: "", glassdoorLink: "")
+            navigationController?.popViewControllerAnimated(true)
         } else if indexPath.row < companies!.count {
             let company = companies![indexPath.row] as NSDictionary
             let companyName = (company["name"] as String)
@@ -145,8 +149,8 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate, UI
             let glassdoorIDString = glassdoorID.description
             let glassdoorLink = "http://www.glassdoor.com/Job/\(companyName)-Jobs-E\(glassdoorIDString).htm"
             delegate.companySelected(companyName, website: website, glassdoorLink: glassdoorLink)
+            navigationController?.popViewControllerAnimated(true)
         }
-        navigationController?.popViewControllerAnimated(true)
     }
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {

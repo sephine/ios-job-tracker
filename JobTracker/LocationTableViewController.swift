@@ -14,7 +14,7 @@ protocol LocationSelectionDelegate {
     func coordinatesCalculated(coordinates: CLLocationCoordinate2D)
 }
 
-class LocationTableViewController: UITableViewController, UISearchBarDelegate, UISearchDisplayDelegate {
+class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var search: UISearchBar!
     var delegate: LocationSelectionDelegate!
@@ -25,6 +25,9 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate, U
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Find Locations"
+        
+        //adding an empty footer ensures that the table view doesn't show empty rows
+        self.tableView.tableFooterView = UIView(frame: CGRectZero)
     }
     
     override func didReceiveMemoryWarning() {

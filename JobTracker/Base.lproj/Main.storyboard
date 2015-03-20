@@ -10,10 +10,18 @@
         <scene sceneID="C4r-Ar-lX4">
             <objects>
                 <tableViewController id="Ujg-K2-dLt" customClass="JobListViewController" customModule="JobTracker" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="60" sectionHeaderHeight="10" sectionFooterHeight="10" id="n9R-NM-7AU">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="n9R-NM-7AU">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <searchBar key="tableHeaderView" contentMode="redraw" placeholder="search for a company" id="AuJ-Ie-B0p">
+                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" spellCheckingType="no" returnKeyType="search"/>
+                            <connections>
+                                <outlet property="delegate" destination="Ujg-K2-dLt" id="kiC-eX-4CR"/>
+                            </connections>
+                        </searchBar>
                         <prototypes>
                             <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="jobListResultCell" rowHeight="65" id="0UL-03-3dC" customClass="JobListResultCell" customModule="JobTracker" customModuleProvider="target">
                                 <autoresizingMask key="autoresizingMask"/>
@@ -124,10 +132,20 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="searchDisplayController" destination="dTi-1l-qdX" id="dCi-Il-b1O"/>
                         <segue destination="pes-MT-8g8" kind="show" identifier="showJob" id="vGd-A7-gBb"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vcm-jY-NEj" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <searchDisplayController id="dTi-1l-qdX">
+                    <connections>
+                        <outlet property="delegate" destination="Ujg-K2-dLt" id="xDs-jS-H1e"/>
+                        <outlet property="searchBar" destination="AuJ-Ie-B0p" id="gOr-AK-T8V"/>
+                        <outlet property="searchContentsController" destination="Ujg-K2-dLt" id="1j6-BD-OuF"/>
+                        <outlet property="searchResultsDataSource" destination="Ujg-K2-dLt" id="oNY-iS-Ujc"/>
+                        <outlet property="searchResultsDelegate" destination="Ujg-K2-dLt" id="kw9-aB-h1Q"/>
+                    </connections>
+                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="1482" y="423.75"/>
         </scene>

@@ -6,30 +6,27 @@
 //  Copyright (c) 2015 Joanne Maynard. All rights reserved.
 //
 
+import Foundation
 import UIKit
 import CoreData
 
-class JobListViewController: UITableViewController, NSFetchedResultsControllerDelegate {
+class JobListViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate {
     
     var fetchedResultsController: NSFetchedResultsController!
+    var searchFTC: NSFetchedResultsController!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let fetchRequest = NSFetchRequest(entityName: "JobBasic")
-        let sectionSortDescriptor = NSSortDescriptor(key: "stage", ascending: true)
-        let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
-        let sortDescriptors = [sectionSortDescriptor, companySortDescriptor]
-        fetchRequest.sortDescriptors = sortDescriptors
-        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: "stage", cacheName: "Root")
-        fetchedResultsController.delegate = self
-        
-        var error: NSError?
-        if !fetchedResultsController.performFetch(&error) {
-            NSLog("Could not fetch results \(error), \(error?.userInfo)")
-        }
-        
+        setUpMainFetchedResultController()
+        setUpSearchFetchedResultController()
         checkForPassedInterviewsAndUpdateStages()
+        
+        self.tableView.rowHeight = 60.0
+        self.searchDisplayController!.searchResultsTableView.rowHeight = 60.0
+        
+        //adding an empty footer ensures that the table view doesn't show empty rows
+        self.searchDisplayController!.searchResultsTableView.tableFooterView = UIView(frame: CGRectZero)
     }
 
     override func didReceiveMemoryWarning() {
@@ -39,6 +36,37 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    
+    func setUpMainFetchedResultController() {
+        let fetchRequest = NSFetchRequest(entityName: "JobBasic")
+        let sectionSortDescriptor = NSSortDescriptor(key: "stage", ascending: true)
+        let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
+        let sortDescriptors = [sectionSortDescriptor, companySortDescriptor]
+        fetchRequest.sortDescriptors = sortDescriptors
+        
+        fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: "stage", cacheName: "Root")
+        fetchedResultsController.delegate = self
+        
+        var error: NSError?
+        if !fetchedResultsController.performFetch(&error) {
+            NSLog("Could not fetch results \(error), \(error?.userInfo)")
+        }
+    }
+    
+    func setUpSearchFetchedResultController() {
+        let fetchRequest = NSFetchRequest(entityName: "JobBasic")
+        let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
+        let sortDescriptors = [companySortDescriptor]
+        fetchRequest.sortDescriptors = sortDescriptors
+        
+        searchFTC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: nil, cacheName: nil)
+        searchFTC.delegate = self
+        
+        var error: NSError?
+        if !searchFTC.performFetch(&error) {
+            NSLog("Could not fetch results \(error), \(error?.userInfo)")
+        }
     }
     
     //check if any of the stages have moved from PreInteview to PostInterview since last opened.
@@ -73,25 +101,61 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
     
+    func searchDisplayController(controller: UISearchDisplayController, shouldReloadTableForSearchString searchString: String!) -> Bool {
+        filterResultsForSearchText(searchString)
+        return true
+    }
+    
+    func frcForTableView(tableView: UITableView) -> NSFetchedResultsController {
+        if tableView == self.searchDisplayController!.searchResultsTableView {
+            return searchFTC
+        }
+        return fetchedResultsController
+    }
+    
+    func tableViewForFRC(controller: NSFetchedResultsController) -> UITableView {
+        if controller == self.fetchedResultsController {
+            return self.tableView
+        }
+        return self.searchDisplayController!.searchResultsTableView
+    }
+    
+    func filterResultsForSearchText(searchText: String) {
+        searchFTC.fetchRequest.predicate = NSPredicate(format: "company BEGINSWITH[cd] %@", searchText)
+
+        var error: NSError?
+        if !searchFTC.performFetch(&error) {
+            NSLog("Could not fetch results \(error), \(error?.userInfo)")
+        }
+        //TODO reload table?
+    }
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
-        return fetchedResultsController.sections!.count
+        if tableView == self.tableView {
+            return fetchedResultsController.sections!.count
+        }
+        return 1
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        let sectionInfo = fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
-        let stageNumber = sectionInfo.name!.toInt()!
-        let stage = Stage(rawValue: stageNumber)!
-        return stage.title
+        if tableView == self.tableView {
+            let sectionInfo = fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
+            let stageNumber = sectionInfo.name!.toInt()!
+            let stage = Stage(rawValue: stageNumber)!
+            return stage.title
+        }
+        return nil
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let sectionInfo = fetchedResultsController.sections![section] as NSFetchedResultsSectionInfo
+        let currentFRC = frcForTableView(tableView)
+        let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
         return sectionInfo.numberOfObjects
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("jobListResultCell") as JobListResultCell
-        configureCell(cell, atIndexPath: indexPath)
+        var cell = self.tableView.dequeueReusableCellWithIdentifier("jobListResultCell") as JobListResultCell
+        configureCell(tableView, cell: cell, atIndexPath: indexPath)
         return cell
     }
     
@@ -101,7 +165,8 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == UITableViewCellEditingStyle.Delete {
-            let job = fetchedResultsController.objectAtIndexPath(indexPath) as JobBasic
+            let currentFRC = frcForTableView(tableView)
+            let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
             deleteJob(job)
         }
     }
@@ -110,8 +175,13 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         performSegueWithIdentifier("showJob", sender: indexPath)
     }
     
-    func configureCell(cell: JobListResultCell, atIndexPath indexPath: NSIndexPath) {
-        let job = fetchedResultsController.objectAtIndexPath(indexPath) as JobBasic
+    func configureCell(tableView: UITableView, cell: JobListResultCell, atIndexPath indexPath: NSIndexPath) {
+        let currentFRC = frcForTableView(tableView)
+        let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
+        let i = job.company
+        let j = job.title
+        let k = cell.companyLabel
+        let l = cell.positionLabel
         cell.companyLabel.text = job.company
         cell.positionLabel.text = job.title
         
@@ -200,39 +270,42 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     }
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
-        tableView.beginUpdates()
+        let currentTableView = tableViewForFRC(controller)
+        currentTableView.beginUpdates()
     }
     
     func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
-        let tableView = self.tableView
+        let currentTableView = tableViewForFRC(controller)
         switch type {
         case .Insert:
-            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
+            currentTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
         case .Delete:
-            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
+            currentTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
         case .Update:
-            configureCell(tableView.cellForRowAtIndexPath(indexPath!)! as JobListResultCell, atIndexPath: indexPath!)
+            configureCell(currentTableView, cell: currentTableView.cellForRowAtIndexPath(indexPath!)! as JobListResultCell, atIndexPath: indexPath!)
         case .Move:
-            tableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
-            tableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
+            currentTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
+            currentTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
         }
     }
     
     func controller(controller: NSFetchedResultsController, didChangeSection sectionInfo: NSFetchedResultsSectionInfo, atIndex sectionIndex: Int, forChangeType type: NSFetchedResultsChangeType) {
+        let currentTableView = tableViewForFRC(controller)
         switch type {
         case .Insert:
             let indexSet = NSIndexSet(index: sectionIndex)
-            tableView.insertSections(indexSet, withRowAnimation: .Automatic)
+            currentTableView.insertSections(indexSet, withRowAnimation: .Automatic)
         case .Delete:
             let indexSet = NSIndexSet(index: sectionIndex)
-            self.tableView.deleteSections(indexSet, withRowAnimation: .Automatic)
+            currentTableView.deleteSections(indexSet, withRowAnimation: .Automatic)
         default:
             break
         }
     }
     
     func controllerDidChangeContent(controller: NSFetchedResultsController) {
-        self.tableView.endUpdates()
+        let currentTableView = tableViewForFRC(controller)
+        currentTableView.endUpdates()
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {

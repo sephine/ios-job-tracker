@@ -139,9 +139,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         if !notes.isEmpty {
             cellTypeArray.append(type: .Notes, interview: nil, website: nil)
         }
-        
-        //adding an empty footer ensures that the table view doesn't show empty rows
-        tableView.tableFooterView = UIView(frame: CGRectZero)
     }
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
