@@ -221,7 +221,11 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             managedContext.insertObject(basic)
             managedContext.insertObject(details)
             managedContext.insertObject(location)
+            
+            //the two below are temporary as they will be set again after the save anyway
             basic.stage = Stage.Potential.rawValue
+            basic.date = NSDate()
+            
             basic.details = details
             basic.location = location
             details.basic = basic

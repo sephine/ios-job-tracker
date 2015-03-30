@@ -449,7 +449,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             performSegueWithIdentifier("editReject", sender: self)
         } else {
             loadedBasic.rejected = nil
-            loadedBasic.updateStageToFurthestStageReached()
             
             var error: NSError?
             if !Common.managedContext.save(&error) {

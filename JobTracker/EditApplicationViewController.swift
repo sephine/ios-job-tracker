@@ -114,8 +114,6 @@ class EditApplicationViewController: UITableViewController {
         application.notes = notesView.text
         application.dateSent = Common.standardDateFormatter.dateFromString(dateSentBox.text!)!
         
-        loadedBasic.updateStageToFurthestStageReached()
-        
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
@@ -125,7 +123,6 @@ class EditApplicationViewController: UITableViewController {
     func deleteApplication() {
         if let application = loadedBasic.application {
             loadedBasic.application = nil
-            loadedBasic.updateStageToFurthestStageReached()
 
             var error: NSError?
             if !Common.managedContext.save(&error) {

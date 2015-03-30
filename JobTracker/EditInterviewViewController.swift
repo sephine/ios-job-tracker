@@ -263,8 +263,6 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         interview.location.latitude = nil
         interview.location.longitude = nil
         
-        loadedBasic.updateStageToFurthestStageReached()
-        
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
@@ -286,8 +284,6 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         interview.location.address = locationBox.text!
         interview.location.latitude = locationLatitude
         interview.location.longitude = locationLongitude
-        
-        loadedBasic.updateStageToFurthestStageReached()
         
         var error: NSError?
         if !managedContext.save(&error) {
@@ -322,7 +318,6 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
             let mutableInterviews = loadedBasic.interviews.mutableCopy() as NSMutableSet
             mutableInterviews.removeObject(loadedInterview!)
             loadedBasic.interviews = mutableInterviews
-            loadedBasic.updateStageToFurthestStageReached()
             
             var error: NSError?
             if !Common.managedContext.save(&error) {

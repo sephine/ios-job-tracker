@@ -6,7 +6,7 @@
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
-        <!--Job List-->
+        <!--Job List View Controller-->
         <scene sceneID="C4r-Ar-lX4">
             <objects>
                 <tableViewController id="Ujg-K2-dLt" customClass="JobListViewController" customModule="JobTracker" customModuleProvider="target" sceneMemberID="viewController">
@@ -15,7 +15,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <searchBar key="tableHeaderView" contentMode="redraw" placeholder="search for a company" id="AuJ-Ie-B0p">
-                            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                            <rect key="frame" x="0.0" y="64" width="600" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <textInputTraits key="textInputTraits" autocapitalizationType="words" autocorrectionType="no" spellCheckingType="no" returnKeyType="search"/>
                             <connections>
@@ -124,7 +124,19 @@
                             <outlet property="delegate" destination="Ujg-K2-dLt" id="6lb-0g-doK"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Job List" id="Wv9-DO-KUG">
+                    <navigationItem key="navigationItem" id="Wv9-DO-KUG">
+                        <nil key="title"/>
+                        <segmentedControl key="titleView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="bar" selectedSegmentIndex="0" id="QmN-Hq-YcX">
+                            <rect key="frame" x="-61" y="-14" width="123" height="29"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <segments>
+                                <segment title="Stage"/>
+                                <segment title="Date"/>
+                            </segments>
+                            <connections>
+                                <action selector="sectionTypeChanged:" destination="Ujg-K2-dLt" eventType="valueChanged" id="M3p-hr-kgu"/>
+                            </connections>
+                        </segmentedControl>
                         <barButtonItem key="rightBarButtonItem" title="Add" id="5pV-Zs-ufB">
                             <connections>
                                 <segue destination="lgu-NL-SMk" kind="show" identifier="addJob" id="e6z-Zx-sl0"/>
@@ -133,6 +145,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="searchDisplayController" destination="dTi-1l-qdX" id="dCi-Il-b1O"/>
+                        <outlet property="sortControl" destination="QmN-Hq-YcX" id="kvi-5e-OUo"/>
                         <segue destination="pes-MT-8g8" kind="show" identifier="showJob" id="vGd-A7-gBb"/>
                     </connections>
                 </tableViewController>
@@ -674,6 +687,9 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                                     <nil key="highlightedColor"/>
+                                                    <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
+                                                        <rect key="frame" x="16" y="11" width="271" height="20"/>
+                                                    </variation>
                                                 </label>
                                             </subviews>
                                             <constraints>
@@ -2138,58 +2154,6 @@
                                             </variation>
                                         </tableViewCellContentView>
                                     </tableViewCell>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" id="OJq-8g-AMW">
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="OJq-8g-AMW" id="Nnj-e4-G9K">
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sent To" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Oyg-RL-Bvq">
-                                                    <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="height" constant="21" id="968-ll-WJx"/>
-                                                        <constraint firstAttribute="width" constant="73" id="Dhz-py-EGU"/>
-                                                    </constraints>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                    <variation key="default">
-                                                        <mask key="constraints">
-                                                            <exclude reference="968-ll-WJx"/>
-                                                            <exclude reference="Dhz-py-EGU"/>
-                                                        </mask>
-                                                    </variation>
-                                                    <variation key="heightClass=regular-widthClass=compact">
-                                                        <mask key="constraints">
-                                                            <include reference="968-ll-WJx"/>
-                                                            <include reference="Dhz-py-EGU"/>
-                                                        </mask>
-                                                    </variation>
-                                                </label>
-                                            </subviews>
-                                            <constraints>
-                                                <constraint firstItem="Oyg-RL-Bvq" firstAttribute="leading" secondItem="Nnj-e4-G9K" secondAttribute="leadingMargin" constant="8" id="Svj-CD-pkz"/>
-                                                <constraint firstItem="Oyg-RL-Bvq" firstAttribute="top" secondItem="Nnj-e4-G9K" secondAttribute="topMargin" constant="3" id="ZAc-fD-4FL"/>
-                                            </constraints>
-                                            <variation key="default">
-                                                <mask key="subviews">
-                                                    <exclude reference="Oyg-RL-Bvq"/>
-                                                </mask>
-                                                <mask key="constraints">
-                                                    <exclude reference="Svj-CD-pkz"/>
-                                                    <exclude reference="ZAc-fD-4FL"/>
-                                                </mask>
-                                            </variation>
-                                            <variation key="heightClass=regular-widthClass=compact">
-                                                <mask key="subviews">
-                                                    <include reference="Oyg-RL-Bvq"/>
-                                                </mask>
-                                                <mask key="constraints">
-                                                    <include reference="Svj-CD-pkz"/>
-                                                    <include reference="ZAc-fD-4FL"/>
-                                                </mask>
-                                            </variation>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
                                     <tableViewCell contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" rowHeight="118" id="eX8-mv-LQH">
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="eX8-mv-LQH" id="wQe-QS-BRw">
@@ -3158,8 +3122,7 @@
                                                     <exclude reference="b2V-99-W9I"/>
                                                 </mask>
                                             </variation>
-                                            <variation key="heightClass=regular-widthClass=compact" misplaced="YES">
-                                                <rect key="frame" x="150" y="11" width="42" height="21"/>
+                                            <variation key="heightClass=regular-widthClass=compact">
                                                 <mask key="constraints">
                                                     <include reference="b2V-99-W9I"/>
                                                 </mask>

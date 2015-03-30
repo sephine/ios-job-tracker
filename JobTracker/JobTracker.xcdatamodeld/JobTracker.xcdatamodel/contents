@@ -7,6 +7,7 @@
     </entity>
     <entity name="JobBasic" representedClassName="JobTracker.JobBasic" syncable="YES">
         <attribute name="company" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="stage" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="application" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobApplication" inverseName="basic" inverseEntity="JobApplication" syncable="YES"/>
@@ -60,7 +61,7 @@
     </entity>
     <elements>
         <element name="JobApplication" positionX="-45" positionY="72" width="128" height="88"/>
-        <element name="JobBasic" positionX="-54" positionY="-9" width="128" height="193"/>
+        <element name="JobBasic" positionX="-54" positionY="-9" width="128" height="210"/>
         <element name="JobContact" positionX="-45" positionY="81" width="128" height="118"/>
         <element name="JobDetail" positionX="-36" positionY="27" width="128" height="148"/>
         <element name="JobInterview" positionX="-45" positionY="99" width="128" height="148"/>

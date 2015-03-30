@@ -62,11 +62,14 @@ class EditRejectViewController: UITableViewController {
             managedContext.insertObject(rejected)
             loadedBasic.rejected = rejected
             rejected.basic = loadedBasic
-            rejected.dateRejected = NSDate()
+            
+            let calendar = NSCalendar.currentCalendar()
+            let startOfToday = calendar.startOfDayForDate(NSDate())
+            rejected.dateRejected = startOfToday
+            let i = rejected.dateRejected
         }
         
         rejected.notes = notesView.text
-        loadedBasic.updateStageToFurthestStageReached()
         
         var error: NSError?
         if !managedContext.save(&error) {

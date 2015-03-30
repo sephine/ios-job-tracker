@@ -155,8 +155,6 @@ class EditOfferViewController: UITableViewController {
         offer.dateReceived = Common.standardDateFormatter.dateFromString(dateReceivedBox.text!)!
         offer.salary = salary
         
-        loadedBasic.updateStageToFurthestStageReached()
-        
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
@@ -166,7 +164,6 @@ class EditOfferViewController: UITableViewController {
     func deleteOffer() {
         if let offer = loadedBasic.offer {
             loadedBasic.offer = nil
-            loadedBasic.updateStageToFurthestStageReached()
             
             var error: NSError?
             if !Common.managedContext.save(&error) {

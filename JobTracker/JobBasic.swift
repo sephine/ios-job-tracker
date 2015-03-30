@@ -14,6 +14,7 @@ class JobBasic: NSManagedObject {
     @NSManaged var company: String
     @NSManaged var title: String
     @NSManaged var stage: NSNumber
+    @NSManaged var date: NSDate
     @NSManaged var details: JobDetail
     @NSManaged var contacts: NSSet
     @NSManaged var location: JobLocation
@@ -21,6 +22,10 @@ class JobBasic: NSManagedObject {
     @NSManaged var interviews: NSSet
     @NSManaged var offer: JobOffer?
     @NSManaged var rejected: JobRejected?
+    
+    var inPast: Bool {
+        return date.timeIntervalSinceNow < 0.0
+    }
     
     var orderedInterviews: [JobInterview] {
         let sortDescriptor = NSSortDescriptor(key: "starts", ascending: true)
@@ -53,30 +58,8 @@ class JobBasic: NSManagedObject {
         })
         return sortedArray as [JobContact]
     }
-    
-    //used to get the correct current stage after deletion for example. Will still need to be saved.
-    func updateStageToFurthestStageReached() {
-        if rejected != nil {
-            stage = Stage.Rejected.rawValue
-        } else if offer != nil {
-            stage = Stage.Offer.rawValue
-        } else if interviews.count != 0 {
-            var allComplete = true
-            for interview in interviews {
-                if !(interview as JobInterview).completed {
-                    allComplete = false
-                    break
-                }
-            }
-            if allComplete {
-                stage = Stage.PostInterview.rawValue
-            } else {
-                stage = Stage.PreInterview.rawValue
-            }
-        } else if application != nil {
-            stage = Stage.Applied.rawValue
-        } else {
-            stage = Stage.Potential.rawValue
-        }
-    }
 }
+
+//TODO cope with future core date model changes
+
+
