@@ -14,7 +14,7 @@ enum SortType: Int {
     case Stage = 0, Date
 }
 
-class JobListViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate {
+class JobListViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, CollapsableSectionHeaderViewDelegate {
     
     @IBOutlet weak var sortControl: UISegmentedControl!
     
@@ -23,22 +23,32 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     var dateFRC: NSFetchedResultsController!
     var searchFRC: NSFetchedResultsController!
     
+    var stageSectionsExpanded: [Bool]!
+    var dateSectionsExpanded: [Bool]!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         //accessing the shared instance ensures that the class is initiated and so observes saves.
         CoreDataObserver.sharedInstance
         
+        setUpArraysOfExpandedSections()
+        
         setUpStageFetchedResultsController()
         setUpDateFetchedResultsController()
         setUpSearchFetchedResultsController()
-        checkForPassedInterviewsAndUpdateStages()
         
         self.tableView.rowHeight = 60.0
         self.searchDisplayController!.searchResultsTableView.rowHeight = 60.0
         
         //adding an empty footer ensures that the table view doesn't show empty rows
         self.searchDisplayController!.searchResultsTableView.tableFooterView = UIView(frame: CGRectZero)
+        
+        let sectionHeaderNib = UINib(nibName: "CollapsableSectionHeaderView", bundle: nil)
+        tableView.registerNib(sectionHeaderNib, forHeaderFooterViewReuseIdentifier: "collapsableSectionHeaderView")
+        
+        tableView.reloadData()
+        checkForPassedInterviewsAndUpdateStages()
     }
 
     override func didReceiveMemoryWarning() {
@@ -48,6 +58,15 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
 
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+    }
+    
+    func setUpArraysOfExpandedSections() {
+        //initially all sections are expanded
+        stageSectionsExpanded = []
+        for stage in Stage.allValues {
+            stageSectionsExpanded.append(true)
+        }
+        dateSectionsExpanded = [true, true]
     }
     
     func setUpStageFetchedResultsController() {
@@ -69,13 +88,13 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     func setUpDateFetchedResultsController() {
         let fetchRequest = NSFetchRequest(entityName: "JobBasic")
-        let sectionSortDescriptor = NSSortDescriptor(key: "date", ascending: false)
+        let sectionSortDescriptor = NSSortDescriptor(key: "date", ascending: true)
         let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
         
         let sortDescriptors = [sectionSortDescriptor, companySortDescriptor]
         fetchRequest.sortDescriptors = sortDescriptors
         
-        dateFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: "inPast", cacheName: "inPast")
+        dateFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: "inFuture", cacheName: "inFuture")
         dateFRC.delegate = self
         
         var error: NSError?
@@ -185,8 +204,28 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         return currentFRC.sections!.count
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let currentFRC = frcForTableView(tableView)
+        if currentFRC == searchFRC {
+            return super.tableView(tableView, viewForHeaderInSection: section)
+        }
+            
+        let headerView = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("collapsableSectionHeaderView") as CollapsableSectionHeaderView
+        headerView.section = section
+        headerView.delegate = self
+        headerView.titleLabel.text = getHeaderTitle(currentFRC: currentFRC, section: section).uppercaseString
+        
+        let sectionExpanded = isSectionExpanded(section, controller: currentFRC)
+        if sectionExpanded {
+            headerView.arrowLabel.text = "\u{25BC}"//black arrow pointing down
+        } else {
+            headerView.arrowLabel.text = "\u{25B6}\u{FE0E}"//black arrow pointing right
+        }
+        
+        return headerView
+    }
+    
+    func getHeaderTitle(#currentFRC: NSFetchedResultsController, section: Int) -> String {
         let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
         if currentFRC == stageFRC {
             let sectionNumber = sectionInfo.name!.toInt()!
@@ -195,17 +234,57 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         } else if currentFRC == dateFRC {
             let sectionNumber = sectionInfo.name!.toInt()!
             if sectionNumber == 0 {
-                return "Future"
+                return "Past"
             }
-            return "Past"
+            return "Future"
         }
-        return nil
+        return ""
+    }
+    
+    func isSectionExpanded(section: Int, controller: NSFetchedResultsController) -> Bool {
+        if controller == searchFRC {
+            return true
+        } else if controller == stageFRC {
+            return stageSectionsExpanded[section]
+        }
+        return dateSectionsExpanded[section]
+    }
+    
+    func sectionToggled(section: Int?) {
+        if section != nil {
+            //won't be called for search as it shows no sections.
+            if sortControl.selectedSegmentIndex == SortType.Stage.rawValue {
+                stageSectionsExpanded[section!] = !stageSectionsExpanded[section!]
+            } else {
+                dateSectionsExpanded[section!] = !dateSectionsExpanded[section!]
+            }
+        
+            tableView.beginUpdates()
+            let indexSet = NSIndexSet(index: section!)
+            tableView.reloadSections(indexSet, withRowAnimation: .Automatic)
+            tableView.endUpdates()
+        }
+    }
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let currentFRC = frcForTableView(tableView)
+        if currentFRC == searchFRC {
+            return super.tableView(tableView, heightForHeaderInSection: section)
+        }
+        if section == 0 {
+            return 55.5
+        }
+        return 38.0
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let currentFRC = frcForTableView(tableView)
-        let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
-        return sectionInfo.numberOfObjects
+        let sectionExpanded = isSectionExpanded(section, controller: currentFRC)
+        if sectionExpanded {
+            let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
+            return sectionInfo.numberOfObjects
+        }
+        return 0
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -317,14 +396,24 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
             let connectedTableView = tableViewForFRC(controller)
             switch type {
             case .Insert:
-                connectedTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
+                if isSectionExpanded(newIndexPath!.section, controller: controller) {
+                    connectedTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
+                }
             case .Delete:
-                connectedTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
+                if isSectionExpanded(indexPath!.section, controller: controller) {
+                    connectedTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
+                }
             case .Update:
-                configureCell(connectedTableView, cell: connectedTableView.cellForRowAtIndexPath(indexPath!)! as JobListResultCell, atIndexPath: indexPath!)
+                if isSectionExpanded(indexPath!.section, controller: controller) {
+                    configureCell(connectedTableView, cell: connectedTableView.cellForRowAtIndexPath(indexPath!)! as JobListResultCell, atIndexPath: indexPath!)
+                }
             case .Move:
-                connectedTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
-                connectedTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
+                if isSectionExpanded(indexPath!.section, controller: controller) {
+                    connectedTableView.deleteRowsAtIndexPaths([indexPath!], withRowAnimation: .Automatic)
+                }
+                if isSectionExpanded(newIndexPath!.section, controller: controller) {
+                    connectedTableView.insertRowsAtIndexPaths([newIndexPath!], withRowAnimation: .Automatic)
+                }
             }
         }
     }

@@ -35,6 +35,8 @@
 		B0568B3D1A98334400261B4F /* ShowResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0568B3C1A98334400261B4F /* ShowResultCell.swift */; };
 		B0568B491A9A7D1100261B4F /* EditApplicationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0568B481A9A7D1100261B4F /* EditApplicationViewController.swift */; };
 		B0568B4B1A9A83AB00261B4F /* JobApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0568B4A1A9A83AB00261B4F /* JobApplication.swift */; };
+		B07D22AA1ACA194B00CB6CB4 /* CollapsableSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07D22A91ACA194B00CB6CB4 /* CollapsableSectionHeaderView.swift */; };
+		B07D22AC1ACA26FE00CB6CB4 /* CollapsableSectionHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B07D22AB1ACA26FE00CB6CB4 /* CollapsableSectionHeaderView.xib */; };
 		B086D0761ABCD5F90007D94C /* CoreDataObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B086D0751ABCD5F90007D94C /* CoreDataObserver.swift */; };
 		B088D2581A8EFFDF00E8CB99 /* JobContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B088D2571A8EFFDF00E8CB99 /* JobContact.swift */; };
 		B088D25E1A8F32A100E8CB99 /* GoogleLocationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B088D25D1A8F32A100E8CB99 /* GoogleLocationSearch.swift */; };
@@ -94,6 +96,8 @@
 		B0568B3C1A98334400261B4F /* ShowResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowResultCell.swift; sourceTree = "<group>"; };
 		B0568B481A9A7D1100261B4F /* EditApplicationViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditApplicationViewController.swift; sourceTree = "<group>"; };
 		B0568B4A1A9A83AB00261B4F /* JobApplication.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobApplication.swift; sourceTree = "<group>"; };
+		B07D22A91ACA194B00CB6CB4 /* CollapsableSectionHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CollapsableSectionHeaderView.swift; sourceTree = "<group>"; };
+		B07D22AB1ACA26FE00CB6CB4 /* CollapsableSectionHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CollapsableSectionHeaderView.xib; sourceTree = "<group>"; };
 		B086D0751ABCD5F90007D94C /* CoreDataObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataObserver.swift; sourceTree = "<group>"; };
 		B088D24E1A8DC63000E8CB99 /* JobTracker-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JobTracker-Bridging-Header.h"; sourceTree = "<group>"; };
 		B088D2571A8EFFDF00E8CB99 /* JobContact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobContact.swift; sourceTree = "<group>"; };
@@ -224,6 +228,8 @@
 				B0BCAC1E1A97DABC0040CAE9 /* MapViewController.swift */,
 				B0B32D7E1A8D86E00039E6BC /* CompanyTableViewController.swift */,
 				B088D25F1A8F3DFC00E8CB99 /* LocationTableViewController.swift */,
+				B07D22A91ACA194B00CB6CB4 /* CollapsableSectionHeaderView.swift */,
+				B07D22AB1ACA26FE00CB6CB4 /* CollapsableSectionHeaderView.xib */,
 				B023B1801AA806780082C5B0 /* Custom Cells */,
 				B023B1821AA806CF0082C5B0 /* Core Data Types */,
 				B023B1831AA8072C0082C5B0 /* Helper Classes */,
@@ -354,6 +360,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B07D22AC1ACA26FE00CB6CB4 /* CollapsableSectionHeaderView.xib in Resources */,
 				B0F879661A8AED6F0082F3DF /* Main.storyboard in Resources */,
 				B04E91751ABA7663008A01E2 /* powered-by-google-on-white@2x.png in Resources */,
 				B04E91741ABA7663008A01E2 /* powered-by-google-on-white.png in Resources */,
@@ -430,6 +437,7 @@
 				B047E2851A8318E400475F31 /* JobListViewController.swift in Sources */,
 				B0065D621A9C277300B16E09 /* JobBasic.swift in Sources */,
 				B04C47551AAA7DB000C235B1 /* EditOfferViewController.swift in Sources */,
+				B07D22AA1ACA194B00CB6CB4 /* CollapsableSectionHeaderView.swift in Sources */,
 				B047E2831A8318E400475F31 /* JobTracker.xcdatamodeld in Sources */,
 				B023B17F1AA7FD9C0082C5B0 /* JobListResultCell.swift in Sources */,
 				B0B32D831A8D8EB70039E6BC /* CompanyResultCell.swift in Sources */,

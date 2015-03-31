@@ -160,7 +160,7 @@
                     </connections>
                 </searchDisplayController>
             </objects>
-            <point key="canvasLocation" x="1482" y="423.75"/>
+            <point key="canvasLocation" x="1482" y="411"/>
         </scene>
         <!--Web View Controller-->
         <scene sceneID="BsL-Qz-zwr">

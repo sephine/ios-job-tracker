@@ -35,9 +35,9 @@ class WebViewController: UIViewController, UIWebViewDelegate {
         let request = NSURLRequest(URL: url!)
         containedWebView.loadRequest(request)
         
-        backItem = UIBarButtonItem(title: "<", style: UIBarButtonItemStyle.Plain, target: self, action: "backSelected")
-        forwardItem = UIBarButtonItem(title: ">", style: UIBarButtonItemStyle.Plain, target: self, action: "forwardSelected")
-        let exitItem = UIBarButtonItem(title: "X", style: UIBarButtonItemStyle.Plain, target: self, action: "exitSelected")
+        backItem = UIBarButtonItem(title: "\u{3008}", style: UIBarButtonItemStyle.Plain, target: self, action: "backSelected")
+        forwardItem = UIBarButtonItem(title: "\u{3009}", style: UIBarButtonItemStyle.Plain, target: self, action: "forwardSelected")
+        let exitItem = UIBarButtonItem(title: "x", style: UIBarButtonItemStyle.Plain, target: self, action: "exitSelected")
         navigationBar.leftBarButtonItems = nil
         navigationBar.rightBarButtonItem = exitItem
         navigationBar.hidesBackButton = true

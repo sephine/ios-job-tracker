@@ -23,8 +23,8 @@ class JobBasic: NSManagedObject {
     @NSManaged var offer: JobOffer?
     @NSManaged var rejected: JobRejected?
     
-    var inPast: Bool {
-        return date.timeIntervalSinceNow < 0.0
+    var inFuture: Bool {
+        return date.timeIntervalSinceNow > 0.0
     }
     
     var orderedInterviews: [JobInterview] {
