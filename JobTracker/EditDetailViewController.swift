@@ -23,18 +23,21 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     @IBOutlet weak var dueDateBox: UITextField!
     @IBOutlet weak var notesView: UITextView!
     
-    let companyBoxTag = 100
-    let salaryBoxTag = 103
-    let locationBoxTag = 104
-    var companyJustCleared = false
-    var locationJustCleared = false
-    
     var loadedBasic: JobBasic?
-    var salary: NSNumber?
-    var glassdoorLink = ""
-    var locationLatitude: NSNumber?
-    var locationLongitude: NSNumber?
-    let datePickerView = UIDatePicker()
+    
+    private var salary: NSNumber?
+    private var glassdoorLink = ""
+    private var locationLatitude: NSNumber?
+    private var locationLongitude: NSNumber?
+    private let datePickerView = UIDatePicker()
+    
+    private let companyBoxTag = 100
+    private let salaryBoxTag = 103
+    private let locationBoxTag = 104
+    private var companyJustCleared = false
+    private var locationJustCleared = false
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,7 +54,34 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         }
     }
     
-    func setControlValuesToLoadedData() {
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "findCompany" {
+            let destination = segue.destinationViewController as CompanyTableViewController
+            destination.delegate = self
+        } else if segue.identifier == "findLocation" {
+            let destination = segue.destinationViewController as LocationTableViewController
+            destination.delegate = self
+        } else if segue.identifier == "showContacts" {
+            let destination = segue.destinationViewController as ShowContactsViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.destinationViewController is ShowDetailViewController {
+            let destination = segue.destinationViewController as ShowDetailViewController
+            destination.loadedBasic = loadedBasic
+        }
+    }
+    
+    //MARK:-
+    
+    private func setControlValuesToLoadedData() {
         let basic = loadedBasic!
         title = "Edit Job"
         companyBox.text = basic.company
@@ -80,14 +110,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         }
     }
     
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    override func viewWillAppear(animated: Bool) {
-        super.viewWillAppear(animated)
-    }
+    //MARK:- UITableViewDelegate
     
     //sets it up so that wherever in the cell they select the textbox starts editing.
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
@@ -108,6 +131,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             break
         }
     }
+    
+    //MARK:- UITextFieldDelegate
     
     func textFieldShouldClear(textField: UITextField) -> Bool {
         if textField.tag == companyBoxTag {
@@ -169,11 +194,15 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
     }
     
+    //MARK:- CompanySelectionDelegate
+    
     func companySelected(company: String, website: String, glassdoorLink: String) {
         companyBox.text = company
         websiteBox.text = website
         self.glassdoorLink = glassdoorLink
     }
+    
+    //MARK:- LocationSelectionDelegate
     
     func locationSelected(address: String) {
         locationBox.text = address
@@ -185,6 +214,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             locationLongitude = coordinates.longitude
         }
     }
+    
+    //MARK:- IBActions
     
     @IBAction func updateDate() {
         let date = datePickerView.date
@@ -205,7 +236,9 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         }
     }
     
-    func saveDetails() {
+    //MARK:- Core Data Changers
+    
+    private func saveDetails() {
         let managedContext = Common.managedContext
         var basic: JobBasic
         var details: JobDetail
@@ -255,22 +288,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
-        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "findCompany" {
-            let destination = segue.destinationViewController as CompanyTableViewController
-            destination.delegate = self
-        } else if segue.identifier == "findLocation" {
-            let destination = segue.destinationViewController as LocationTableViewController
-            destination.delegate = self
-        } else if segue.identifier == "showContacts" {
-            let destination = segue.destinationViewController as ShowContactsViewController
-            destination.loadedBasic = loadedBasic
-        } else if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
-            destination.loadedBasic = loadedBasic
         }
     }
 }

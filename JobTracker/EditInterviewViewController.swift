@@ -13,8 +13,6 @@ import EventKitUI
 
 class EditInterviewViewController: UITableViewController, UITextFieldDelegate, LocationSelectionDelegate, EventCreationDelegate {
 
-    
-
     @IBOutlet weak var addEventCell: ShowResultCell!
     @IBOutlet weak var titleBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
@@ -26,13 +24,15 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     var loadedBasic: JobBasic!
     var loadedInterview: JobInterview?
     
-    var locationLatitude: NSNumber?
-    var locationLongitude: NSNumber?
+    private var locationLatitude: NSNumber?
+    private var locationLongitude: NSNumber?
+    private var locationJustCleared = false
     
-    let startDatePickerView = UIDatePicker()
-    let endDatePickerView = UIDatePicker()
-    var locationJustCleared = false
-    var timeInterval: NSTimeInterval!
+    private let startDatePickerView = UIDatePicker()
+    private let endDatePickerView = UIDatePicker()
+    private var timeInterval: NSTimeInterval!
+    
+    //MARK:- UIViewController
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,14 +53,6 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         } else {
             title = "Edit Interview"
             setControlValuesToLocallySavedData()
-        }
-    }
-    
-    func accessRequestCompleted() {
-        if EventManager.sharedInstance.accessToCalendarGranted {
-            addEventCell.userInteractionEnabled = true
-            addEventCell.mainLabel.enabled = true
-            tableView.reloadData()
         }
     }
     
@@ -85,62 +77,27 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         self.navigationController?.toolbarHidden = true
     }
     
-    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        let accessGranted = EventManager.sharedInstance.accessToCalendarGranted
-        if section == 0 && !accessGranted {
-            return "Requires access to your calendar"
-        }
-        return nil
-    }
-    
-    //sets it up so that wherever in the cell they select the textbox starts editing.
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section == 0 {
-            createCalendarEvent()
-        } else if indexPath.section == 1 {
-            switch indexPath.row {
-            case 0:
-                titleBox.becomeFirstResponder()
-            case 2:
-                startsBox.becomeFirstResponder()
-            case 3:
-                endsBox.becomeFirstResponder()
-            case 4:
-                notesView.becomeFirstResponder()
-            default:
-                break
-            }
-        }
-    }
-
-    func textFieldShouldClear(textField: UITextField) -> Bool {
-        locationJustCleared = true
-        locationLatitude = nil
-        locationLongitude = nil
-        return true
-    }
-    
-    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
-        if locationJustCleared {
-            locationJustCleared = false
-        } else {
-            performSegueWithIdentifier("findLocation", sender: self)
-        }
-        return false
-    }
-
-    func locationSelected(address: String) {
-        locationBox.text = address
-    }
-    
-    func coordinatesCalculated(coordinates: CLLocationCoordinate2D) {
-        if !locationBox.text.isEmpty {
-            locationLatitude = coordinates.latitude
-            locationLongitude = coordinates.longitude
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "findLocation" {
+            let destination = segue.destinationViewController as LocationTableViewController
+            destination.delegate = self
+        } else if segue.destinationViewController is ShowDetailViewController {
+            let destination = segue.destinationViewController as ShowDetailViewController
+            destination.loadedBasic = loadedBasic
         }
     }
     
-    func setControlValuesToDefaults() {
+    //MARK:-
+    
+    func accessRequestCompleted() {
+        if EventManager.sharedInstance.accessToCalendarGranted {
+            addEventCell.userInteractionEnabled = true
+            addEventCell.mainLabel.enabled = true
+            tableView.reloadData()
+        }
+    }
+    
+    private func setControlValuesToDefaults() {
         //get today's date and the last complete hour.
         let today = NSDate()
         let calendar = NSCalendar.currentCalendar()
@@ -161,7 +118,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         locationLongitude = loadedBasic.location.longitude
     }
     
-    func setControlValuesToLocallySavedData() {
+    private func setControlValuesToLocallySavedData() {
         titleBox.text = loadedInterview!.title
         locationBox.text = loadedInterview!.location.address
         locationLatitude = loadedInterview!.location.latitude
@@ -180,7 +137,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         notesView.text = loadedInterview!.notes
     }
     
-    func setUpDatePickers() {
+    private func setUpDatePickers() {
         startDatePickerView.datePickerMode = UIDatePickerMode.DateAndTime
         startDatePickerView.addTarget(self, action: "updateStartDate", forControlEvents: UIControlEvents.ValueChanged)
         startDatePickerView.minuteInterval = 5
@@ -191,8 +148,8 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         endDatePickerView.minuteInterval = 5
         endsBox.inputView = endDatePickerView
     }
-
-    func updateStartDate() {
+    
+    private func updateStartDate() {
         let date = startDatePickerView.date
         startsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(date)
         
@@ -201,17 +158,51 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         updateEndDate()
     }
     
-    func updateEndDate() {
+    private func updateEndDate() {
         let date = endDatePickerView.date
         endsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(date)
         
         //work out difference between start and end date.
         timeInterval = endDatePickerView.date.timeIntervalSinceDate(startDatePickerView.date)
         
-        //TODO why is box becoming center aligned?
+        //TODO: why is box becoming center aligned?
     }
     
-    func createCalendarEvent() {
+    //MARK:- UITableViewDataSource
+    
+    override func tableView(tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        let accessGranted = EventManager.sharedInstance.accessToCalendarGranted
+        if section == 0 && !accessGranted {
+            return "Requires access to your calendar"
+        }
+        return nil
+    }
+    
+    //MARK:- UITableViewDelegate
+    
+    //sets it up so that wherever in the cell they select the textbox starts editing.
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0 {
+            createCalendarEvent()
+        } else if indexPath.section == 1 {
+            switch indexPath.row {
+            case 0:
+                titleBox.becomeFirstResponder()
+            case 2:
+                startsBox.becomeFirstResponder()
+            case 3:
+                endsBox.becomeFirstResponder()
+            case 4:
+                notesView.becomeFirstResponder()
+            default:
+                break
+            }
+        }
+    }
+    
+    //MARK:- 
+    
+    private func createCalendarEvent() {
         let store = EventManager.sharedInstance.store
         let event = EKEvent(eventStore: store)
         event.calendar = store.defaultCalendarForNewEvents
@@ -225,11 +216,46 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         EventManager.sharedInstance.createEventInEventEditVC(event, viewController: self)
     }
     
+    //MARK:- UITextFieldDelegate
+
+    func textFieldShouldClear(textField: UITextField) -> Bool {
+        locationJustCleared = true
+        locationLatitude = nil
+        locationLongitude = nil
+        return true
+    }
+    
+    func textFieldShouldBeginEditing(textField: UITextField) -> Bool {
+        if locationJustCleared {
+            locationJustCleared = false
+        } else {
+            performSegueWithIdentifier("findLocation", sender: self)
+        }
+        return false
+    }
+    
+    //MARK:- LocationSelectionDelegate
+
+    func locationSelected(address: String) {
+        locationBox.text = address
+    }
+    
+    func coordinatesCalculated(coordinates: CLLocationCoordinate2D) {
+        if !locationBox.text.isEmpty {
+            locationLatitude = coordinates.latitude
+            locationLongitude = coordinates.longitude
+        }
+    }
+    
+    //MARK:- EventCreationDelegate
+    
     func eventCreated(#event: EKEvent, wasSaved: Bool) {
         if wasSaved {
             saveDetailsFollowingCreationOfEvent(event)
         }
     }
+    
+    //MARK:- IBActions
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
@@ -249,7 +275,9 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
-    func saveDetailsFollowingCreationOfEvent(event: EKEvent) {
+    //MARK:- Core Data Changers
+    
+    private func saveDetailsFollowingCreationOfEvent(event: EKEvent) {
         let managedContext = Common.managedContext
         let interview = createOrLoadInterview()
         
@@ -271,7 +299,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         navigationController?.popViewControllerAnimated(true)
     }
     
-    func saveDetailsFromControlData() {
+    private func saveDetailsFromControlData() {
         let managedContext = Common.managedContext
         let interview = createOrLoadInterview()
         
@@ -293,7 +321,21 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         navigationController?.popViewControllerAnimated(true)
     }
     
-    func createOrLoadInterview() -> JobInterview {
+    private func deleteInterview() {
+        if loadedInterview != nil {
+            let mutableInterviews = loadedBasic.interviews.mutableCopy() as NSMutableSet
+            mutableInterviews.removeObject(loadedInterview!)
+            loadedBasic.interviews = mutableInterviews
+            
+            var error: NSError?
+            if !Common.managedContext.save(&error) {
+                println("Could not save \(error), \(error?.userInfo)")
+            }
+            navigationController?.popViewControllerAnimated(true)
+        }
+    }
+    
+    private func createOrLoadInterview() -> JobInterview {
         var interview: JobInterview
         if loadedInterview != nil {
             interview = loadedInterview!
@@ -311,29 +353,5 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
             interview.location = interviewLocation
         }
         return interview
-    }
-    
-    func deleteInterview() {
-        if loadedInterview != nil {
-            let mutableInterviews = loadedBasic.interviews.mutableCopy() as NSMutableSet
-            mutableInterviews.removeObject(loadedInterview!)
-            loadedBasic.interviews = mutableInterviews
-            
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
-            }
-            navigationController?.popViewControllerAnimated(true)
-        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "findLocation" {
-            let destination = segue.destinationViewController as LocationTableViewController
-            destination.delegate = self
-        } else if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
-            destination.loadedBasic = loadedBasic
-        }
     }
 }

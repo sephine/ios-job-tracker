@@ -18,8 +18,10 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
     @IBOutlet weak var search: UISearchBar!
     var delegate: CompanySelectionDelegate!
     
-    var companies: [AnyObject]?
-    var connectionError = false
+    private var companies: [AnyObject]?
+    private var connectionError = false
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +40,8 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
         super.viewWillAppear(animated)
     }
     
+    //MARK:- UISearchBarDelegate
+    
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         if searchBar.text.isEmpty {
             companies = nil
@@ -48,11 +52,15 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
-    func updateWithCompanyResults(success: Bool, companyResults: [AnyObject]?) {
+    //MARK:-
+    
+    private func updateWithCompanyResults(success: Bool, companyResults: [AnyObject]?) {
         companies = companyResults
         connectionError = !success
         tableView.reloadData()
     }
+    
+    //MARK:- UITableViewDataSource
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 2
@@ -67,13 +75,6 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
             return "Manual Entry"
         }
         return "Search Results"
-    }
-    
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if indexPath.section == 0 || (companies != nil && indexPath.row == companies!.count) {
-            return 44
-        }
-        return 78
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -135,6 +136,15 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
         return cell
     }
     
+    //MARK:- UITableViewDelegate
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        if indexPath.section == 0 || (companies != nil && indexPath.row == companies!.count) {
+            return 44
+        }
+        return 78
+    }
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 {
             let cell = tableView.cellForRowAtIndexPath(indexPath)
@@ -153,10 +163,12 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
+    //MARK:- IBActions
+    
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
     
-    //TODO powered by glassdoor on search results
-    //TODO attribution in About page
+    //TODO: powered by glassdoor on search results
+    //TODO: attribution in About page
 }

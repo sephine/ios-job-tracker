@@ -14,10 +14,13 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     @IBOutlet weak var navigationBar: UINavigationItem!
     
     var website: String!
-    var backItem: UIBarButtonItem!
-    var forwardItem: UIBarButtonItem!
-    var firstLoad = true
-    var haveTriedGoogling = false
+    
+    private var backItem: UIBarButtonItem!
+    private var forwardItem: UIBarButtonItem!
+    private var firstLoad = true
+    private var haveTriedGoogling = false
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,6 +61,26 @@ class WebViewController: UIViewController, UIWebViewDelegate {
         navigationController?.navigationBar.titleTextAttributes = [NSFontAttributeName: UIFont.boldSystemFontOfSize(17)]
     }
     
+    //MARK:-
+    
+    private func backSelected() {
+        if containedWebView.canGoBack {
+            containedWebView.goBack()
+        }
+    }
+    
+    private func forwardSelected() {
+        if containedWebView.canGoForward {
+            containedWebView.goForward()
+        }
+    }
+    
+    private func exitSelected() {
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
+    //MARK:- UIWebViewDelegate
+    
     func webViewDidStartLoad(webView: UIWebView) {
         if firstLoad {
             navigationBar.title = "Loading..."
@@ -96,25 +119,10 @@ class WebViewController: UIViewController, UIWebViewDelegate {
             haveTriedGoogling = true
         } else {
             navigationBar.title = "Failed To Load Page"
-            //TODO do something with error?
+            //TODO: do something with error?
         }
     }
     
-    func backSelected() {
-        if containedWebView.canGoBack {
-            containedWebView.goBack()
-        }
-    }
     
-    func forwardSelected() {
-        if containedWebView.canGoForward {
-            containedWebView.goForward()
-        }
-    }
-    
-    func exitSelected() {
-        navigationController?.popViewControllerAnimated(true)
-    }
-    
-    //TODO change images
+    //TODO: change images
 }

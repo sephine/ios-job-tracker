@@ -16,7 +16,10 @@ class EditApplicationViewController: UITableViewController {
     @IBOutlet weak var notesView: UITextView!
     
     var loadedBasic: JobBasic!
-    let datePickerView = UIDatePicker()
+    
+    private let datePickerView = UIDatePicker()
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,6 +63,22 @@ class EditApplicationViewController: UITableViewController {
         self.navigationController?.toolbarHidden = true
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.destinationViewController is ShowDetailViewController {
+            let destination = segue.destinationViewController as ShowDetailViewController
+            destination.loadedBasic = loadedBasic
+        }
+    }
+    
+    //MARK:-
+    
+    private func updateDate() {
+        let date = datePickerView.date
+        dateSentBox.text = Common.standardDateFormatter.stringFromDate(date)
+    }
+
+    //MARK:- UITableViewDelegate
+    
     //sets it up so that wherever in the cell they select the textbox starts editing.
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         switch indexPath.row {
@@ -75,10 +94,7 @@ class EditApplicationViewController: UITableViewController {
         }
     }
     
-    func updateDate() {
-        let date = datePickerView.date
-        dateSentBox.text = Common.standardDateFormatter.stringFromDate(date)
-    }
+    //MARK:- IBActions
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
@@ -99,7 +115,9 @@ class EditApplicationViewController: UITableViewController {
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
-    func saveDetails() {
+    //MARK:- Core Data Changers
+    
+    private func saveDetails() {
         let managedContext = Common.managedContext
         var application: JobApplication
         if loadedBasic.application != nil {
@@ -120,22 +138,15 @@ class EditApplicationViewController: UITableViewController {
         }
     }
     
-    func deleteApplication() {
+    private func deleteApplication() {
         if let application = loadedBasic.application {
             loadedBasic.application = nil
-
+            
             var error: NSError?
             if !Common.managedContext.save(&error) {
                 println("Could not save \(error), \(error?.userInfo)")
             }
             navigationController?.popViewControllerAnimated(true)
-        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
-            destination.loadedBasic = loadedBasic
         }
     }
 }

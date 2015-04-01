@@ -20,6 +20,8 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
     var accessToAddressBookGranted = false
     var contactDelegate: ContactDelegate?
     
+    //MARK:- Singleton Class Creation
+    
     class var sharedInstance: ContactManager {
         struct Static {
             static let instance = ContactManager()
@@ -27,19 +29,13 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
         return Static.instance
     }
     
-    override private init() {
+    private override init() {
         super.init()
         addressBook = ABAddressBookCreateWithOptions(nil, nil).takeRetainedValue()
         setAccessToAddressBook()
     }
     
-    func setAccessToAddressBook() {
-        if ABAddressBookGetAuthorizationStatus() == ABAuthorizationStatus.Authorized {
-            accessToAddressBookGranted = true
-        } else {
-            accessToAddressBookGranted = false
-        }
-    }
+    //MARK:- Address Book Access
     
     func askForAddressBookAccessWithCompletion(completion: () -> Void) {
         if ABAddressBookGetAuthorizationStatus() == ABAuthorizationStatus.NotDetermined {
@@ -49,6 +45,16 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
             })
         }
     }
+    
+    private func setAccessToAddressBook() {
+        if ABAddressBookGetAuthorizationStatus() == ABAuthorizationStatus.Authorized {
+            accessToAddressBookGranted = true
+        } else {
+            accessToAddressBookGranted = false
+        }
+    }
+    
+    //MARK:- Check Stored Data Against Address Book
     
     //during the gap since the app was last used, records in the address book may have changed IDs or been deleted all together, if the stored id no longer seems correct we will search by name or company.
     func findAddressBookPersonMatchingNameOrCompanyAndUpdateID(#contact: JobContact) -> ABRecord? {
@@ -174,6 +180,8 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
         return person
     }
     
+    //MARK:- Display/Pick/Create Address Book Contact
+    
     func displayContactInPersonVC(contact: JobContact, viewController: UIViewController) {
         let controller = ABPersonViewController()
         let person: ABRecord? = ABAddressBookGetPersonWithRecordID(addressBook, contact.contactID.intValue).takeUnretainedValue()
@@ -186,15 +194,26 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
         }
     }
     
-    func personViewController(personViewController: ABPersonViewController!, shouldPerformDefaultActionForPerson person: ABRecord!, property: ABPropertyID, identifier: ABMultiValueIdentifier) -> Bool {
-        return true
-    }
-    
     func pickPersonInPeoplePickerVC(viewController: UIViewController) {
         let controller = ABPeoplePickerNavigationController()
         controller.peoplePickerDelegate = self
         viewController.presentViewController(controller, animated: true, completion: nil)
     }
+    
+    func createPersonInNewPersonVC(viewController: UIViewController) {
+        let controller = ABNewPersonViewController()
+        controller.newPersonViewDelegate = self
+        let newNavController = UINavigationController(rootViewController: controller)
+        viewController.presentViewController(newNavController, animated: true, completion: nil)
+    }
+    
+    //MARK:- ABPersonViewControllerDelegate
+    
+    func personViewController(personViewController: ABPersonViewController!, shouldPerformDefaultActionForPerson person: ABRecord!, property: ABPropertyID, identifier: ABMultiValueIdentifier) -> Bool {
+        return true
+    }
+    
+    //MARK:- ABPeoplePickerNavigationControllerDelegate
     
     func peoplePickerNavigationControllerDidCancel(peoplePicker: ABPeoplePickerNavigationController!) {
         peoplePicker.dismissViewControllerAnimated(true, completion: nil)
@@ -210,12 +229,7 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
         contactDelegate?.personSelected(person)
     }
     
-    func createPersonInNewPersonVC(viewController: UIViewController) {
-        let controller = ABNewPersonViewController()
-        controller.newPersonViewDelegate = self
-        let newNavController = UINavigationController(rootViewController: controller)
-        viewController.presentViewController(newNavController, animated: true, completion: nil)
-    }
+    //MARK:- ABNewPersonViewControllerDelegate
     
     func newPersonViewController(newPersonView: ABNewPersonViewController!, didCompleteWithNewPerson person: ABRecord!) {
         newPersonView.dismissViewControllerAnimated(true, completion: nil)

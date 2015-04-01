@@ -13,8 +13,11 @@ import CoreData
 class ShowContactsViewController: UITableViewController, ContactDelegate {
     
     var loadedBasic: JobBasic!
-    var contacts: [(contact: JobContact, person: ABRecord?, doubleHeight: Bool)] = []
-    var reloadRequired = false
+    
+    private var contacts: [(contact: JobContact, person: ABRecord?, doubleHeight: Bool)] = []
+    private var reloadRequired = false
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,11 +30,6 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
             contacts.append(contact: contact, person: nil, doubleHeight: false)
         }
         updateContactIDsAndCheckIfTheyShouldBeEnabled()
-    }
-    
-    func accessRequestCompleted() {
-        //reload tableview to make sure add/select contact buttons are enabled as appropriate
-        tableView.reloadData()
     }
     
     override func didReceiveMemoryWarning() {
@@ -50,8 +48,15 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         }
     }
     
+    //MARK:-
+    
+    func accessRequestCompleted() {
+        //reload tableview to make sure add/select contact buttons are enabled as appropriate
+        tableView.reloadData()
+    }
+    
     //checks for changes in contact ids since the app was last opened.
-    func updateContactIDsAndCheckIfTheyShouldBeEnabled() {
+    private func updateContactIDsAndCheckIfTheyShouldBeEnabled() {
         let originalContacts = contacts
         contacts = []
         for contactTuple in originalContacts {
@@ -62,7 +67,7 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
     }
     
     //check for changes in contact data (e.g. name) following a contact being viewed.
-    func updateContactDataAndCheckIfTheyShouldBeEnabled() {
+    private func updateContactDataAndCheckIfTheyShouldBeEnabled() {
         let originalContacts = contacts
         contacts = []
         for contactTuple in originalContacts {
@@ -72,24 +77,7 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         }
     }
     
-    func doesPersonRequireDoubleHeightCell(#person: ABRecord?) -> Bool {
-        if person == nil {
-            return false
-        }
-        
-        let compositeName = ABRecordCopyCompositeName(person).takeRetainedValue() as String
-        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
-        if company != nil && compositeName == company! {
-            return false
-        }
-        
-        let jobTitle = ABRecordCopyValue(person, kABPersonJobTitleProperty)?.takeRetainedValue() as String?
-        let department = ABRecordCopyValue(person, kABPersonDepartmentProperty)?.takeRetainedValue() as String?
-        if jobTitle != nil || department != nil || company != nil {
-            return true
-        }
-        return false
-    }
+    //MARK:- UITableViewDataSource
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         if contacts.count == 0 {
@@ -120,18 +108,6 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         return contacts.count
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
-        if indexPath.section == 0 {
-            return 44
-        }
-        
-        let doubleHeight = contacts[indexPath.row].doubleHeight
-        if doubleHeight {
-            return 79
-        }
-        return 44
-    }
-    
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell: ShowResultCell
         if indexPath.section == 0 {
@@ -144,11 +120,11 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
                 cell = tableView.dequeueReusableCellWithIdentifier("showContactCell") as ShowResultCell
             }
         }
-
+        
         configureCell(cell, atIndexPath: indexPath)
         return cell
     }
-    
+
     override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
         if indexPath.section == 1 {
             return true
@@ -165,22 +141,9 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         }
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        if indexPath.section == 0 {
-            if indexPath.row == 0 {
-                addNewContactSelected()
-            } else {
-                addCurrentContactSelected()
-            }
-        } else {
-            if contacts[indexPath.row].person != nil {
-                let contact = contacts[indexPath.row].contact
-                displayContact(contact)
-            }
-        }
-    }
+    //MARK:-
     
-    func configureCell(cell: ShowResultCell, atIndexPath indexPath: NSIndexPath) {
+    private func configureCell(cell: ShowResultCell, atIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 {
             let accessGranted = ContactManager.sharedInstance.accessToAddressBookGranted
             cell.userInteractionEnabled = accessGranted
@@ -210,8 +173,8 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
             }
         }
     }
-    
-    func mainTextForCell(#contact: JobContact, person: ABRecord?) -> String {
+
+    private func mainTextForCell(#contact: JobContact, person: ABRecord?) -> String {
         if person != nil {
             return ABRecordCopyCompositeName(person).takeRetainedValue() as String
         } else {
@@ -230,7 +193,7 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         }
     }
     
-    func secondaryTextForCell(#contact: JobContact, person: ABRecord?) -> String {
+    private func secondaryTextForCell(#contact: JobContact, person: ABRecord?) -> String {
         if person == nil {
             return ""
         }
@@ -252,12 +215,26 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         return join(" - ", textArray)
     }
     
-    func displayContact(contact: JobContact) {
-        ContactManager.sharedInstance.displayContactInPersonVC(contact, viewController: self)
-        reloadRequired = true
+    private func doesPersonRequireDoubleHeightCell(#person: ABRecord?) -> Bool {
+        if person == nil {
+            return false
+        }
+        
+        let compositeName = ABRecordCopyCompositeName(person).takeRetainedValue() as String
+        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+        if company != nil && compositeName == company! {
+            return false
+        }
+        
+        let jobTitle = ABRecordCopyValue(person, kABPersonJobTitleProperty)?.takeRetainedValue() as String?
+        let department = ABRecordCopyValue(person, kABPersonDepartmentProperty)?.takeRetainedValue() as String?
+        if jobTitle != nil || department != nil || company != nil {
+            return true
+        }
+        return false
     }
     
-    func deleteContactAtIndex(indexPath: NSIndexPath) {
+    private func deleteContactAtIndex(indexPath: NSIndexPath) {
         contacts.removeAtIndex(indexPath.row)
         tableView.beginUpdates()
         tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
@@ -268,40 +245,61 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         tableView.endUpdates()
     }
     
-    func insertContact(contact: JobContact, person: ABRecord, indexPath: NSIndexPath) {
-        let doubleHeight = doesPersonRequireDoubleHeightCell(person: person)
-        contacts.insert((contact: contact, person: person, doubleHeight: doubleHeight), atIndex: indexPath.row)
-        tableView.beginUpdates()
-        if contacts.count == 1 {
-            let indexSet = NSIndexSet(index: 1)
-            tableView.insertSections(indexSet, withRowAnimation: .Automatic)
+    //MARK:- UITableViewDelegate
+    
+    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+        if indexPath.section == 0 {
+            return 44
         }
-        tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
-        tableView.endUpdates()
+        
+        let doubleHeight = contacts[indexPath.row].doubleHeight
+        if doubleHeight {
+            return 79
+        }
+        return 44
     }
     
-    //no longer used
-    func updateContactAtIndex(indexPath: NSIndexPath) {
-        tableView.beginUpdates()
-        configureCell(tableView.cellForRowAtIndexPath(indexPath)! as ShowResultCell, atIndexPath: indexPath)
-        tableView.endUpdates()
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        if indexPath.section == 0 {
+            if indexPath.row == 0 {
+                addNewContactSelected()
+            } else {
+                addCurrentContactSelected()
+            }
+        } else {
+            if contacts[indexPath.row].person != nil {
+                let contact = contacts[indexPath.row].contact
+                displayContact(contact)
+            }
+        }
     }
     
-    func addNewContactSelected() {
+    //MARK:-
+    
+    private func displayContact(contact: JobContact) {
+        ContactManager.sharedInstance.displayContactInPersonVC(contact, viewController: self)
+        reloadRequired = true
+    }
+    
+    private func addNewContactSelected() {
         ContactManager.sharedInstance.contactDelegate = self
         ContactManager.sharedInstance.createPersonInNewPersonVC(self)
     }
     
-    func addCurrentContactSelected() {
+    private func addCurrentContactSelected() {
         ContactManager.sharedInstance.contactDelegate = self
         ContactManager.sharedInstance.pickPersonInPeoplePickerVC(self)
     }
+
+    //MARK:- ContactDelegate
     
     func personSelected(person: ABRecord) {
         createJobContactFromPerson(person)
     }
     
-    func createJobContactFromPerson(person: ABRecord) {
+    //MARK:-
+    
+    private func createJobContactFromPerson(person: ABRecord) {
         let personFirst = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
         let personLast = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as String?
         let personCompany = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
@@ -366,7 +364,21 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         saveData()
     }
     
-    func saveData() {
+    private func insertContact(contact: JobContact, person: ABRecord, indexPath: NSIndexPath) {
+        let doubleHeight = doesPersonRequireDoubleHeightCell(person: person)
+        contacts.insert((contact: contact, person: person, doubleHeight: doubleHeight), atIndex: indexPath.row)
+        tableView.beginUpdates()
+        if contacts.count == 1 {
+            let indexSet = NSIndexSet(index: 1)
+            tableView.insertSections(indexSet, withRowAnimation: .Automatic)
+        }
+        tableView.insertRowsAtIndexPaths([indexPath], withRowAnimation: .Automatic)
+        tableView.endUpdates()
+    }
+
+    //MARK:- Core Data Changers
+    
+    private func saveData() {
         var error: NSError?
         if !Common.managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")

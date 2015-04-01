@@ -14,17 +14,19 @@ enum SortType: Int {
     case Stage = 0, Date
 }
 
-class JobListViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchBarDelegate, UISearchDisplayDelegate, CollapsableSectionHeaderViewDelegate {
+class JobListViewController: UITableViewController, NSFetchedResultsControllerDelegate, UISearchDisplayDelegate, CollapsableSectionHeaderViewDelegate {
     
     @IBOutlet weak var sortControl: UISegmentedControl!
     
     //there are two FRCs for when the standard tableview is sorted by stage or date and a third one for the seperate search tableview. Only one will be used to display data at a time.
-    var stageFRC: NSFetchedResultsController!
-    var dateFRC: NSFetchedResultsController!
-    var searchFRC: NSFetchedResultsController!
+    private var stageFRC: NSFetchedResultsController!
+    private var dateFRC: NSFetchedResultsController!
+    private var searchFRC: NSFetchedResultsController!
     
-    var stageSectionsExpanded: [Bool]!
-    var dateSectionsExpanded: [Bool]!
+    private var stageSectionsExpanded: [Bool]!
+    private var dateSectionsExpanded: [Bool]!
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -60,7 +62,17 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         super.viewWillAppear(animated)
     }
     
-    func setUpArraysOfExpandedSections() {
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showJob" {
+            let job = sender as JobBasic
+            let showJobDestination = segue.destinationViewController as ShowDetailViewController
+            showJobDestination.loadedBasic = job
+        }
+    }
+    
+    //MARK:-
+    
+    private func setUpArraysOfExpandedSections() {
         //initially all sections are expanded
         stageSectionsExpanded = []
         for stage in Stage.allValues {
@@ -69,7 +81,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         dateSectionsExpanded = [true, true]
     }
     
-    func setUpStageFetchedResultsController() {
+    private func setUpStageFetchedResultsController() {
         let fetchRequest = NSFetchRequest(entityName: "JobBasic")
         let sectionSortDescriptor = NSSortDescriptor(key: "stage", ascending: true)
         let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
@@ -86,7 +98,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
     
-    func setUpDateFetchedResultsController() {
+    private func setUpDateFetchedResultsController() {
         let fetchRequest = NSFetchRequest(entityName: "JobBasic")
         let sectionSortDescriptor = NSSortDescriptor(key: "date", ascending: true)
         let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
@@ -103,7 +115,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
     
-    func setUpSearchFetchedResultsController() {
+    private func setUpSearchFetchedResultsController() {
         let fetchRequest = NSFetchRequest(entityName: "JobBasic")
         let companySortDescriptor = NSSortDescriptor(key: "company", ascending: true, selector: "caseInsensitiveCompare:")
         let sortDescriptors = [companySortDescriptor]
@@ -118,9 +130,70 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
     
+    //MARK:- IBActions
+    
     @IBAction func sectionTypeChanged(sender: UISegmentedControl) {
         self.tableView.reloadData()
     }
+    
+    //MARK:- FRC Management
+    //based on the table view being shown and the sort selected different FRCs must be used. Only updates for the currently in use FRC should be made.
+    
+    private func frcForTableView(tableView: UITableView) -> NSFetchedResultsController {
+        if tableView == self.searchDisplayController!.searchResultsTableView {
+            return searchFRC
+        } else if sortControl.selectedSegmentIndex == SortType.Stage.rawValue {
+            return stageFRC
+        }
+        return dateFRC
+    }
+    
+    private func tableViewForFRC(controller: NSFetchedResultsController) -> UITableView {
+        if controller == searchFRC {
+            return self.searchDisplayController!.searchResultsTableView
+        }
+        return self.tableView
+    }
+    
+    private func shouldUpdateTableViewWithChangesFromController(controller: NSFetchedResultsController) -> Bool {
+        if searchDisplayController!.active {
+            return controller == searchFRC
+        } else if sortControl.selectedSegmentIndex == SortType.Stage.rawValue {
+            return controller == stageFRC
+        }
+        return controller == dateFRC
+    }
+    
+    //MARK:- Collapsable Sections (
+    
+    private func isSectionExpanded(section: Int, controller: NSFetchedResultsController) -> Bool {
+        if controller == searchFRC {
+            return true
+        } else if controller == stageFRC {
+            return stageSectionsExpanded[section]
+        }
+        return dateSectionsExpanded[section]
+    }
+    
+    //MARK:- CollapsableSectionHeaderViewDelegate
+    
+    func sectionToggled(section: Int?) {
+        if section != nil {
+            //won't be called for search as it shows no sections.
+            if sortControl.selectedSegmentIndex == SortType.Stage.rawValue {
+                stageSectionsExpanded[section!] = !stageSectionsExpanded[section!]
+            } else {
+                dateSectionsExpanded[section!] = !dateSectionsExpanded[section!]
+            }
+            
+            tableView.beginUpdates()
+            let indexSet = NSIndexSet(index: section!)
+            tableView.reloadSections(indexSet, withRowAnimation: .Automatic)
+            tableView.endUpdates()
+        }
+    }
+    
+    //MARK:- UISearchDisplayDelegate
     
     func searchDisplayController(controller: UISearchDisplayController, shouldReloadTableForSearchString searchString: String!) -> Bool {
         filterResultsForSearchText(searchString)
@@ -132,149 +205,22 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         self.tableView.reloadData()
     }
     
-    func frcForTableView(tableView: UITableView) -> NSFetchedResultsController {
-        if tableView == self.searchDisplayController!.searchResultsTableView {
-            return searchFRC
-        } else if sortControl.selectedSegmentIndex == SortType.Stage.rawValue {
-            return stageFRC
-        }
-        return dateFRC
-    }
+    //MARK:-
     
-    func tableViewForFRC(controller: NSFetchedResultsController) -> UITableView {
-        if controller == searchFRC {
-            return self.searchDisplayController!.searchResultsTableView
-        }
-        return self.tableView
-    }
-    
-    //we only want updates to a tableview to be made when they come from the controller that is currently controlling the data displayed.
-    func shouldUpdateTableViewWithChangesFromController(controller: NSFetchedResultsController) -> Bool {
-        if searchDisplayController!.active {
-            return controller == searchFRC
-        } else if sortControl.selectedSegmentIndex == SortType.Stage.rawValue {
-            return controller == stageFRC
-        }
-        return controller == dateFRC
-    }
-    
-    func filterResultsForSearchText(searchText: String) {
+    private func filterResultsForSearchText(searchText: String) {
         searchFRC.fetchRequest.predicate = NSPredicate(format: "company BEGINSWITH[cd] %@", searchText)
-
+        
         var error: NSError?
         if !searchFRC.performFetch(&error) {
             NSLog("Could not fetch results \(error), \(error?.userInfo)")
         }
     }
     
-    //check if any of the stages have moved from PreInteview to PostInterview since last opened.
-    func checkForPassedInterviewsAndUpdateStages() {
-        let sections = stageFRC.sections!
-        for section in sections {
-            let section = section as NSFetchedResultsSectionInfo
-            let stageNumber = section.name!.toInt()!
-            let stage = Stage(rawValue: stageNumber)!
-            
-            if stage == .PreInterview {
-                for basic in section.objects {
-                    let basic = basic as JobBasic
-                    var allComplete = true
-                    for interview in basic.interviews {
-                        if !(interview as JobInterview).completed {
-                            allComplete = false
-                            break
-                        }
-                    }
-                    if allComplete {
-                        basic.stage = Stage.PostInterview.rawValue
-                    }
-                }
-                
-                var error: NSError?
-                if !Common.managedContext.save(&error) {
-                    println("Could not save \(error), \(error?.userInfo)")
-                }
-                return
-            }
-        }
-    }
+    //MARK:- UITableViewDataSource
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         let currentFRC = frcForTableView(tableView)
         return currentFRC.sections!.count
-    }
-    
-    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let currentFRC = frcForTableView(tableView)
-        if currentFRC == searchFRC {
-            return super.tableView(tableView, viewForHeaderInSection: section)
-        }
-            
-        let headerView = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("collapsableSectionHeaderView") as CollapsableSectionHeaderView
-        headerView.section = section
-        headerView.delegate = self
-        headerView.titleLabel.text = getHeaderTitle(currentFRC: currentFRC, section: section).uppercaseString
-        
-        let sectionExpanded = isSectionExpanded(section, controller: currentFRC)
-        if sectionExpanded {
-            headerView.arrowLabel.text = "\u{25BC}"//black arrow pointing down
-        } else {
-            headerView.arrowLabel.text = "\u{25B6}\u{FE0E}"//black arrow pointing right
-        }
-        
-        return headerView
-    }
-    
-    func getHeaderTitle(#currentFRC: NSFetchedResultsController, section: Int) -> String {
-        let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
-        if currentFRC == stageFRC {
-            let sectionNumber = sectionInfo.name!.toInt()!
-            let stage = Stage(rawValue: sectionNumber)!
-            return stage.title
-        } else if currentFRC == dateFRC {
-            let sectionNumber = sectionInfo.name!.toInt()!
-            if sectionNumber == 0 {
-                return "Past"
-            }
-            return "Future"
-        }
-        return ""
-    }
-    
-    func isSectionExpanded(section: Int, controller: NSFetchedResultsController) -> Bool {
-        if controller == searchFRC {
-            return true
-        } else if controller == stageFRC {
-            return stageSectionsExpanded[section]
-        }
-        return dateSectionsExpanded[section]
-    }
-    
-    func sectionToggled(section: Int?) {
-        if section != nil {
-            //won't be called for search as it shows no sections.
-            if sortControl.selectedSegmentIndex == SortType.Stage.rawValue {
-                stageSectionsExpanded[section!] = !stageSectionsExpanded[section!]
-            } else {
-                dateSectionsExpanded[section!] = !dateSectionsExpanded[section!]
-            }
-        
-            tableView.beginUpdates()
-            let indexSet = NSIndexSet(index: section!)
-            tableView.reloadSections(indexSet, withRowAnimation: .Automatic)
-            tableView.endUpdates()
-        }
-    }
-    
-    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        let currentFRC = frcForTableView(tableView)
-        if currentFRC == searchFRC {
-            return super.tableView(tableView, heightForHeaderInSection: section)
-        }
-        if section == 0 {
-            return 55.5
-        }
-        return 38.0
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -305,16 +251,12 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
     
-    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let currentFRC = frcForTableView(tableView)
-        let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
-        performSegueWithIdentifier("showJob", sender: job)
-    }
+    //MARK:-
     
-    func configureCell(tableView: UITableView, cell: JobListResultCell, atIndexPath indexPath: NSIndexPath) {
+    private func configureCell(tableView: UITableView, cell: JobListResultCell, atIndexPath indexPath: NSIndexPath) {
         let currentFRC = frcForTableView(tableView)
         let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
-
+        
         cell.companyLabel.text = job.company
         cell.positionLabel.text = job.title
         
@@ -359,7 +301,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         //TODO could get a library that displays dates like 5 days time, a month ago etc
     }
     
-    func isDateWithinAWeekOfToday(#date: NSDate) -> Bool {
+    private func isDateWithinAWeekOfToday(#date: NSDate) -> Bool {
         let today = NSDate()
         let calendar = NSCalendar.currentCalendar()
         
@@ -375,14 +317,66 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
         return false
     }
+
+    //MARK:- UITableViewDelegate
     
-    func deleteJob(job: JobBasic) {
-        Common.managedContext.deleteObject(job)
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+    override func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let currentFRC = frcForTableView(tableView)
+        if currentFRC == searchFRC {
+            return super.tableView(tableView, viewForHeaderInSection: section)
         }
+            
+        let headerView = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("collapsableSectionHeaderView") as CollapsableSectionHeaderView
+        headerView.section = section
+        headerView.delegate = self
+        headerView.titleLabel.text = getHeaderTitle(currentFRC: currentFRC, section: section).uppercaseString
+        
+        let sectionExpanded = isSectionExpanded(section, controller: currentFRC)
+        if sectionExpanded {
+            headerView.arrowLabel.text = "\u{25BC}"//black arrow pointing down
+        } else {
+            headerView.arrowLabel.text = "\u{25B6}\u{FE0E}"//black arrow pointing right
+        }
+        
+        return headerView
     }
+    
+    override func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        let currentFRC = frcForTableView(tableView)
+        if currentFRC == searchFRC {
+            return super.tableView(tableView, heightForHeaderInSection: section)
+        }
+        if section == 0 {
+            return 55.5
+        }
+        return 38.0
+    }
+    
+    override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let currentFRC = frcForTableView(tableView)
+        let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
+        performSegueWithIdentifier("showJob", sender: job)
+    }
+    
+    //MARK:-
+    
+    private func getHeaderTitle(#currentFRC: NSFetchedResultsController, section: Int) -> String {
+        let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
+        if currentFRC == stageFRC {
+            let sectionNumber = sectionInfo.name!.toInt()!
+            let stage = Stage(rawValue: sectionNumber)!
+            return stage.title
+        } else if currentFRC == dateFRC {
+            let sectionNumber = sectionInfo.name!.toInt()!
+            if sectionNumber == 0 {
+                return "Past"
+            }
+            return "Future"
+        }
+        return ""
+    }
+    
+    //MARK:- NSFetchedResultsControllerDelegate
     
     func controllerWillChangeContent(controller: NSFetchedResultsController) {
         if shouldUpdateTableViewWithChangesFromController(controller) {
@@ -441,11 +435,45 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showJob" {
-            let job = sender as JobBasic
-            let showJobDestination = segue.destinationViewController as ShowDetailViewController
-            showJobDestination.loadedBasic = job
+    //MARK:- Core Data Changers
+    
+    //check if any of the stages have moved from PreInteview to PostInterview since last opened.
+    private func checkForPassedInterviewsAndUpdateStages() {
+        let sections = stageFRC.sections!
+        for section in sections {
+            let section = section as NSFetchedResultsSectionInfo
+            let stageNumber = section.name!.toInt()!
+            let stage = Stage(rawValue: stageNumber)!
+            
+            if stage == .PreInterview {
+                for basic in section.objects {
+                    let basic = basic as JobBasic
+                    var allComplete = true
+                    for interview in basic.interviews {
+                        if !(interview as JobInterview).completed {
+                            allComplete = false
+                            break
+                        }
+                    }
+                    if allComplete {
+                        basic.stage = Stage.PostInterview.rawValue
+                    }
+                }
+                
+                var error: NSError?
+                if !Common.managedContext.save(&error) {
+                    println("Could not save \(error), \(error?.userInfo)")
+                }
+                return
+            }
+        }
+    }
+    
+    private func deleteJob(job: JobBasic) {
+        Common.managedContext.deleteObject(job)
+        var error: NSError?
+        if !Common.managedContext.save(&error) {
+            println("Could not save \(error), \(error?.userInfo)")
         }
     }
 }

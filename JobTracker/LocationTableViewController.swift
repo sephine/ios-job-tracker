@@ -19,8 +19,10 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     @IBOutlet weak var search: UISearchBar!
     var delegate: LocationSelectionDelegate!
     
-    var locations: [AnyObject]?
-    var connectionError = false
+    private var locations: [AnyObject]?
+    private var connectionError = false
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +41,8 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
         super.viewWillAppear(animated)
     }
     
+    //MARK:- UISearchBarDelegate
+    
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
         if searchBar.text.isEmpty {
             locations = nil
@@ -49,11 +53,15 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
-    func updateWithLocationResults(success: Bool, locationResults: [AnyObject]?) {
+    //MARK:-
+    
+    private func updateWithLocationResults(success: Bool, locationResults: [AnyObject]?) {
         locations = locationResults
         connectionError = !success
         tableView.reloadData()
     }
+    
+    //MARK:- UITableViewDataSource
     
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 2
@@ -120,6 +128,8 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
         return cell
     }
     
+    //MARK:- UITableViewDelegate
+    
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 || indexPath.row < locations!.count {
             let cell = tableView.cellForRowAtIndexPath(indexPath) as LocationResultCell
@@ -130,7 +140,9 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
-    func getPlacemark(address: String) {
+    //MARK:-
+    
+    private func getPlacemark(address: String) {
         let geocoder = CLGeocoder()
         geocoder.geocodeAddressString(address, completionHandler: {(results, error) -> Void in
             if error != nil {
@@ -144,20 +156,22 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
         })
     }
     
-    func fetchedPlacemarks(placemarks: [CLPlacemark]) {
+    private func fetchedPlacemarks(placemarks: [CLPlacemark]) {
         if placemarks.count > 0 {
             let bestPlacemark = placemarks[0]
             delegate.coordinatesCalculated(bestPlacemark.location.coordinate)
         }
     }
     
+    //MARK:- IBActions
+    
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
-    //TODO think about whether these automatically unwrapped optionals are safe!
+    //TODO: think about whether these automatically unwrapped optionals are safe!
     
-    //TODO can maybe have autocomplete back on for location search
+    //TODO: can maybe have autocomplete back on for location search
     
-    //TODO powered by google on search results
-    //TODO attribution in About page
+    //TODO: powered by google on search results
+    //TODO: attribution in About page
 }

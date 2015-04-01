@@ -29,6 +29,8 @@ class EventManager: NSObject, EKEventEditViewDelegate {
     private var viewController: UIViewController!
     private var creatingEvent = false
     
+    //MARK:- Singleton Class Creation
+    
     class var sharedInstance: EventManager {
         struct Static {
             static let instance = EventManager()
@@ -36,18 +38,12 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         return Static.instance
     }
     
-    override private init() {
+    private override init() {
         super.init()
         setAccessToCalendar()
     }
     
-    func setAccessToCalendar() {
-        if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.Authorized {
-            accessToCalendarGranted = true
-        } else {
-            accessToCalendarGranted = false
-        }
-    }
+    //MARK:- Calendar Access
     
     func askForCalendarAccessWithCompletion(completion: () -> Void) {
         if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.NotDetermined {
@@ -58,32 +54,20 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         }
     }
     
+    private func setAccessToCalendar() {
+        if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.Authorized {
+            accessToCalendarGranted = true
+        } else {
+            accessToCalendarGranted = false
+        }
+    }
+    
+    //MARK:- Create/Update/Load Calendar Events
+    
     func syncInterviewWithCalendarEvent(#interview: JobInterview) {
         if accessToCalendarGranted && !interview.eventID.isEmpty {
             let event = store.eventWithIdentifier(interview.eventID)
             updateInterviewToMatchEvent(event, interview: interview)
-        }
-    }
-    
-    private func updateInterviewToMatchEvent(event: EKEvent, interview: JobInterview) {
-        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
-        let managedContext = appDelegate.managedObjectContext!
-        
-        interview.title = event.title
-        interview.location.address = event.location
-        interview.location.latitude = nil
-        interview.location.longitude = nil
-        interview.starts = event.startDate
-        interview.ends = event.endDate
-        if event.hasNotes {
-            interview.notes = event.notes
-        } else {
-            interview.notes = ""
-        }
-        
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
         }
     }
     
@@ -113,6 +97,33 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         
         viewController.presentViewController(controller, animated: true, completion: nil)
     }
+    
+    //MARK:-
+    
+    private func updateInterviewToMatchEvent(event: EKEvent, interview: JobInterview) {
+        let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+        let managedContext = appDelegate.managedObjectContext!
+        
+        interview.title = event.title
+        interview.location.address = event.location
+        interview.location.latitude = nil
+        interview.location.longitude = nil
+        interview.starts = event.startDate
+        interview.ends = event.endDate
+        if event.hasNotes {
+            interview.notes = event.notes
+        } else {
+            interview.notes = ""
+        }
+        
+        var error: NSError?
+        if !managedContext.save(&error) {
+            println("Could not save \(error), \(error?.userInfo)")
+        }
+    }
+
+    
+    //MARK:- EKEventEditViewDelegate
     
     func eventEditViewController(controller: EKEventEditViewController!, didCompleteWithAction action: EKEventEditViewAction) {
         viewController.dismissViewControllerAnimated(true, completion: nil)

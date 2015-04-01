@@ -11,6 +11,8 @@ import CoreData
 
 class CoreDataObserver: NSObject {
     
+    //MARK:- Singleton Class Creation
+    
     class var sharedInstance: CoreDataObserver {
         struct Static {
             static let instance = CoreDataObserver()
@@ -23,6 +25,12 @@ class CoreDataObserver: NSObject {
         super.init()
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "notificationReceived:", name: NSManagedObjectContextWillSaveNotification, object: Common.managedContext)
     }
+    
+    deinit {
+        NSNotificationCenter.defaultCenter().removeObserver(self)
+    }
+    
+    //MARK:- Managing Changes In Core Data
     
     func notificationReceived(notification: NSNotification) {
         //if anything but a JobLocation is altered we will get the JobBasic from it and make sure that it has the correct stage and date.
@@ -107,9 +115,5 @@ class CoreDataObserver: NSObject {
         if newDate != jobBasic.date {
             jobBasic.date = newDate
         }
-    }
-    
-    deinit {
-        NSNotificationCenter.defaultCenter().removeObserver(self)
     }
 }

@@ -16,6 +16,8 @@ class EditRejectViewController: UITableViewController {
     
     var loadedBasic: JobBasic!
     
+    //MARK:- UIViewController
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -33,6 +35,15 @@ class EditRejectViewController: UITableViewController {
         super.viewWillAppear(animated)
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.destinationViewController is ShowDetailViewController {
+            let destination = segue.destinationViewController as ShowDetailViewController
+            destination.loadedBasic = loadedBasic
+        }
+    }
+    
+    //MARK:- UITableViewDelegate
+    
     //sets it up so that wherever in the cell they select the textbox starts editing.
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         switch indexPath.row {
@@ -43,6 +54,8 @@ class EditRejectViewController: UITableViewController {
         }
     }
     
+    //MARK:- IBActions
+    
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
     }
@@ -52,7 +65,9 @@ class EditRejectViewController: UITableViewController {
         navigationController?.popViewControllerAnimated(true)
     }
     
-    func saveDetails() {
+    //MARK:- Core Data Changers
+    
+    private func saveDetails() {
         let managedContext = Common.managedContext
         var rejected: JobRejected
         if loadedBasic.rejected != nil {
@@ -74,13 +89,6 @@ class EditRejectViewController: UITableViewController {
         var error: NSError?
         if !managedContext.save(&error) {
             println("Could not save \(error), \(error?.userInfo)")
-        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
-            destination.loadedBasic = loadedBasic
         }
     }
 }

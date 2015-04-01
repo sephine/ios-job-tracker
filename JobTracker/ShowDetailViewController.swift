@@ -25,12 +25,14 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     @IBOutlet weak var rejectOrRestoreButton: UIBarButtonItem!
     
     var loadedBasic: JobBasic!
-    var cellTypeArray: [(type: ShowCellType, interview: JobInterview?, website: String?)] = []
-    var sectionTypeArray: [ShowSectionType] = []
     
-    var stage: Stage {
+    private var cellTypeArray: [(type: ShowCellType, interview: JobInterview?, website: String?)] = []
+    private var sectionTypeArray: [ShowSectionType] = []
+    private var stage: Stage {
         return Stage(rawValue: loadedBasic.stage.integerValue)!
     }
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,14 +54,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         
         checkForUpdatedInterviewEvents()
-    }
-    
-    //some interviews might have changed from being scheduled to being completed.
-    func checkForUpdatedInterviewEvents() {
-        for interview in loadedBasic.interviews {
-            let interview = interview as JobInterview
-            EventManager.sharedInstance.syncInterviewWithCalendarEvent(interview: interview)
-        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -89,7 +83,52 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         self.navigationController?.toolbarHidden = true
     }
     
-    func reloadSectionTypeArray() {
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showWeb" {
+            let indexPath = sender as NSIndexPath
+            let website = cellTypeArray[indexPath.row].website
+            let destination = segue.destinationViewController as WebViewController
+            destination.website = website
+        } else if segue.identifier == "showMap" {
+            let destination = segue.destinationViewController as MapViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "showContacts" {
+            let destination = segue.destinationViewController as ShowContactsViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "editJob" {
+            let destination = segue.destinationViewController as EditDetailViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "editApplication" {
+            let destination = segue.destinationViewController as EditApplicationViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "editInterview" {
+            let destination = segue.destinationViewController as EditInterviewViewController
+            destination.loadedBasic = loadedBasic
+            if sender is NSIndexPath {
+                let indexPath = sender as NSIndexPath
+                let interview = loadedBasic.orderedInterviews[indexPath.row - 1]
+                destination.loadedInterview = interview
+            }
+        } else if segue.identifier == "editOffer" {
+            let destination = segue.destinationViewController as EditOfferViewController
+            destination.loadedBasic = loadedBasic
+        } else if segue.identifier == "editReject" {
+            let destination = segue.destinationViewController as EditRejectViewController
+            destination.loadedBasic = loadedBasic
+        }
+    }
+
+    //MARK:-
+    
+    //some interviews might have changed from being scheduled to being completed.
+    private func checkForUpdatedInterviewEvents() {
+        for interview in loadedBasic.interviews {
+            let interview = interview as JobInterview
+            EventManager.sharedInstance.syncInterviewWithCalendarEvent(interview: interview)
+        }
+    }
+    
+    private func reloadSectionTypeArray() {
         sectionTypeArray = []
         sectionTypeArray.append(.Basic)
         if stage == .Rejected {
@@ -111,7 +150,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    func reloadCellTypeArray() {
+    private func reloadCellTypeArray() {
         cellTypeArray = []
         cellTypeArray.append(type: .Company, interview: nil, website: nil)
         
@@ -140,6 +179,9 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             cellTypeArray.append(type: .Notes, interview: nil, website: nil)
         }
     }
+    
+    
+    //MARK:- UITableViewDataSource
     
     func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return sectionTypeArray.count
@@ -226,44 +268,9 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         }
     }
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        let sectionType = sectionTypeArray[indexPath.section]
-        switch sectionType {
-        case .Basic:
-            let selectedTuple = cellTypeArray[indexPath.row]
-            let website = selectedTuple.website
-            if website != nil && website != "" {
-                performSegueWithIdentifier("showWeb", sender: indexPath)
-            }
-        case .Application:
-            performSegueWithIdentifier("editApplication", sender: self)
-        case .Interview:
-            var offset = 0
-            if stage != .Rejected {
-                if indexPath.row == 0 {
-                    performSegueWithIdentifier("editInterview", sender: nil)
-                    return
-                }
-                offset = 1
-            }
-            let interview = loadedBasic.orderedInterviews[indexPath.row - offset]
-            if interview.eventID.isEmpty {
-                performSegueWithIdentifier("editInterview", sender: indexPath)
-            } else {
-                segueToCalendarEventForInterview(interview)
-            }
-        case .Offer:
-            performSegueWithIdentifier("editOffer", sender: self)
-        case .Rejected:
-            performSegueWithIdentifier("editReject", sender: self)
-        }
-    }
+    //MARK:-
     
-    func segueToCalendarEventForInterview(interview: JobInterview) {
-        EventManager.sharedInstance.loadEventInEventEditVC(interviewToUpdate: interview, viewController: self)
-    }
-    
-    func getCompanyCell() -> ShowResultCell {
+    private func getCompanyCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyCell") as ShowResultCell
         
         let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
@@ -301,30 +308,30 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    func getLocationCell() -> ShowResultCell {
+    private func getLocationCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showLocationCell") as ShowResultCell
         cell.mainLabel.text = loadedBasic.location.address
         return cell
     }
     
-    func getWebsiteCell(text: String) -> ShowResultCell {
+    private func getWebsiteCell(text: String) -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showWebsiteCell") as ShowResultCell
         cell.mainLabel.text = text
         return cell
     }
     
-    func getGlassdoorCell() -> UITableViewCell {
+    private func getGlassdoorCell() -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showGlassdoorCell") as UITableViewCell
         return cell
     }
     
-    func getNotesCell() -> ShowResultCell {
+    private func getNotesCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showNotesCell") as ShowResultCell
         cell.secondaryLabel!.text = loadedBasic.details.notes
         return cell
     }
     
-    func getContactsCell() -> ShowResultCell {
+    private func getContactsCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showContactsCell") as ShowResultCell
         
         let numberOfContacts = loadedBasic.contacts.count
@@ -336,13 +343,13 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    func getAddApplicationCell() -> ShowResultCell {
+    private func getAddApplicationCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
         cell.mainLabel.text = "Add Application"
         return cell
     }
     
-    func getViewApplicationCell() -> ShowResultCell {
+    private func getViewApplicationCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
         let dateSent = loadedBasic.application!.dateSent
@@ -360,13 +367,13 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    func getAddInterviewCell() -> ShowResultCell {
+    private func getAddInterviewCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
         cell.mainLabel.text = "Add Interview"
         return cell
     }
     
-    func getViewInterviewCell(interview: JobInterview) -> ShowResultCell {
+    private func getViewInterviewCell(interview: JobInterview) -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
         let startsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.starts)
@@ -392,13 +399,13 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    func getAddOfferCell() -> ShowResultCell {
+    private func getAddOfferCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
         cell.mainLabel.text = "Add Offer"
         return cell
     }
     
-    func getViewOfferCell() -> ShowResultCell {
+    private func getViewOfferCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
         let dateReceived = loadedBasic.offer!.dateReceived
@@ -425,7 +432,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    func getViewRejectedCell() -> ShowResultCell {
+    private func getViewRejectedCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
         let dateRejected = loadedBasic.rejected!.dateRejected
@@ -443,62 +450,75 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
+    //MARK:- UITableViewDelegate
+    
+    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let sectionType = sectionTypeArray[indexPath.section]
+        switch sectionType {
+        case .Basic:
+            let selectedTuple = cellTypeArray[indexPath.row]
+            let website = selectedTuple.website
+            if website != nil && website != "" {
+                performSegueWithIdentifier("showWeb", sender: indexPath)
+            }
+        case .Application:
+            performSegueWithIdentifier("editApplication", sender: self)
+        case .Interview:
+            var offset = 0
+            if stage != .Rejected {
+                if indexPath.row == 0 {
+                    performSegueWithIdentifier("editInterview", sender: nil)
+                    return
+                }
+                offset = 1
+            }
+            let interview = loadedBasic.orderedInterviews[indexPath.row - offset]
+            if interview.eventID.isEmpty {
+                performSegueWithIdentifier("editInterview", sender: indexPath)
+            } else {
+                segueToCalendarEventForInterview(interview)
+            }
+        case .Offer:
+            performSegueWithIdentifier("editOffer", sender: self)
+        case .Rejected:
+            performSegueWithIdentifier("editReject", sender: self)
+        }
+    }
+    
+    //MARK:-
+    
+    private func segueToCalendarEventForInterview(interview: JobInterview) {
+        EventManager.sharedInstance.loadEventInEventEditVC(interviewToUpdate: interview, viewController: self)
+    }
+    
+    //MARK:- IBActions
     
     @IBAction func rejectOrRestoreButtonClicked(sender: UIBarButtonItem) {
         if stage != .Rejected {
             performSegueWithIdentifier("editReject", sender: self)
         } else {
-            loadedBasic.rejected = nil
-            
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
-            }
-
-            reloadSectionTypeArray()
-            reloadCellTypeArray()
-            tableView.reloadData()
-            rejectOrRestoreButton.title = "Reject"
+            restoreJob()
         }
     }
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "showWeb" {
-            let indexPath = sender as NSIndexPath
-            let website = cellTypeArray[indexPath.row].website
-            let destination = segue.destinationViewController as WebViewController
-            destination.website = website
-        } else if segue.identifier == "showMap" {
-            let destination = segue.destinationViewController as MapViewController
-            destination.loadedBasic = loadedBasic
-        } else if segue.identifier == "showContacts" {
-            let destination = segue.destinationViewController as ShowContactsViewController
-            destination.loadedBasic = loadedBasic
-        } else if segue.identifier == "editJob" {
-            let destination = segue.destinationViewController as EditDetailViewController
-            destination.loadedBasic = loadedBasic
-        } else if segue.identifier == "editApplication" {
-            let destination = segue.destinationViewController as EditApplicationViewController
-            destination.loadedBasic = loadedBasic
-        } else if segue.identifier == "editInterview" {
-            let destination = segue.destinationViewController as EditInterviewViewController
-            destination.loadedBasic = loadedBasic
-            if sender is NSIndexPath {
-                let indexPath = sender as NSIndexPath
-                let interview = loadedBasic.orderedInterviews[indexPath.row - 1]
-                destination.loadedInterview = interview
-            }
-        } else if segue.identifier == "editOffer" {
-            let destination = segue.destinationViewController as EditOfferViewController
-            destination.loadedBasic = loadedBasic
-        } else if segue.identifier == "editReject" {
-            let destination = segue.destinationViewController as EditRejectViewController
-            destination.loadedBasic = loadedBasic
+    //MARK:- Core Data Changers
+    
+    private func restoreJob() {
+        loadedBasic.rejected = nil
+        
+        var error: NSError?
+        if !Common.managedContext.save(&error) {
+            println("Could not save \(error), \(error?.userInfo)")
         }
+        
+        reloadSectionTypeArray()
+        reloadCellTypeArray()
+        tableView.reloadData()
+        rejectOrRestoreButton.title = "Reject"
     }
 }
 
-//TODO some of the stored data is empty strings and sometimes nil, tidy it up.
+//TODO: some of the stored data is empty strings and sometimes nil, tidy it up.
 
 
 

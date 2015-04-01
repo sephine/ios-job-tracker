@@ -12,15 +12,18 @@ import Foundation
 import UIKit
 import CoreData
 
-class EditOfferViewController: UITableViewController {
+class EditOfferViewController: UITableViewController, UITextFieldDelegate {
     
     @IBOutlet weak var dateReceivedBox: UITextField!
     @IBOutlet weak var salaryBox: UITextField!
     @IBOutlet weak var notesView: UITextView!
     
     var loadedBasic: JobBasic!
-    let datePickerView = UIDatePicker()
-    var salary: NSNumber?
+    
+    private let datePickerView = UIDatePicker()
+    private var salary: NSNumber?
+    
+    //MARK:- UIViewController
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -71,6 +74,22 @@ class EditOfferViewController: UITableViewController {
         self.navigationController?.toolbarHidden = true
     }
     
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.destinationViewController is ShowDetailViewController {
+            let destination = segue.destinationViewController as ShowDetailViewController
+            destination.loadedBasic = loadedBasic
+        }
+    }
+    
+    //MARK:-
+    
+    private func updateDate() {
+        let date = datePickerView.date
+        dateReceivedBox.text = Common.standardDateFormatter.stringFromDate(date)
+    }
+
+    //MARK:- UITableViewDelegate
+    
     //sets it up so that wherever in the cell they select the textbox starts editing.
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         switch indexPath.row {
@@ -84,6 +103,8 @@ class EditOfferViewController: UITableViewController {
             break
         }
     }
+    
+    //MARK:- UITextFieldDelegate
     
     //only called by salary text field
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
@@ -115,10 +136,7 @@ class EditOfferViewController: UITableViewController {
         salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
     }
     
-    func updateDate() {
-        let date = datePickerView.date
-        dateReceivedBox.text = Common.standardDateFormatter.stringFromDate(date)
-    }
+    //MARK:- IBActions
     
     @IBAction func cancelClicked(sender: UIBarButtonItem) {
         navigationController?.popViewControllerAnimated(true)
@@ -139,7 +157,9 @@ class EditOfferViewController: UITableViewController {
         self.presentViewController(alertController, animated: true, completion: nil)
     }
     
-    func saveDetails() {
+    //MARK:- Core Data Changers
+    
+    private func saveDetails() {
         let managedContext = Common.managedContext
         var offer: JobOffer
         if loadedBasic.offer != nil {
@@ -161,7 +181,7 @@ class EditOfferViewController: UITableViewController {
         }
     }
     
-    func deleteOffer() {
+    private func deleteOffer() {
         if let offer = loadedBasic.offer {
             loadedBasic.offer = nil
             
@@ -170,13 +190,6 @@ class EditOfferViewController: UITableViewController {
                 println("Could not save \(error), \(error?.userInfo)")
             }
             navigationController?.popViewControllerAnimated(true)
-        }
-    }
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
-            destination.loadedBasic = loadedBasic
         }
     }
 }

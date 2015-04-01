@@ -18,6 +18,8 @@ class MapViewController: UIViewController {
     
     var loadedBasic: JobBasic!
     
+    //MARK:- UIViewController
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -58,7 +60,9 @@ class MapViewController: UIViewController {
         
     }
     
-    func loadLocation() {
+    //MARK:-
+    
+    private func loadLocation() {
         let latitude = loadedBasic.location.latitude as Double
         let longitude = loadedBasic.location.longitude as Double
         let coordinates = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -69,6 +73,12 @@ class MapViewController: UIViewController {
         
         mapView.camera = GMSCameraPosition(target: coordinates, zoom: 15, bearing: 0, viewingAngle: 0)
     }
+    
+    private func exitSelected() {
+        navigationController?.popViewControllerAnimated(true)
+    }
+    
+    //MARK:- IBActions
     
     @IBAction func mapTypeSegmentClicked(sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
@@ -90,9 +100,5 @@ class MapViewController: UIViewController {
         
         UIApplication.sharedApplication().openURL(NSURL(string:
             "comgooglemaps://?daddr=\(urlFormAddress)&directionsmode=driving")!)
-    }
-    
-    func exitSelected() {
-        navigationController?.popViewControllerAnimated(true)
     }
 }
