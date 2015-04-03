@@ -18,7 +18,6 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     private var backItem: UIBarButtonItem!
     private var forwardItem: UIBarButtonItem!
     private var firstLoad = true
-    private var haveTriedGoogling = false
     
     //MARK:- UIViewController
     
@@ -63,25 +62,28 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     
     //MARK:-
     
-    private func backSelected() {
+    func backSelected() {
         if containedWebView.canGoBack {
             containedWebView.goBack()
         }
     }
     
-    private func forwardSelected() {
+    func forwardSelected() {
         if containedWebView.canGoForward {
             containedWebView.goForward()
         }
     }
     
-    private func exitSelected() {
+    func exitSelected() {
         navigationController?.popViewControllerAnimated(true)
+        //might be closed before all the finish/fail loads are called. There shouldn't be any network activity going on after this view is closed.
+        NetworkActivityIndicator.resetActivities()
     }
     
     //MARK:- UIWebViewDelegate
     
     func webViewDidStartLoad(webView: UIWebView) {
+        NetworkActivityIndicator.startActivity()
         if firstLoad {
             navigationBar.title = "Loading..."
             firstLoad = false
@@ -89,6 +91,8 @@ class WebViewController: UIViewController, UIWebViewDelegate {
     }
     
     func webViewDidFinishLoad(webView: UIWebView) {
+        NetworkActivityIndicator.stopActivity()
+        firstLoad = false
         navigationBar.title = webView.stringByEvaluatingJavaScriptFromString("document.title")
         if navigationBar.leftBarButtonItem == nil &&
             (containedWebView.canGoBack || containedWebView.canGoForward) {
@@ -106,23 +110,28 @@ class WebViewController: UIViewController, UIWebViewDelegate {
         } else {
             forwardItem.enabled = false
         }
-        
-        let i = webView.scrollView.contentSize
     }
     
     func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
-        if !haveTriedGoogling {
+        NetworkActivityIndicator.stopActivity()
+        if error.code == NSURLErrorCancelled {
+            return
+        }
+        
+        if error.code == NSURLErrorCannotFindHost {
             let googleSearchString = "http://google.com/search?q=\(website)"
             let url = NSURL(string: googleSearchString)
             let request = NSURLRequest(URL: url!)
             containedWebView.loadRequest(request)
-            haveTriedGoogling = true
-        } else {
-            navigationBar.title = "Failed To Load Page"
-            //TODO: do something with error?
+            return
         }
+        
+        navigationBar.title = "Failed To Load Page"
+        let alert = UIAlertView(title: "Failed To Load Page", message: "Please check your internet connection.", delegate: nil, cancelButtonTitle: "OK")
+        alert.show()
     }
     
+    //TODO: not working properly when part of the page (not the main part) fails to load, also when you press back it crashes
     
     //TODO: change images
 }

@@ -149,7 +149,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         endsBox.inputView = endDatePickerView
     }
     
-    private func updateStartDate() {
+    func updateStartDate() {
         let date = startDatePickerView.date
         startsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(date)
         
@@ -158,7 +158,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         updateEndDate()
     }
     
-    private func updateEndDate() {
+    func updateEndDate() {
         let date = endDatePickerView.date
         endsBox.text = Common.standardDateAndTimeFormatter.stringFromDate(date)
         
@@ -235,13 +235,16 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     }
     
     //MARK:- LocationSelectionDelegate
-
+    
     func locationSelected(address: String) {
         locationBox.text = address
+        //set lat and long to nil in case coordinates are never successfully calculated. We don't want the coordiantes of a previous address being used. If coordinates are calculated they will be overwritten.
+        locationLatitude = nil
+        locationLongitude = nil
     }
     
-    func coordinatesCalculated(coordinates: CLLocationCoordinate2D) {
-        if !locationBox.text.isEmpty {
+    func coordinatesCalculated(#address: String, coordinates: CLLocationCoordinate2D) {
+        if address == locationBox.text {
             locationLatitude = coordinates.latitude
             locationLongitude = coordinates.longitude
         }

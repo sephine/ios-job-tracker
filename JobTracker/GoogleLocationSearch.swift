@@ -24,14 +24,17 @@ class GoogleLocationSearch {
         let request = NSURLRequest(URL: googleRequestURL)
         let queue = NSOperationQueue()
         
+        NetworkActivityIndicator.startActivity()
         NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler: { (response: NSURLResponse!, data: NSData!, error: NSError!) in
             if error != nil {
                 //TODO what to do if the data can't be retrieved.
                 NSOperationQueue.mainQueue().addOperationWithBlock({
+                    NetworkActivityIndicator.stopActivity()
                     callbackFunction(false, nil)
                 })
             } else {
                 NSOperationQueue.mainQueue().addOperationWithBlock({
+                    NetworkActivityIndicator.stopActivity()
                     self.fetchedData(data, callbackFunction)
                 })
             }

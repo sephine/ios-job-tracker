@@ -267,24 +267,27 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
             //in this case job.date holds a date in the far future for the purposes of date sorting in the table view, but text should show no deadline.
             dateText = "No Deadline"
         } else {
-            var dateString = Common.standardDateFormatter.stringFromDate(job.date)
+            let dateString = NSDateFormatter().stringFromDifferenceInDateToToday(date: job.date)
+            
+            //var dateString = Common.standardDateFormatter.stringFromDate(job.date)
+            
             switch stage {
             case .Potential:
-                dateText = "Deadline \(dateString)"
+                dateText = "Application deadline \(dateString)"
                 if isDateWithinAWeekOfToday(date: job.date) {
                     displayRedText = true
                 }
             case .Applied:
                 dateText = "Applied \(dateString)"
             case .PreInterview:
-                dateText = "Scheduled \(dateString)"
+                dateText = "Interview scheduled \(dateString)"
                 if isDateWithinAWeekOfToday(date: job.date) {
                     displayRedText = true
                 }
             case .PostInterview:
-                dateText = "Completed \(dateString)"
+                dateText = "Interview completed \(dateString)"
             case .Offer:
-                dateText = "Received \(dateString)"
+                dateText = "Received offer \(dateString)"
             case .Rejected:
                 dateText = "Rejected \(dateString)"
             }
@@ -437,7 +440,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     //MARK:- Core Data Changers
     
-    //check if any of the stages have moved from PreInteview to PostInterview since last opened.
+    //check if any of the stages have moved from PreInteview to PostInterview since last opened. Also check for changes in dates of interviews.
     private func checkForPassedInterviewsAndUpdateStages() {
         let sections = stageFRC.sections!
         for section in sections {
@@ -445,26 +448,14 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
             let stageNumber = section.name!.toInt()!
             let stage = Stage(rawValue: stageNumber)!
             
-            if stage == .PreInterview {
+            if stage == .PreInterview || stage == .PostInterview {
                 for basic in section.objects {
                     let basic = basic as JobBasic
-                    var allComplete = true
                     for interview in basic.interviews {
-                        if !(interview as JobInterview).completed {
-                            allComplete = false
-                            break
-                        }
-                    }
-                    if allComplete {
-                        basic.stage = Stage.PostInterview.rawValue
+                        let interview = interview as JobInterview
+                        EventManager.sharedInstance.syncInterviewWithCalendarEvent(interview: interview)
                     }
                 }
-                
-                var error: NSError?
-                if !Common.managedContext.save(&error) {
-                    println("Could not save \(error), \(error?.userInfo)")
-                }
-                return
             }
         }
     }

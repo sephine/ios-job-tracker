@@ -206,10 +206,13 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     
     func locationSelected(address: String) {
         locationBox.text = address
+        //set lat and long to nil in case coordinates are never successfully calculated. We don't want the coordiantes of a previous address being used. If coordinates are calculated they will be overwritten.
+        locationLatitude = nil
+        locationLongitude = nil
     }
     
-    func coordinatesCalculated(coordinates: CLLocationCoordinate2D) {
-        if !locationBox.text.isEmpty {
+    func coordinatesCalculated(#address: String, coordinates: CLLocationCoordinate2D) {
+        if address == locationBox.text {
             locationLatitude = coordinates.latitude
             locationLongitude = coordinates.longitude
         }
@@ -272,6 +275,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         details.jobListing = listingBox.text
         details.glassdoorLink = glassdoorLink
         details.notes = notesView.text
+        
+        let i = locationBox.text!
         
         location.address = locationBox.text!
         location.latitude = locationLatitude

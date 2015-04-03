@@ -83,7 +83,7 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
     
     //MARK:-
     
-    private func updateDate() {
+    func updateDate() {
         let date = datePickerView.date
         dateReceivedBox.text = Common.standardDateFormatter.stringFromDate(date)
     }

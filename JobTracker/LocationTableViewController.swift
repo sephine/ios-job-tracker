@@ -11,7 +11,7 @@ import UIKit
 
 protocol LocationSelectionDelegate {
     func locationSelected(address: String)
-    func coordinatesCalculated(coordinates: CLLocationCoordinate2D)
+    func coordinatesCalculated(#address: String, coordinates: CLLocationCoordinate2D)
 }
 
 class LocationTableViewController: UITableViewController, UISearchBarDelegate {
@@ -135,31 +135,16 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
             let cell = tableView.cellForRowAtIndexPath(indexPath) as LocationResultCell
             let address = cell.locationLabel.text!
             delegate.locationSelected(address)
-            getPlacemark(address)
+            AddressCoordinateSearch.getPlacemark(address, callbackFunction: fetchedPlacemark)
             navigationController?.popViewControllerAnimated(true)
         }
     }
     
     //MARK:-
     
-    private func getPlacemark(address: String) {
-        let geocoder = CLGeocoder()
-        geocoder.geocodeAddressString(address, completionHandler: {(results, error) -> Void in
-            if error != nil {
-                //TODO what to do if the data can't be retrieved.
-            } else {
-                let placemarks = results as [CLPlacemark]
-                NSOperationQueue.mainQueue().addOperationWithBlock({
-                    self.fetchedPlacemarks(placemarks)
-                })
-            }
-        })
-    }
-    
-    private func fetchedPlacemarks(placemarks: [CLPlacemark]) {
-        if placemarks.count > 0 {
-            let bestPlacemark = placemarks[0]
-            delegate.coordinatesCalculated(bestPlacemark.location.coordinate)
+    func fetchedPlacemark(#address: String, placemark: CLPlacemark?) {
+        if placemark != nil {
+            delegate.coordinatesCalculated(address: address, coordinates: placemark!.location.coordinate)
         }
     }
     

@@ -19,7 +19,7 @@ enum ShowSectionType {
     case Basic, Application, Interview, Offer, Rejected
 }
 
-class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ShowInterviewResultCellDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var rejectOrRestoreButton: UIBarButtonItem!
@@ -91,7 +91,14 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             destination.website = website
         } else if segue.identifier == "showMap" {
             let destination = segue.destinationViewController as MapViewController
-            destination.loadedBasic = loadedBasic
+            if sender is JobInterview {
+                let interview = sender as JobInterview
+                destination.location = interview.location
+                destination.locationTitle = interview.title
+            } else {
+                destination.location = loadedBasic.location
+                destination.locationTitle = loadedBasic.company
+            }
         } else if segue.identifier == "showContacts" {
             let destination = segue.destinationViewController as ShowContactsViewController
             destination.loadedBasic = loadedBasic
@@ -120,7 +127,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
 
     //MARK:-
     
-    //some interviews might have changed from being scheduled to being completed.
+    //event dates etc might have been changed since last opened.
     private func checkForUpdatedInterviewEvents() {
         for interview in loadedBasic.interviews {
             let interview = interview as JobInterview
@@ -373,7 +380,11 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    private func getViewInterviewCell(interview: JobInterview) -> ShowResultCell {
+    private func getViewInterviewCell(interview: JobInterview) -> UITableViewCell {
+        if !interview.location.address.isEmpty {
+            return getViewInterviewWithAddressCell(interview)
+        }
+        
         let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
         
         let startsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.starts)
@@ -381,12 +392,6 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         var detailsArray = [String]()
         detailsArray.append(interview.title)
-        
-        let address = interview.location.address
-        if !address.isEmpty {
-            detailsArray.append(address)
-        }
-        
         detailsArray.append("Starts: \(startsString)")
         detailsArray.append("Ends: \(endsString)")
         
@@ -396,6 +401,28 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         let detailsString = join("\n", detailsArray)
         cell.mainLabel.text = detailsString
+        return cell
+    }
+    
+    private func getViewInterviewWithAddressCell(interview: JobInterview) -> ShowInterviewResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showInterviewWithAddressCell") as ShowInterviewResultCell
+        cell.interview = interview
+        cell.delegate = self
+        
+        let startsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.starts)
+        let endsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.ends)
+        
+        var detailsArray = [String]()
+        detailsArray.append("Starts: \(startsString)")
+        detailsArray.append("Ends: \(endsString)")
+        if !interview.notes.isEmpty {
+            detailsArray.append(interview.notes)
+        }
+        let detailsString = join("\n", detailsArray)
+        
+        cell.titleLabel.text = interview.title
+        cell.addressButton.setTitle(interview.location.address, forState: UIControlState.Normal)
+        cell.secondaryLabel.text = detailsString
         return cell
     }
     
@@ -489,6 +516,12 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     
     private func segueToCalendarEventForInterview(interview: JobInterview) {
         EventManager.sharedInstance.loadEventInEventEditVC(interviewToUpdate: interview, viewController: self)
+    }
+    
+    //MARK:- ShowInterviewResultCellDelegate
+    
+    func addressButtonSelectedForInterview(interview: JobInterview) {
+        performSegueWithIdentifier("showMap", sender: interview)
     }
     
     //MARK:- IBActions

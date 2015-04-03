@@ -72,7 +72,7 @@ class EditApplicationViewController: UITableViewController {
     
     //MARK:-
     
-    private func updateDate() {
+    func updateDate() {
         let date = datePickerView.date
         dateSentBox.text = Common.standardDateFormatter.stringFromDate(date)
     }
