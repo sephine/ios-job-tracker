@@ -40,8 +40,10 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
     func askForAddressBookAccessWithCompletion(completion: () -> Void) {
         if ABAddressBookGetAuthorizationStatus() == ABAuthorizationStatus.NotDetermined {
             ABAddressBookRequestAccessWithCompletion(addressBook, {(granted, error) in
-                self.setAccessToAddressBook()
-                completion()
+                NSOperationQueue.mainQueue().addOperationWithBlock({
+                    self.setAccessToAddressBook()
+                    completion()
+                })
             })
         }
     }

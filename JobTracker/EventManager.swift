@@ -48,8 +48,10 @@ class EventManager: NSObject, EKEventEditViewDelegate {
     func askForCalendarAccessWithCompletion(completion: () -> Void) {
         if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.NotDetermined {
             store.requestAccessToEntityType(EKEntityTypeEvent, completion: { (granted, error) in
-                self.setAccessToCalendar()
-                completion()
+                NSOperationQueue.mainQueue().addOperationWithBlock({
+                    self.setAccessToCalendar()
+                    completion()
+                })
             })
         }
     }

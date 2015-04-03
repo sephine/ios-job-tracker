@@ -30,6 +30,8 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
         
         //adding an empty footer ensures that the table view doesn't show empty rows
         self.tableView.tableFooterView = UIView(frame: CGRectZero)
+        
+        search.becomeFirstResponder()
     }
     
     override func didReceiveMemoryWarning() {
