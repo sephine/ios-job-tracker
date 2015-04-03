@@ -34,6 +34,11 @@ extension NSDateFormatter {
             inPast = month < 0
             appendS = abs(month) > 1
             dateString = "\(abs(month)) month"
+        } else if abs(day) >= 7 {
+            let week: Int = day/7
+            inPast = week < 0
+            appendS = abs(week) > 1
+            dateString = "\(abs(week)) week"
         } else if day == 0 {
             return "today"
         } else if day == 1 {
