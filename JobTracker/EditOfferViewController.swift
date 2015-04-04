@@ -108,31 +108,36 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
     
     //only called by salary text field
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        let newSalary = salaryBox.text + string
-        let expression = "^\\d+\\.?\\d{0,2}$"
+        let newSalary = (textField.text as NSString).stringByReplacingCharactersInRange(range, withString: string)
+        let decimalSeparator = Common.standardCurrencyFormatter.decimalSeparator!
+        let expression = "^\\d*\\\(decimalSeparator)?\\d{0,2}$"
         let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
         let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, countElements(newSalary)))
         if numberOfMatches == 0 {
             return false
         }
-        salary = (newSalary as NSString).doubleValue
+        if newSalary == "" {
+            salary = nil
+        } else {
+            salary = Common.standardDecimalFormatter.numberFromString(newSalary)
+        }
         return true
     }
     
     //see above
     func textFieldDidBeginEditing(textField: UITextField) {
         if salary != nil {
-            salaryBox.text = salary!.stringValue
+            textField.text = Common.standardDecimalFormatter.stringFromNumber(salary!)
         }
     }
     
     //see above
     func textFieldDidEndEditing(textField: UITextField) {
-        if salaryBox.text == "" {
+        if textField.text == "" {
             salary = nil
             return
         }
-        salary = (salaryBox.text as NSString).doubleValue
+        salary = Common.standardDecimalFormatter.numberFromString(textField.text)
         salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
     }
     

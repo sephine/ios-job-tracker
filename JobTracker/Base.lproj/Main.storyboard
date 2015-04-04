@@ -2505,7 +2505,7 @@
                                                     </constraints>
                                                     <color key="textColor" red="0.5" green="0.0" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <textInputTraits key="textInputTraits" spellCheckingType="no" keyboardType="webSearch"/>
+                                                    <textInputTraits key="textInputTraits" spellCheckingType="no" keyboardType="URL"/>
                                                     <variation key="default">
                                                         <mask key="constraints">
                                                             <exclude reference="2Iu-m6-202"/>
@@ -2516,6 +2516,9 @@
                                                             <include reference="2Iu-m6-202"/>
                                                         </mask>
                                                     </variation>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="lgu-NL-SMk" id="izj-pZ-fWM"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -2598,6 +2601,9 @@
                                                             <include reference="t8J-eU-IST"/>
                                                         </mask>
                                                     </variation>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="lgu-NL-SMk" id="pOw-p1-Rof"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -2842,7 +2848,7 @@
                                                     </constraints>
                                                     <color key="textColor" red="0.5" green="0.0" blue="0.5" alpha="1" colorSpace="calibratedRGB"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <textInputTraits key="textInputTraits" spellCheckingType="no" keyboardType="webSearch"/>
+                                                    <textInputTraits key="textInputTraits" spellCheckingType="no" keyboardType="URL"/>
                                                     <variation key="default">
                                                         <mask key="constraints">
                                                             <exclude reference="YPl-WE-rUZ"/>
@@ -2853,6 +2859,9 @@
                                                             <include reference="YPl-WE-rUZ"/>
                                                         </mask>
                                                     </variation>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="lgu-NL-SMk" id="nKO-iQ-9Zd"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -2937,6 +2946,7 @@
                                                     </variation>
                                                     <connections>
                                                         <action selector="updateDate" destination="lgu-NL-SMk" eventType="editingDidBegin" id="1kF-ke-eVq"/>
+                                                        <outlet property="delegate" destination="lgu-NL-SMk" id="E4S-Pk-o7l"/>
                                                     </connections>
                                                 </textField>
                                             </subviews>
@@ -3021,6 +3031,9 @@
                                                             <include reference="2Wd-RK-yf2"/>
                                                         </mask>
                                                     </variation>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="lgu-NL-SMk" id="J2a-dX-ECX"/>
+                                                    </connections>
                                                 </textView>
                                             </subviews>
                                             <constraints>

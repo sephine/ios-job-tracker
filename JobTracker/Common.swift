@@ -19,6 +19,12 @@ struct Common {
         return formatter
     }
     
+    static var standardDecimalFormatter: NSNumberFormatter {
+        let formatter = NSNumberFormatter()
+        formatter.numberStyle = NSNumberFormatterStyle.DecimalStyle
+        return formatter
+    }
+    
     static var standardDateFormatter: NSDateFormatter {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = NSDateFormatterStyle.LongStyle

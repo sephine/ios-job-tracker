@@ -18,7 +18,6 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     @IBOutlet weak var positionBox: UITextField!
     @IBOutlet weak var salaryBox: UITextField!
     @IBOutlet weak var locationBox: UITextField!
-    @IBOutlet weak var locationButton: UIButton!
     @IBOutlet weak var listingBox: UITextField!
     @IBOutlet weak var dueDateBox: UITextField!
     @IBOutlet weak var notesView: UITextView!
@@ -53,7 +52,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             setControlValuesToLoadedData()
         }
     }
-    
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -164,34 +163,47 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         return true
     }
     
-    //only called by salary text field, company and location text field doesn't begin editing (the rest don't have this class set as delegate.
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        let newSalary = salaryBox.text + string
-        let expression = "^\\d+\\.?\\d{0,2}$"
-        let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
-        let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, countElements(newSalary)))
-        if numberOfMatches == 0 {
-            return false
+        if textField.tag == salaryBoxTag {
+            let newSalary = (textField.text as NSString).stringByReplacingCharactersInRange(range, withString: string)
+            let decimalSeparator = Common.standardCurrencyFormatter.decimalSeparator!
+            let decimalPlaces = Common.standardCurrencyFormatter.maximumFractionDigits
+            var expression: String
+            if decimalPlaces != 0 {
+                expression = "^\\d*\\\(decimalSeparator)?\\d{0,\(decimalPlaces)}$"
+            } else {
+                expression = "^\\d*$"
+            }
+            let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
+            let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, countElements(newSalary)))
+            if numberOfMatches == 0 {
+                return false
+            }
+            
+            if newSalary == "" {
+                salary = nil
+            } else {
+                salary = Common.standardDecimalFormatter.numberFromString(newSalary)
+            }
         }
-        salary = (newSalary as NSString).doubleValue
         return true
     }
     
-    //see above
     func textFieldDidBeginEditing(textField: UITextField) {
-        if salary != nil {
-            salaryBox.text = salary!.stringValue
+        if textField.tag == salaryBoxTag && salary != nil {
+            textField.text = Common.standardDecimalFormatter.stringFromNumber(salary!)
         }
     }
     
-    //see above
     func textFieldDidEndEditing(textField: UITextField) {
-        if salaryBox.text == "" {
-            salary = nil
-            return
+        if textField.tag == salaryBoxTag {
+            if textField.text == "" {
+                salary = nil
+                return
+            }
+            salary = Common.standardDecimalFormatter.numberFromString(textField.text)
+            salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
         }
-        salary = (salaryBox.text as NSString).doubleValue
-        salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
     }
     
     //MARK:- CompanySelectionDelegate
