@@ -167,6 +167,8 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         interview.ends = event.endDate
         
         //if we already have a correct lat and long, don't delete them
+        let i = interview.location.address
+        let j = event.location
         if interview.location.address != event.location {
             interview.location.address = event.location
             interview.location.latitude = nil
@@ -197,7 +199,6 @@ class EventManager: NSObject, EKEventEditViewDelegate {
             }
         } else {
             if accessToCalendarGranted {
-                updateInterviewToMatchEvent(event, interview: interviewToUpdate)
                 if action.value == EKEventEditViewActionDeleted.value {
                     interviewToUpdate.eventID = ""
                     var error: NSError?
@@ -207,6 +208,7 @@ class EventManager: NSObject, EKEventEditViewDelegate {
                     
                     loadingDelegate?.eventLoaded(wasDeleted: true)
                 } else {
+                    updateInterviewToMatchEvent(event, interview: interviewToUpdate)
                     loadingDelegate?.eventLoaded(wasDeleted: false)
                 }
             }

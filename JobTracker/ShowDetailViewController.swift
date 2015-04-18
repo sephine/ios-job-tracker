@@ -48,10 +48,10 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         reloadCellTypeArray()
         
         //individually reloading the sections seems to solve the problem where cells that appear off the screen aren't the correct height.
-        for i in 0..<sectionTypeArray.count {
-            let indexSet = NSIndexSet(index: i)
-            tableView.reloadSections(indexSet, withRowAnimation: .None)
-        }
+        tableView.layoutIfNeeded()
+        let range = NSMakeRange(0, sectionTypeArray.count)
+        let indexSet = NSIndexSet(indexesInRange: range)
+        tableView.reloadSections(indexSet, withRowAnimation: .None)
         
         checkForUpdatedInterviewEvents()
     }
@@ -74,7 +74,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         reloadSectionTypeArray()
         reloadCellTypeArray()
         tableView.reloadData()
-        
+
         self.navigationController?.toolbarHidden = false
     }
     
@@ -111,9 +111,8 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         } else if segue.identifier == "editInterview" {
             let destination = segue.destinationViewController as EditInterviewViewController
             destination.loadedBasic = loadedBasic
-            if sender is NSIndexPath {
-                let indexPath = sender as NSIndexPath
-                let interview = loadedBasic.orderedInterviews[indexPath.row - 1]
+            if sender is JobInterview {
+                let interview = sender as JobInterview
                 destination.loadedInterview = interview
             }
         } else if segue.identifier == "editOffer" {
@@ -501,7 +500,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             }
             let interview = loadedBasic.orderedInterviews[indexPath.row - offset]
             if interview.eventID.isEmpty {
-                performSegueWithIdentifier("editInterview", sender: indexPath)
+                performSegueWithIdentifier("editInterview", sender: interview)
             } else {
                 segueToCalendarEventForInterview(interview)
             }
