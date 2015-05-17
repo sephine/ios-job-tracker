@@ -14,7 +14,7 @@ enum Stage: Int {
     var title: String {
         switch self {
         case .Potential:
-            return "Potential Job"
+            return "Not Yet Applied"
         case .Applied:
             return "Application Sent"
         case .PreInterview:

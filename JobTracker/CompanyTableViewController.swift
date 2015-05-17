@@ -9,14 +9,14 @@
 import Foundation
 import UIKit
 
-protocol CompanySelectionDelegate {
+protocol CompanySelectionDelegate: class {
     func companySelected(company: String, website: String, glassdoorLink: String)
 }
 
 class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var search: UISearchBar!
-    var delegate: CompanySelectionDelegate!
+    weak var delegate: CompanySelectionDelegate!
     
     private var companies: [AnyObject]?
     private var connectionError = false

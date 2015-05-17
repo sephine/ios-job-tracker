@@ -10,7 +10,7 @@ import Foundation
 import AddressBook
 import AddressBookUI
 
-protocol ContactDelegate {
+protocol ContactDelegate: class {
     func personSelected(person: ABRecord)
 }
 
@@ -18,7 +18,7 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
     
     var addressBook: ABAddressBook!
     var accessToAddressBookGranted = false
-    var contactDelegate: ContactDelegate?
+    weak var contactDelegate: ContactDelegate?
     
     //MARK:- Singleton Class Creation
     

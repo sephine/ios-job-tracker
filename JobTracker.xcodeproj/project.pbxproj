@@ -10,6 +10,7 @@
 		585E0BB6AE2D68E0A0224718 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B72712A7F77B29077BCE048A /* libPods.a */; };
 		B0065D581A9BF7B800B16E09 /* JobDetail.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0065D571A9BF7B800B16E09 /* JobDetail.swift */; };
 		B0065D621A9C277300B16E09 /* JobBasic.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0065D611A9C277300B16E09 /* JobBasic.swift */; };
+		B017F4DE1B095441006FBADF /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = B017F4DD1B095441006FBADF /* Keys.swift */; };
 		B023B1711A9D62D30082C5B0 /* EditInterviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B023B1701A9D62D30082C5B0 /* EditInterviewViewController.swift */; };
 		B023B1731A9D6C630082C5B0 /* JobInterview.swift in Sources */ = {isa = PBXBuildFile; fileRef = B023B1721A9D6C630082C5B0 /* JobInterview.swift */; };
 		B023B1751A9E97120082C5B0 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = B023B1741A9E97120082C5B0 /* Common.swift */; };
@@ -41,7 +42,7 @@
 		B07D22B21ACB988C00CB6CB4 /* NSDateFormatterExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07D22B11ACB988C00CB6CB4 /* NSDateFormatterExtension.swift */; };
 		B07D22B61ACE0CA800CB6CB4 /* NetworkActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07D22B51ACE0CA800CB6CB4 /* NetworkActivityIndicator.swift */; };
 		B07D22B81ACE229A00CB6CB4 /* AddressCoordinateSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07D22B71ACE229A00CB6CB4 /* AddressCoordinateSearch.swift */; };
-		B07D22BA1ACE3C7400CB6CB4 /* ShowInterviewResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07D22B91ACE3C7400CB6CB4 /* ShowInterviewResultCell.swift */; };
+		B07D22BA1ACE3C7400CB6CB4 /* ShowResultWithAddressCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07D22B91ACE3C7400CB6CB4 /* ShowResultWithAddressCell.swift */; };
 		B086D0761ABCD5F90007D94C /* CoreDataObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B086D0751ABCD5F90007D94C /* CoreDataObserver.swift */; };
 		B088D2581A8EFFDF00E8CB99 /* JobContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = B088D2571A8EFFDF00E8CB99 /* JobContact.swift */; };
 		B088D25E1A8F32A100E8CB99 /* GoogleLocationSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = B088D25D1A8F32A100E8CB99 /* GoogleLocationSearch.swift */; };
@@ -72,6 +73,7 @@
 		9B7591EE70F26B9825751C91 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		B0065D571A9BF7B800B16E09 /* JobDetail.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobDetail.swift; sourceTree = "<group>"; };
 		B0065D611A9C277300B16E09 /* JobBasic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobBasic.swift; sourceTree = "<group>"; };
+		B017F4DD1B095441006FBADF /* Keys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		B023B1701A9D62D30082C5B0 /* EditInterviewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditInterviewViewController.swift; sourceTree = "<group>"; };
 		B023B1721A9D6C630082C5B0 /* JobInterview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobInterview.swift; sourceTree = "<group>"; };
 		B023B1741A9E97120082C5B0 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
@@ -107,7 +109,7 @@
 		B07D22B11ACB988C00CB6CB4 /* NSDateFormatterExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDateFormatterExtension.swift; sourceTree = "<group>"; };
 		B07D22B51ACE0CA800CB6CB4 /* NetworkActivityIndicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkActivityIndicator.swift; sourceTree = "<group>"; };
 		B07D22B71ACE229A00CB6CB4 /* AddressCoordinateSearch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddressCoordinateSearch.swift; sourceTree = "<group>"; };
-		B07D22B91ACE3C7400CB6CB4 /* ShowInterviewResultCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowInterviewResultCell.swift; sourceTree = "<group>"; };
+		B07D22B91ACE3C7400CB6CB4 /* ShowResultWithAddressCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShowResultWithAddressCell.swift; sourceTree = "<group>"; };
 		B086D0751ABCD5F90007D94C /* CoreDataObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataObserver.swift; sourceTree = "<group>"; };
 		B088D24E1A8DC63000E8CB99 /* JobTracker-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "JobTracker-Bridging-Header.h"; sourceTree = "<group>"; };
 		B088D2571A8EFFDF00E8CB99 /* JobContact.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JobContact.swift; sourceTree = "<group>"; };
@@ -166,7 +168,7 @@
 			children = (
 				B023B17E1AA7FD9C0082C5B0 /* JobListResultCell.swift */,
 				B0568B3C1A98334400261B4F /* ShowResultCell.swift */,
-				B07D22B91ACE3C7400CB6CB4 /* ShowInterviewResultCell.swift */,
+				B07D22B91ACE3C7400CB6CB4 /* ShowResultWithAddressCell.swift */,
 				B0B32D821A8D8EB70039E6BC /* CompanyResultCell.swift */,
 				B0BCAC201A97EA6C0040CAE9 /* LocationResultCell.swift */,
 				B04E91771ABA7787008A01E2 /* AttributionCell.swift */,
@@ -201,6 +203,7 @@
 				B023B1741A9E97120082C5B0 /* Common.swift */,
 				B07D22B11ACB988C00CB6CB4 /* NSDateFormatterExtension.swift */,
 				B07D22B51ACE0CA800CB6CB4 /* NetworkActivityIndicator.swift */,
+				B017F4DD1B095441006FBADF /* Keys.swift */,
 			);
 			name = "Helper Classes";
 			sourceTree = "<group>";
@@ -440,7 +443,8 @@
 				B023B1731A9D6C630082C5B0 /* JobInterview.swift in Sources */,
 				B0BCAC231A9802040040CAE9 /* JobLocation.swift in Sources */,
 				B04C47571AAA7F1200C235B1 /* JobOffer.swift in Sources */,
-				B07D22BA1ACE3C7400CB6CB4 /* ShowInterviewResultCell.swift in Sources */,
+				B07D22BA1ACE3C7400CB6CB4 /* ShowResultWithAddressCell.swift in Sources */,
+				B017F4DE1B095441006FBADF /* Keys.swift in Sources */,
 				B04E91781ABA7787008A01E2 /* AttributionCell.swift in Sources */,
 				B04C475D1AAE51CA00C235B1 /* ShowContactsViewController.swift in Sources */,
 				B023B17D1A9FF9650082C5B0 /* EventManager.swift in Sources */,

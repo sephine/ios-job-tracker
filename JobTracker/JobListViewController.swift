@@ -263,26 +263,26 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         let stage = Stage(rawValue: job.stage.integerValue)!
         var dateText: String
         var displayRedText = false
+        var displayOrangeText = false
         if stage == .Potential && job.details.dueDate == nil {
             //in this case job.date holds a date in the far future for the purposes of date sorting in the table view, but text should show no deadline.
             dateText = "No Deadline"
         } else {
             let dateString = NSDateFormatter().stringFromDifferenceInDateToToday(date: job.date)
-            
-            //var dateString = Common.standardDateFormatter.stringFromDate(job.date)
-            
             switch stage {
             case .Potential:
                 dateText = "Application deadline \(dateString)"
-                if isDateWithinAWeekOfToday(date: job.date) {
+                if job.date.timeIntervalSinceNow <= 0.0 {
                     displayRedText = true
+                } else if isDateWithinAWeekOfToday(date: job.date) {
+                    displayOrangeText = true
                 }
             case .Applied:
                 dateText = "Applied \(dateString)"
             case .PreInterview:
                 dateText = "Interview scheduled \(dateString)"
                 if isDateWithinAWeekOfToday(date: job.date) {
-                    displayRedText = true
+                    displayOrangeText = true
                 }
             case .PostInterview:
                 dateText = "Interview completed \(dateString)"
@@ -296,12 +296,11 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         cell.dateLabel.text = dateText
         if displayRedText {
             cell.dateLabel.textColor = UIColor.redColor()
+        } else if displayOrangeText {
+            cell.dateLabel.textColor = UIColor.orangeColor()
         } else {
             cell.dateLabel.textColor = UIColor.darkGrayColor()
         }
-        
-        //TODO red makes it seem like the date is in the past! consider orange
-        //TODO could get a library that displays dates like 5 days time, a month ago etc
     }
     
     private func isDateWithinAWeekOfToday(#date: NSDate) -> Bool {
@@ -469,4 +468,5 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     }
 }
 
-//TODO can you add two identical jobs?
+//TODO: can you add two identical jobs?
+//TODO: what to do when there is a memory warning

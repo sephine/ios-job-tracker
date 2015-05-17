@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-protocol LocationSelectionDelegate {
+protocol LocationSelectionDelegate: class {
     func locationSelected(address: String)
     func coordinatesCalculated(#address: String, coordinates: CLLocationCoordinate2D)
 }
@@ -17,7 +17,7 @@ protocol LocationSelectionDelegate {
 class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     
     @IBOutlet weak var search: UISearchBar!
-    var delegate: LocationSelectionDelegate!
+    weak var delegate: LocationSelectionDelegate!
     
     private var locations: [AnyObject]?
     private var connectionError = false

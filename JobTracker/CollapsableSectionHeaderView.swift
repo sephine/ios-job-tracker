@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol CollapsableSectionHeaderViewDelegate {
+protocol CollapsableSectionHeaderViewDelegate: class {
     func sectionToggled(section: Int?)
 }
 
@@ -18,7 +18,7 @@ class CollapsableSectionHeaderView: UITableViewHeaderFooterView {
     @IBOutlet weak var arrowLabel: UILabel!
     
     var section: Int?
-    var delegate: CollapsableSectionHeaderViewDelegate?
+    weak var delegate: CollapsableSectionHeaderViewDelegate?
     
     override func awakeFromNib() {
         let tapGesture = UITapGestureRecognizer(target: self, action: "headerSelected")

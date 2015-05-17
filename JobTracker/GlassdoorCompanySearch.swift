@@ -10,17 +10,13 @@ import Foundation
 
 class GlassdoorCompanySearch {
     
-    let glassdoorPartnerID = "29976"
-    let glassdoorPartnerKey = "hfEt8lCsdp9"
-    let glassdoorAPIVersion = "1"
-    
     func queryGlassdoor(#company: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
         let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
         allowedCharacters.removeCharactersInString("&=?")
         
         let urlFormCompany = company.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
         
-        let url = "http://api.glassdoor.com/api/api.htm?t.p=\(glassdoorPartnerID)&t.k=\(glassdoorPartnerKey)&format=json&v=\(glassdoorAPIVersion)&action=employers&q=\(urlFormCompany)"
+        let url = "http://api.glassdoor.com/api/api.htm?t.p=\(Keys.glassdoorPartnerID)&t.k=\(Keys.glassdoorPartnerKey)&format=json&v=\(Keys.glassdoorAPIVersion)&action=employers&q=\(urlFormCompany)"
         
         let glassdoorRequestURL = NSURL(string: url)!
         let request = NSURLRequest(URL: glassdoorRequestURL)
@@ -54,6 +50,6 @@ class GlassdoorCompanySearch {
         callbackFunction(true, companies)
     }
 
-    //TODO: make keys secred, move them into seperate file?
+    //TODO: make keys secret, move them into seperate file?
     //TODO: check the async bit is working correctly
 }

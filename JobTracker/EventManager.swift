@@ -9,19 +9,19 @@
 import Foundation
 import EventKitUI
 
-protocol EventCreationDelegate {
+protocol EventCreationDelegate: class {
     func eventCreated(#event: EKEvent, wasSaved: Bool)
 }
 
-protocol EventLoadingDelegate {
+protocol EventLoadingDelegate: class {
     func eventLoaded(#wasDeleted: Bool)
 }
 
 class EventManager: NSObject, EKEventEditViewDelegate {
     
     let store = EKEventStore()
-    var creationDelegate: EventCreationDelegate?
-    var loadingDelegate: EventLoadingDelegate?
+    weak var creationDelegate: EventCreationDelegate?
+    weak var loadingDelegate: EventLoadingDelegate?
     var accessToCalendarGranted = false
     
     private var event: EKEvent!
@@ -213,5 +213,9 @@ class EventManager: NSObject, EKEventEditViewDelegate {
                 }
             }
         }
+        //the below are stored just long enough for this method to use them.
+        viewController = nil
+        interviewToUpdate = nil
+        event = nil
     }
 }

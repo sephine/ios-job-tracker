@@ -12,14 +12,14 @@ import CoreData
 import MapKit
 
 enum ShowCellType {
-    case Company, Location, CompanyWebsite, JobListing, GlassdoorLink, Notes, Contacts
+    case Company, CompanyWebsite, JobListing, GlassdoorLink, Notes, Contacts
 }
 
 enum ShowSectionType {
     case Basic, Application, Interview, Offer, Rejected
 }
 
-class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ShowInterviewResultCellDelegate {
+class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, ShowResultWithAddressCellDelegate {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var rejectOrRestoreButton: UIBarButtonItem!
@@ -64,7 +64,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
         
-        title = loadedBasic.company
+        title = "\(loadedBasic.company)"
         if stage == .Rejected {
             rejectOrRestoreButton.title = "Restore"
         } else {
@@ -160,10 +160,10 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         cellTypeArray = []
         cellTypeArray.append(type: .Company, interview: nil, website: nil)
         
-        let address = loadedBasic.location.address
+        /*let address = loadedBasic.location.address
         if !address.isEmpty {
             cellTypeArray.append(type: .Location, interview: nil, website: nil)
-        }
+        }*/
         
         let website: String? = loadedBasic.details.website
         if !website!.isEmpty {
@@ -236,12 +236,12 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             switch cellType {
             case .Company:
                 return getCompanyCell()
-            case .Location:
-                return getLocationCell()
+            /*case .Location:
+                return getLocationCell()*/
             case .CompanyWebsite:
-                return getWebsiteCell("Company Website")
+                return getCompanyWebsiteCell()
             case .JobListing:
-                return getWebsiteCell("Job Listing")
+                return getJobListingCell()
             case .GlassdoorLink:
                 return getGlassdoorCell()
             case .Notes:
@@ -276,9 +276,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     
     //MARK:-
     
-    private func getCompanyCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyCell") as ShowResultCell
-        
+    private func getCompanyCell() -> UITableViewCell {
         let stage = Stage(rawValue: loadedBasic.stage.integerValue)!
         let company = loadedBasic.company
         let title = loadedBasic.title as String
@@ -291,7 +289,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         
         var dueDateString: String?
-        if dueDate != nil {
+        if dueDate != nil && stage == Stage.Potential {
             dueDateString = Common.standardDateFormatter.stringFromDate(dueDate!)
         }
         
@@ -299,30 +297,54 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         if !title.isEmpty {
             detailsArray.append(title)
         }
-        detailsArray.append(company)
         if salaryString != nil {
             detailsArray.append(salaryString!)
         }
         if dueDateString != nil {
-            detailsArray.append("Due: \(dueDateString!)")
+            detailsArray.append("Deadline: \(dueDateString!)")
         }
+        detailsArray.append(stage.title)
         
         let detailsString = join("\n", detailsArray)
         
-        cell.mainLabel.text = stage.title
+        if !loadedBasic.location.address.isEmpty {
+            return getCompanyWithAddressCell(detailsString)
+        }
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyCell") as ShowResultCell
+        cell.mainLabel.text = company
         cell.secondaryLabel!.text = detailsString
         return cell
     }
     
-    private func getLocationCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showLocationCell") as ShowResultCell
-        cell.mainLabel.text = loadedBasic.location.address
+    private func getCompanyWithAddressCell(secondaryText: String) -> ShowResultWithAddressCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyWithAddressCell") as ShowResultWithAddressCell
+        cell.owner = loadedBasic
+        cell.delegate = self
+        
+        cell.titleLabel.text = loadedBasic.company
+        cell.addressButton.setTitle(loadedBasic.location.address, forState: UIControlState.Normal)
+        cell.secondaryLabel.text = secondaryText
         return cell
     }
     
-    private func getWebsiteCell(text: String) -> ShowResultCell {
+    /*private func getLocationCell() -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showLocationCell") as ShowResultCell
+        cell.mainLabel.text = loadedBasic.location.address
+        return cell
+    }*/
+    
+    private func getCompanyWebsiteCell() -> ShowResultCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("showWebsiteCell") as ShowResultCell
-        cell.mainLabel.text = text
+        cell.mainLabel.text = "Company Website"
+        cell.secondaryLabel!.text = loadedBasic.details.website
+        return cell
+    }
+    
+    private func getJobListingCell() -> ShowResultCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showWebsiteCell") as ShowResultCell
+        cell.mainLabel.text = "Job Listing"
+        cell.secondaryLabel!.text = loadedBasic.details.jobListing
         return cell
     }
     
@@ -360,16 +382,26 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         let dateSent = loadedBasic.application!.dateSent
         let dateSentString = Common.standardDateFormatter.stringFromDate(dateSent)
+        let firstLine = "Sent: \(dateSentString)"
         let notes = loadedBasic.application!.notes
         
         var detailsArray = [String]()
-        detailsArray.append("Sent: \(dateSentString)")
+        detailsArray.append(firstLine)
         if !notes.isEmpty {
-            detailsArray.append("\(notes)")
+            detailsArray.append(notes)
         }
         
         let detailsString = join("\n", detailsArray)
-        cell.mainLabel.text = detailsString
+        
+        let firstLineLength = countElements(firstLine)
+        let entireLength = countElements(detailsString)
+        let attributedString = NSMutableAttributedString(string: detailsString)
+        attributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16), range: NSMakeRange(0, entireLength))
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: NSMakeRange(0, firstLineLength))
+        attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.darkGrayColor(), range: NSMakeRange(firstLineLength,
+            entireLength - firstLineLength))
+        
+        cell.mainLabel.attributedText = attributedString
         return cell
     }
     
@@ -403,9 +435,9 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-    private func getViewInterviewWithAddressCell(interview: JobInterview) -> ShowInterviewResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showInterviewWithAddressCell") as ShowInterviewResultCell
-        cell.interview = interview
+    private func getViewInterviewWithAddressCell(interview: JobInterview) -> ShowResultWithAddressCell {
+        let cell = tableView.dequeueReusableCellWithIdentifier("showInterviewWithAddressCell") as ShowResultWithAddressCell
+        cell.owner = interview
         cell.delegate = self
         
         let startsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.starts)
@@ -517,10 +549,10 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         EventManager.sharedInstance.loadEventInEventEditVC(interviewToUpdate: interview, viewController: self)
     }
     
-    //MARK:- ShowInterviewResultCellDelegate
+    //MARK:- ShowResultWithAddressCellDelegate
     
-    func addressButtonSelectedForInterview(interview: JobInterview) {
-        performSegueWithIdentifier("showMap", sender: interview)
+    func addressButtonSelectedForOwner(owner: AnyObject) {
+        performSegueWithIdentifier("showMap", sender: owner)
     }
     
     //MARK:- IBActions

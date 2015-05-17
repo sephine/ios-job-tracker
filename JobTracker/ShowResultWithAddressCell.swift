@@ -8,18 +8,18 @@
 
 import Foundation
 
-protocol ShowInterviewResultCellDelegate {
-    func addressButtonSelectedForInterview(interview: JobInterview)
+protocol ShowResultWithAddressCellDelegate: class {
+    func addressButtonSelectedForOwner(owner: AnyObject)
 }
 
-class ShowInterviewResultCell: UITableViewCell {
+class ShowResultWithAddressCell: UITableViewCell {
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var addressButton: UIButton!
     @IBOutlet weak var secondaryLabel: UILabel!
     
-    var delegate: ShowInterviewResultCellDelegate!
-    var interview: JobInterview!
+    weak var delegate: ShowResultWithAddressCellDelegate!
+    var owner: AnyObject!
     
     override func awakeFromNib() {
         addressButton.titleLabel!.lineBreakMode = NSLineBreakMode.ByWordWrapping
@@ -27,6 +27,6 @@ class ShowInterviewResultCell: UITableViewCell {
     }
     
     func buttonSelected() {
-        delegate.addressButtonSelectedForInterview(interview)
+        delegate.addressButtonSelectedForOwner(owner)
     }
 }

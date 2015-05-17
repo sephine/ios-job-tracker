@@ -13,11 +13,10 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-    let googleiOSAPIKey = "AIzaSyBmDsmbqgA6sCoBTyHtdLLo88_eITr8eJI"
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
-        GMSServices.provideAPIKey(googleiOSAPIKey)
+        GMSServices.provideAPIKey(Keys.googleiOSAPIKey)
         return true
     }
 
