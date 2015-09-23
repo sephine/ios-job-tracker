@@ -11,7 +11,7 @@ import Foundation
 class GoogleLocationSearch {
     
     func queryGoogle(#address: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
-        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
+        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
         allowedCharacters.removeCharactersInString("&=?")
         
         let urlFormAddress = address.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
@@ -33,7 +33,7 @@ class GoogleLocationSearch {
             } else {
                 NSOperationQueue.mainQueue().addOperationWithBlock({
                     NetworkActivityIndicator.stopActivity()
-                    self.fetchedData(data, callbackFunction)
+                    self.fetchedData(data, callbackFunction: callbackFunction)
                 })
             }
         })
@@ -41,12 +41,12 @@ class GoogleLocationSearch {
     
     func fetchedData(responseData: NSData, callbackFunction: (Bool, [AnyObject]?) -> Void) {
         var error: NSError?
-        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as NSDictionary
-        let status = json["status"] as String
+        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as! NSDictionary
+        let status = json["status"] as! String
         if status != "OK" && status != "ZERO_RESULTS" {
             callbackFunction(false, nil)
         }
-        let places = json["predictions"] as [AnyObject]
+        let places = json["predictions"] as! [AnyObject]
         callbackFunction(true, places)
     }
 }

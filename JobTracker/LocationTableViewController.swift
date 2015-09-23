@@ -113,19 +113,19 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         //show google attribution on last row
         if indexPath.section == 1 && indexPath.row == locations!.count {
-            let attributionCell = tableView.dequeueReusableCellWithIdentifier("googleAttributionCell") as AttributionCell
+            let attributionCell = tableView.dequeueReusableCellWithIdentifier("googleAttributionCell") as! AttributionCell
             attributionCell.logo.image = UIImage(named: "powered-by-google-on-white.png")
             attributionCell.logo.contentMode = .Center
             return attributionCell
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("locationResultCell", forIndexPath: indexPath) as LocationResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("locationResultCell", forIndexPath: indexPath) as! LocationResultCell
         if indexPath.section == 0 {
             cell.locationLabel.text = search.text
             return cell
         }
-        let location = locations![indexPath.row] as NSDictionary
-        let address = location["description"] as String
+        let location = locations![indexPath.row] as! NSDictionary
+        let address = location["description"] as! String
         cell.locationLabel.text = address
         return cell
     }
@@ -134,7 +134,7 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         if indexPath.section == 0 || indexPath.row < locations!.count {
-            let cell = tableView.cellForRowAtIndexPath(indexPath) as LocationResultCell
+            let cell = tableView.cellForRowAtIndexPath(indexPath) as! LocationResultCell
             let address = cell.locationLabel.text!
             delegate.locationSelected(address)
             AddressCoordinateSearch.getPlacemark(address, callbackFunction: fetchedPlacemark)

@@ -30,13 +30,13 @@ class JobBasic: NSManagedObject {
     var orderedInterviews: [JobInterview] {
         let sortDescriptor = NSSortDescriptor(key: "starts", ascending: true)
         let sortedArray = interviews.sortedArrayUsingDescriptors([sortDescriptor])
-        return sortedArray as [JobInterview]
+        return sortedArray as! [JobInterview]
     }
     
     var orderedContacts: [JobContact] {
         let sortedArray = contacts.allObjects.sorted({ (one, two) -> Bool in
-            let one = one as JobContact
-            let two = two as JobContact
+            let one = one as! JobContact
+            let two = two as! JobContact
             
             var oneSortText: String
             if !one.last.isEmpty {
@@ -56,7 +56,7 @@ class JobBasic: NSManagedObject {
             }
             return oneSortText < twoSortText
         })
-        return sortedArray as [JobContact]
+        return sortedArray as! [JobContact]
     }
 }
 

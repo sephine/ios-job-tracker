@@ -22,7 +22,7 @@ class AddressCoordinateSearch {
                     //TODO what to do if the data can't be retrieved.
                 })
             } else {
-                let placemarks = results as [CLPlacemark]?
+                let placemarks = results as? [CLPlacemark]
                 var bestPlacemark: CLPlacemark? = nil
                 if placemarks != nil && placemarks!.count > 0 {
                     bestPlacemark = placemarks![0]

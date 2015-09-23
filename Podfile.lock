@@ -1,15 +1,15 @@
 PODS:
   - Google-Maps-iOS-SDK (1.9.2)
-  - SDWebImage (3.7.1):
-    - SDWebImage/Core (= 3.7.1)
-  - SDWebImage/Core (3.7.1)
+  - SDWebImage (3.7.3):
+    - SDWebImage/Core (= 3.7.3)
+  - SDWebImage/Core (3.7.3)
 
 DEPENDENCIES:
   - Google-Maps-iOS-SDK
-  - sdwebimage
+  - SDWebImage
 
 SPEC CHECKSUMS:
-  Google-Maps-iOS-SDK: 3b89f4c151f8fc3ddb0e70dece9bcab33dbec2ea
-  SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
+  Google-Maps-iOS-SDK: 7f89cc1edb3ca239a410e5bc83cd1e060db3a289
+  SDWebImage: 1d2b1a1efda1ade1b00b6f8498865f8ddedc8a84
 
-COCOAPODS: 0.35.0
+COCOAPODS: 0.38.2

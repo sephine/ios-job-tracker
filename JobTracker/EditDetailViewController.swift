@@ -64,16 +64,16 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "findCompany" {
-            let destination = segue.destinationViewController as CompanyTableViewController
+            let destination = segue.destinationViewController as! CompanyTableViewController
             destination.delegate = self
         } else if segue.identifier == "findLocation" {
-            let destination = segue.destinationViewController as LocationTableViewController
+            let destination = segue.destinationViewController as! LocationTableViewController
             destination.delegate = self
         } else if segue.identifier == "showContacts" {
-            let destination = segue.destinationViewController as ShowContactsViewController
+            let destination = segue.destinationViewController as! ShowContactsViewController
             destination.loadedBasic = loadedBasic
         } else if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
+            let destination = segue.destinationViewController as! ShowDetailViewController
             destination.loadedBasic = loadedBasic
         }
     }
@@ -175,7 +175,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
                 expression = "^\\d*$"
             }
             let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
-            let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, countElements(newSalary)))
+            let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, count(newSalary)))
             if numberOfMatches == 0 {
                 return false
             }
@@ -263,9 +263,9 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             details = basic.details
             location = basic.location
         } else {
-            basic = NSEntityDescription.insertNewObjectForEntityForName("JobBasic", inManagedObjectContext: managedContext) as JobBasic
-            details = NSEntityDescription.insertNewObjectForEntityForName("JobDetail", inManagedObjectContext: managedContext) as JobDetail
-            location = NSEntityDescription.insertNewObjectForEntityForName("JobLocation", inManagedObjectContext: managedContext) as JobLocation
+            basic = NSEntityDescription.insertNewObjectForEntityForName("JobBasic", inManagedObjectContext: managedContext) as! JobBasic
+            details = NSEntityDescription.insertNewObjectForEntityForName("JobDetail", inManagedObjectContext: managedContext) as! JobDetail
+            location = NSEntityDescription.insertNewObjectForEntityForName("JobLocation", inManagedObjectContext: managedContext) as! JobLocation
             managedContext.insertObject(basic)
             managedContext.insertObject(details)
             managedContext.insertObject(location)

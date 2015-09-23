@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C109" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="7701" systemVersion="14F27" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="JobApplication" representedClassName="JobTracker.JobApplication" syncable="YES">
         <attribute name="dateSent" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
@@ -15,7 +15,7 @@
         <relationship name="details" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobDetail" inverseName="basic" inverseEntity="JobDetail" syncable="YES"/>
         <relationship name="interviews" toMany="YES" deletionRule="Nullify" destinationEntity="JobInterview" inverseName="basic" inverseEntity="JobInterview" syncable="YES"/>
         <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobLocation" syncable="YES"/>
-        <relationship name="offer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobOffer" syncable="YES"/>
+        <relationship name="offer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobOffer" inverseName="basic" inverseEntity="JobOffer" syncable="YES"/>
         <relationship name="rejected" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobRejected" inverseName="basic" inverseEntity="JobRejected" syncable="YES"/>
     </entity>
     <entity name="JobContact" representedClassName="JobTracker.JobContact" syncable="YES">
@@ -52,7 +52,7 @@
         <attribute name="dateReceived" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="notes" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="salary" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
-        <relationship name="basic" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobBasic" syncable="YES"/>
+        <relationship name="basic" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="JobBasic" inverseName="offer" inverseEntity="JobBasic" syncable="YES"/>
     </entity>
     <entity name="JobRejected" representedClassName="JobTracker.JobRejected" syncable="YES">
         <attribute name="dateRejected" optional="YES" attributeType="Date" syncable="YES"/>
@@ -61,12 +61,12 @@
     </entity>
     <elements>
         <element name="JobApplication" positionX="-45" positionY="72" width="128" height="88"/>
-        <element name="JobBasic" positionX="-54" positionY="-9" width="128" height="208"/>
+        <element name="JobBasic" positionX="-54" positionY="-9" width="128" height="210"/>
         <element name="JobContact" positionX="-45" positionY="81" width="128" height="118"/>
         <element name="JobDetail" positionX="-36" positionY="27" width="128" height="148"/>
         <element name="JobInterview" positionX="-45" positionY="99" width="128" height="148"/>
         <element name="JobLocation" positionX="-54" positionY="81" width="128" height="88"/>
-        <element name="JobOffer" positionX="-27" positionY="117" width="128" height="103"/>
+        <element name="JobOffer" positionX="-27" positionY="117" width="128" height="105"/>
         <element name="JobRejected" positionX="-18" positionY="126" width="128" height="88"/>
     </elements>
 </model>

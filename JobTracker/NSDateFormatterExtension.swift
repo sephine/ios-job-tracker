@@ -18,7 +18,7 @@ extension NSDateFormatter {
         let startOfDate = calendar.startOfDayForDate(date)
         let startOfToday = calendar.startOfDayForDate(today)
         
-        let components = calendar.components(.YearCalendarUnit | .MonthCalendarUnit | .DayCalendarUnit, fromDate: startOfToday, toDate: startOfDate, options: nil)
+        let components = calendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: startOfToday, toDate: startOfDate, options: nil)
         let year = components.year
         let month = components.month
         let day = components.day

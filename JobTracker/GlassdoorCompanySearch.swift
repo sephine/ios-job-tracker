@@ -11,7 +11,7 @@ import Foundation
 class GlassdoorCompanySearch {
     
     func queryGlassdoor(#company: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
-        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
+        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
         allowedCharacters.removeCharactersInString("&=?")
         
         let urlFormCompany = company.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
@@ -33,7 +33,7 @@ class GlassdoorCompanySearch {
             } else {
                 NSOperationQueue.mainQueue().addOperationWithBlock({
                     NetworkActivityIndicator.stopActivity()
-                    self.fetchedData(data, callbackFunction)
+                    self.fetchedData(data, callbackFunction: callbackFunction)
                 })
             }
         })
@@ -41,12 +41,12 @@ class GlassdoorCompanySearch {
     
     func fetchedData(responseData: NSData, callbackFunction: (Bool, [AnyObject]?) -> Void) {
         var error: NSError?
-        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as NSDictionary
-        if (json["success"] as Bool) == false {
+        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as! NSDictionary
+        if (json["success"] as! Bool) != true {
             callbackFunction(false, nil)
         }
-        let response = json["response"] as NSDictionary
-        let companies = response["employers"] as [AnyObject]
+        let response = json["response"] as! NSDictionary
+        let companies = response["employers"] as! [AnyObject]
         callbackFunction(true, companies)
     }
 

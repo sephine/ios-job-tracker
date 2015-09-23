@@ -64,8 +64,8 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showJob" {
-            let job = sender as JobBasic
-            let showJobDestination = segue.destinationViewController as ShowDetailViewController
+            let job = sender as! JobBasic
+            let showJobDestination = segue.destinationViewController as! ShowDetailViewController
             showJobDestination.loadedBasic = job
         }
     }
@@ -227,14 +227,14 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         let currentFRC = frcForTableView(tableView)
         let sectionExpanded = isSectionExpanded(section, controller: currentFRC)
         if sectionExpanded {
-            let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
+            let sectionInfo = currentFRC.sections![section] as! NSFetchedResultsSectionInfo
             return sectionInfo.numberOfObjects
         }
         return 0
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        var cell = self.tableView.dequeueReusableCellWithIdentifier("jobListResultCell") as JobListResultCell
+        var cell = self.tableView.dequeueReusableCellWithIdentifier("jobListResultCell") as! JobListResultCell
         configureCell(tableView, cell: cell, atIndexPath: indexPath)
         return cell
     }
@@ -246,7 +246,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
         if editingStyle == UITableViewCellEditingStyle.Delete {
             let currentFRC = frcForTableView(tableView)
-            let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
+            let job = currentFRC.objectAtIndexPath(indexPath) as! JobBasic
             deleteJob(job)
         }
     }
@@ -255,7 +255,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     private func configureCell(tableView: UITableView, cell: JobListResultCell, atIndexPath indexPath: NSIndexPath) {
         let currentFRC = frcForTableView(tableView)
-        let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
+        let job = currentFRC.objectAtIndexPath(indexPath) as! JobBasic
         
         cell.companyLabel.text = job.company
         cell.positionLabel.text = job.title
@@ -328,7 +328,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
             return super.tableView(tableView, viewForHeaderInSection: section)
         }
             
-        let headerView = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("collapsableSectionHeaderView") as CollapsableSectionHeaderView
+        let headerView = self.tableView.dequeueReusableHeaderFooterViewWithIdentifier("collapsableSectionHeaderView") as! CollapsableSectionHeaderView
         headerView.section = section
         headerView.delegate = self
         headerView.titleLabel.text = getHeaderTitle(currentFRC: currentFRC, section: section).uppercaseString
@@ -356,14 +356,14 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         let currentFRC = frcForTableView(tableView)
-        let job = currentFRC.objectAtIndexPath(indexPath) as JobBasic
+        let job = currentFRC.objectAtIndexPath(indexPath) as! JobBasic
         performSegueWithIdentifier("showJob", sender: job)
     }
     
     //MARK:-
     
     private func getHeaderTitle(#currentFRC: NSFetchedResultsController, section: Int) -> String {
-        let sectionInfo = currentFRC.sections![section] as NSFetchedResultsSectionInfo
+        let sectionInfo = currentFRC.sections![section] as! NSFetchedResultsSectionInfo
         if currentFRC == stageFRC {
             let sectionNumber = sectionInfo.name!.toInt()!
             let stage = Stage(rawValue: sectionNumber)!
@@ -401,7 +401,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
                 }
             case .Update:
                 if isSectionExpanded(indexPath!.section, controller: controller) {
-                    configureCell(connectedTableView, cell: connectedTableView.cellForRowAtIndexPath(indexPath!)! as JobListResultCell, atIndexPath: indexPath!)
+                    configureCell(connectedTableView, cell: connectedTableView.cellForRowAtIndexPath(indexPath!)! as! JobListResultCell, atIndexPath: indexPath!)
                 }
             case .Move:
                 if isSectionExpanded(indexPath!.section, controller: controller) {
@@ -443,15 +443,15 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     private func checkForPassedInterviewsAndUpdateStages() {
         let sections = stageFRC.sections!
         for section in sections {
-            let section = section as NSFetchedResultsSectionInfo
+            let section = section as! NSFetchedResultsSectionInfo
             let stageNumber = section.name!.toInt()!
             let stage = Stage(rawValue: stageNumber)!
             
             if stage == .PreInterview || stage == .PostInterview {
                 for basic in section.objects {
-                    let basic = basic as JobBasic
+                    let basic = basic as! JobBasic
                     for interview in basic.interviews {
-                        let interview = interview as JobInterview
+                        let interview = interview as! JobInterview
                         EventManager.sharedInstance.syncInterviewWithCalendarEvent(interview: interview)
                     }
                 }

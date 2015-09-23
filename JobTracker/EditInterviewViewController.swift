@@ -79,10 +79,10 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "findLocation" {
-            let destination = segue.destinationViewController as LocationTableViewController
+            let destination = segue.destinationViewController as! LocationTableViewController
             destination.delegate = self
         } else if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
+            let destination = segue.destinationViewController as! ShowDetailViewController
             destination.loadedBasic = loadedBasic
         }
     }
@@ -326,7 +326,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     
     private func deleteInterview() {
         if loadedInterview != nil {
-            let mutableInterviews = loadedBasic.interviews.mutableCopy() as NSMutableSet
+            let mutableInterviews = loadedBasic.interviews.mutableCopy() as! NSMutableSet
             mutableInterviews.removeObject(loadedInterview!)
             loadedBasic.interviews = mutableInterviews
             
@@ -343,11 +343,11 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         if loadedInterview != nil {
             interview = loadedInterview!
         } else {
-            let appDelegate = UIApplication.sharedApplication().delegate as AppDelegate
+            let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
             let managedContext = appDelegate.managedObjectContext!
             
-            interview = NSEntityDescription.insertNewObjectForEntityForName("JobInterview", inManagedObjectContext: managedContext) as JobInterview
-            let interviewLocation = NSEntityDescription.insertNewObjectForEntityForName("JobLocation", inManagedObjectContext: managedContext) as JobLocation
+            interview = NSEntityDescription.insertNewObjectForEntityForName("JobInterview", inManagedObjectContext: managedContext) as! JobInterview
+            let interviewLocation = NSEntityDescription.insertNewObjectForEntityForName("JobLocation", inManagedObjectContext: managedContext) as! JobLocation
             managedContext.insertObject(interview)
             managedContext.insertObject(interviewLocation)
             

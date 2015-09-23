@@ -111,13 +111,13 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell: ShowResultCell
         if indexPath.section == 0 {
-            cell = tableView.dequeueReusableCellWithIdentifier("showContactCell") as ShowResultCell
+            cell = tableView.dequeueReusableCellWithIdentifier("showContactCell") as! ShowResultCell
         } else {
             let doubleHeight = contacts[indexPath.row].doubleHeight
             if doubleHeight {
-                cell = tableView.dequeueReusableCellWithIdentifier("showContactWithDetailCell") as ShowResultCell
+                cell = tableView.dequeueReusableCellWithIdentifier("showContactWithDetailCell") as! ShowResultCell
             } else {
-                cell = tableView.dequeueReusableCellWithIdentifier("showContactCell") as ShowResultCell
+                cell = tableView.dequeueReusableCellWithIdentifier("showContactCell") as! ShowResultCell
             }
         }
         
@@ -198,9 +198,9 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
             return ""
         }
         
-        let jobTitle = ABRecordCopyValue(person, kABPersonJobTitleProperty)?.takeRetainedValue() as String?
-        let department = ABRecordCopyValue(person, kABPersonDepartmentProperty)?.takeRetainedValue() as String?
-        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+        let jobTitle = ABRecordCopyValue(person, kABPersonJobTitleProperty)?.takeRetainedValue() as? String
+        let department = ABRecordCopyValue(person, kABPersonDepartmentProperty)?.takeRetainedValue() as? String
+        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as? String
         
         var textArray = [String]()
         if jobTitle != nil {
@@ -221,13 +221,13 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         }
         
         let compositeName = ABRecordCopyCompositeName(person).takeRetainedValue() as String
-        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as? String
         if company != nil && compositeName == company! {
             return false
         }
         
-        let jobTitle = ABRecordCopyValue(person, kABPersonJobTitleProperty)?.takeRetainedValue() as String?
-        let department = ABRecordCopyValue(person, kABPersonDepartmentProperty)?.takeRetainedValue() as String?
+        let jobTitle = ABRecordCopyValue(person, kABPersonJobTitleProperty)?.takeRetainedValue() as? String
+        let department = ABRecordCopyValue(person, kABPersonDepartmentProperty)?.takeRetainedValue() as? String
         if jobTitle != nil || department != nil || company != nil {
             return true
         }
@@ -300,9 +300,9 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
     //MARK:-
     
     private func createJobContactFromPerson(person: ABRecord) {
-        let personFirst = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
-        let personLast = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as String?
-        let personCompany = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+        let personFirst = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as? String
+        let personLast = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as? String
+        let personCompany = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as? String
         let personID = NSNumber(int: ABRecordGetRecordID(person))
         
         //the person picked must have a name or a company
@@ -321,7 +321,7 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
             }
         }
         
-        let contact = NSEntityDescription.insertNewObjectForEntityForName("JobContact", inManagedObjectContext: Common.managedContext) as JobContact
+        let contact = NSEntityDescription.insertNewObjectForEntityForName("JobContact", inManagedObjectContext: Common.managedContext) as! JobContact
         Common.managedContext.insertObject(contact)
         loadedBasic.contacts.setByAddingObject(contact)
         contact.basic = loadedBasic

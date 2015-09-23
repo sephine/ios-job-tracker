@@ -65,7 +65,7 @@ class EditApplicationViewController: UITableViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
+            let destination = segue.destinationViewController as! ShowDetailViewController
             destination.loadedBasic = loadedBasic
         }
     }
@@ -123,7 +123,7 @@ class EditApplicationViewController: UITableViewController {
         if loadedBasic.application != nil {
             application = loadedBasic.application!
         } else {
-            application = NSEntityDescription.insertNewObjectForEntityForName("JobApplication", inManagedObjectContext: managedContext) as JobApplication
+            application = NSEntityDescription.insertNewObjectForEntityForName("JobApplication", inManagedObjectContext: managedContext) as! JobApplication
             managedContext.insertObject(application)
             loadedBasic.application = application
             application.basic = loadedBasic

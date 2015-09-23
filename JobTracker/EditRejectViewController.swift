@@ -37,7 +37,7 @@ class EditRejectViewController: UITableViewController {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
+            let destination = segue.destinationViewController as! ShowDetailViewController
             destination.loadedBasic = loadedBasic
         }
     }
@@ -73,7 +73,7 @@ class EditRejectViewController: UITableViewController {
         if loadedBasic.rejected != nil {
             rejected = loadedBasic.rejected!
         } else {
-            rejected = NSEntityDescription.insertNewObjectForEntityForName("JobRejected", inManagedObjectContext: managedContext) as JobRejected
+            rejected = NSEntityDescription.insertNewObjectForEntityForName("JobRejected", inManagedObjectContext: managedContext) as! JobRejected
             managedContext.insertObject(rejected)
             loadedBasic.rejected = rejected
             rejected.basic = loadedBasic

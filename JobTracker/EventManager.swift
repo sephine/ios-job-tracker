@@ -134,7 +134,7 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         var correctEventID = ""
         if events != nil {
             for event in events! {
-                let event = event as EKEvent
+                let event = event as! EKEvent
                 if event.title == interview.title && event.startDate == interview.starts && event.endDate == interview.ends {
                     correctEventID = event.eventIdentifier
                     break

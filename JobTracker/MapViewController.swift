@@ -61,7 +61,7 @@ class MapViewController: UIViewController {
         let latitude = location.latitude as Double?
         let longitude = location.longitude as Double?
         if latitude == nil || longitude == nil {
-            AddressCoordinateSearch.getPlacemark(location.address, fetchedPlacemark)
+            AddressCoordinateSearch.getPlacemark(location.address, callbackFunction: fetchedPlacemark)
         } else {
         let coordinates = CLLocationCoordinate2D(latitude: latitude!, longitude: longitude!)
         
@@ -93,7 +93,7 @@ class MapViewController: UIViewController {
     }
     
     @IBAction func directionsClicked(sender: UIButton) {
-        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
+        let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
         allowedCharacters.removeCharactersInString("&=?")
         let urlFormAddress = location.address.stringByAddingPercentEncodingWithAllowedCharacters(allowedCharacters)!
         

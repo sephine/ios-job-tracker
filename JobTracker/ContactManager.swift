@@ -62,21 +62,21 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
     func findAddressBookPersonMatchingNameOrCompanyAndUpdateID(#contact: JobContact) -> ABRecord? {
         //get record from address book that matches our stored ID. Check the name or company if there is no name is correct.
         let person: ABRecord? = ABAddressBookGetPersonWithRecordID(addressBook, contact.contactID.intValue).takeUnretainedValue()
-        let first = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
-        let last = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as String?
-        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+        let first = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as? String
+        let last = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as? String
+        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as? String
         
         //if the contact has no name and the company returned does not match the contact's company, search all address book records for one matching the stored company.
         if contact.first.isEmpty && contact.last.isEmpty && (company == nil || company! != contact.company) {
             //when our contact has no name just a company, search the address book by company.
             let allPeople = ABAddressBookCopyArrayOfAllPeople(addressBook).takeRetainedValue() as NSArray
             let matchingRecords = allPeople.filteredArrayUsingPredicate(NSPredicate(block: { (record, bindings) in
-                let recordCompany = ABRecordCopyValue(record, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+                let recordCompany = ABRecordCopyValue(record, kABPersonOrganizationProperty)?.takeRetainedValue() as? String
                 if recordCompany == nil || recordCompany! != contact.company {
                     return false
                 }
-                let recordFirst = ABRecordCopyValue(record, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
-                let recordLast = ABRecordCopyValue(record, kABPersonLastNameProperty)?.takeRetainedValue() as String?
+                let recordFirst = ABRecordCopyValue(record, kABPersonFirstNameProperty)?.takeRetainedValue() as? String
+                let recordLast = ABRecordCopyValue(record, kABPersonLastNameProperty)?.takeRetainedValue() as? String
                 if recordFirst != nil || recordLast != nil {
                     return false
                 }
@@ -106,8 +106,8 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
             //if the contact has a name, search the address book for a record that matches it exactly.
             let allPeopleWithSimilarNames = ABAddressBookCopyPeopleWithName(addressBook, "\(contact.first) \(contact.last)" as CFStringRef).takeRetainedValue() as NSArray
             let matchingRecords = allPeopleWithSimilarNames.filteredArrayUsingPredicate(NSPredicate(block: { (record, bindings) in
-                let recordFirst = ABRecordCopyValue(record, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
-                let recordLast = ABRecordCopyValue(record, kABPersonLastNameProperty)?.takeRetainedValue() as String?
+                let recordFirst = ABRecordCopyValue(record, kABPersonFirstNameProperty)?.takeRetainedValue() as? String
+                let recordLast = ABRecordCopyValue(record, kABPersonLastNameProperty)?.takeRetainedValue() as? String
                 if (recordFirst == nil && !contact.first.isEmpty) || (recordFirst != nil && recordFirst! != contact.first) || (recordLast == nil && !contact.last.isEmpty) || (recordLast != nil && recordLast! != contact.last) {
                     return false
                 }
@@ -144,9 +144,9 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
             return nil
         }
         
-        let first = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as String?
-        let last = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as String?
-        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as String?
+        let first = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as? String
+        let last = ABRecordCopyValue(person, kABPersonLastNameProperty)?.takeRetainedValue() as? String
+        let company = ABRecordCopyValue(person, kABPersonOrganizationProperty)?.takeRetainedValue() as? String
             
         //if the user has deleted all the above fields, it is not longer a viable contact for our app and must be changed to not found.
         if first == nil && last == nil && company == nil {

@@ -34,14 +34,14 @@ class CoreDataObserver: NSObject {
     
     func notificationReceived(notification: NSNotification) {
         //if anything but a JobLocation is altered we will get the JobBasic from it and make sure that it has the correct stage and date.
-        let context = notification.object! as NSManagedObjectContext
-        let allModifiedObjects = context.insertedObjects.setByAddingObjectsFromSet(context.deletedObjects).setByAddingObjectsFromSet(context.updatedObjects)
-        for object in allModifiedObjects.allObjects {
+        let context = notification.object! as! NSManagedObjectContext
+        let allModifiedObjects = context.insertedObjects.union(context.deletedObjects).union(context.updatedObjects)
+        for object in allModifiedObjects {
             if object is JobBasic {
-                updateStageAndDateForJobBasic(object as JobBasic)
+                updateStageAndDateForJobBasic(object as! JobBasic)
                 break
             } else if !(object is JobLocation) {
-                let jobBasic = object.valueForKey("basic") as JobBasic?
+                let jobBasic = object.valueForKey("basic") as? JobBasic
                 if jobBasic != nil {
                     updateStageAndDateForJobBasic(jobBasic!)
                     break
@@ -93,7 +93,7 @@ class CoreDataObserver: NSObject {
             if let dueDate = jobBasic.details.dueDate {
                 newDate = calendar.dateBySettingHour(23, minute: 59, second: 59, ofDate: dueDate, options: nil)!
             } else {
-                newDate = NSDate.distantFuture() as NSDate
+                newDate = NSDate.distantFuture() as! NSDate
             }
         case .Applied:
             newDate = jobBasic.application!.dateSent

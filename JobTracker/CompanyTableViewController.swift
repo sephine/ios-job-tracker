@@ -111,7 +111,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         //show glassdoor attribution on last row
         if indexPath.section == 1 && indexPath.row == companies!.count {
-            let attributionCell = tableView.dequeueReusableCellWithIdentifier("glassdoorAttributionCell") as AttributionCell
+            let attributionCell = tableView.dequeueReusableCellWithIdentifier("glassdoorAttributionCell") as! AttributionCell
             attributionCell.logo.image = UIImage(named: "glassdoor_logo_80.png")
             //TODO change to glassdoor logo
             attributionCell.logo.contentMode = .Left
@@ -119,22 +119,22 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
         }
         
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier("companyManualCell", forIndexPath: indexPath) as UITableViewCell
+            let cell = tableView.dequeueReusableCellWithIdentifier("companyManualCell", forIndexPath: indexPath) as! UITableViewCell
             cell.textLabel!.text = search.text
             return cell
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("companyResultCell", forIndexPath: indexPath) as CompanyResultCell
-        let company = companies![indexPath.row] as NSDictionary
-        let squareLogo = company["squareLogo"] as String
+        let cell = tableView.dequeueReusableCellWithIdentifier("companyResultCell", forIndexPath: indexPath) as! CompanyResultCell
+        let company = companies![indexPath.row] as! NSDictionary
+        let squareLogo = company["squareLogo"] as! String
         if squareLogo != "" {
             let url = NSURL(string: squareLogo)
             if url != nil {
                 cell.logo.sd_setImageWithURL(url!)
             }
         }
-        cell.company.text = (company["name"] as String)
-        cell.website.text = (company["website"] as String)
+        cell.company.text = (company["name"] as! String)
+        cell.website.text = (company["website"] as! String)
         return cell
     }
     
@@ -154,10 +154,10 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
             delegate.companySelected(company!, website: "", glassdoorLink: "")
             navigationController?.popViewControllerAnimated(true)
         } else if indexPath.row < companies!.count {
-            let company = companies![indexPath.row] as NSDictionary
-            let companyName = (company["name"] as String)
-            let website = (company["website"] as String)
-            let glassdoorID = company["id"] as NSNumber
+            let company = companies![indexPath.row] as! NSDictionary
+            let companyName = (company["name"] as! String)
+            let website = (company["website"] as! String)
+            let glassdoorID = company["id"] as! NSNumber
             let glassdoorIDString = glassdoorID.description
             let glassdoorLink = "http://www.glassdoor.com/Job/\(companyName)-Jobs-E\(glassdoorIDString).htm"
             delegate.companySelected(companyName, website: website, glassdoorLink: glassdoorLink)

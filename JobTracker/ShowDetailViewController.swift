@@ -85,14 +85,14 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showWeb" {
-            let indexPath = sender as NSIndexPath
+            let indexPath = sender as! NSIndexPath
             let website = cellTypeArray[indexPath.row].website
-            let destination = segue.destinationViewController as WebViewController
+            let destination = segue.destinationViewController as! WebViewController
             destination.website = website
         } else if segue.identifier == "showMap" {
-            let destination = segue.destinationViewController as MapViewController
+            let destination = segue.destinationViewController as! MapViewController
             if sender is JobInterview {
-                let interview = sender as JobInterview
+                let interview = sender as! JobInterview
                 destination.location = interview.location
                 destination.locationTitle = interview.title
             } else {
@@ -100,26 +100,26 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
                 destination.locationTitle = loadedBasic.company
             }
         } else if segue.identifier == "showContacts" {
-            let destination = segue.destinationViewController as ShowContactsViewController
+            let destination = segue.destinationViewController as! ShowContactsViewController
             destination.loadedBasic = loadedBasic
         } else if segue.identifier == "editJob" {
-            let destination = segue.destinationViewController as EditDetailViewController
+            let destination = segue.destinationViewController as! EditDetailViewController
             destination.loadedBasic = loadedBasic
         } else if segue.identifier == "editApplication" {
-            let destination = segue.destinationViewController as EditApplicationViewController
+            let destination = segue.destinationViewController as! EditApplicationViewController
             destination.loadedBasic = loadedBasic
         } else if segue.identifier == "editInterview" {
-            let destination = segue.destinationViewController as EditInterviewViewController
+            let destination = segue.destinationViewController as! EditInterviewViewController
             destination.loadedBasic = loadedBasic
             if sender is JobInterview {
-                let interview = sender as JobInterview
+                let interview = sender as! JobInterview
                 destination.loadedInterview = interview
             }
         } else if segue.identifier == "editOffer" {
-            let destination = segue.destinationViewController as EditOfferViewController
+            let destination = segue.destinationViewController as! EditOfferViewController
             destination.loadedBasic = loadedBasic
         } else if segue.identifier == "editReject" {
-            let destination = segue.destinationViewController as EditRejectViewController
+            let destination = segue.destinationViewController as! EditRejectViewController
             destination.loadedBasic = loadedBasic
         }
     }
@@ -129,7 +129,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     //event dates etc might have been changed since last opened.
     private func checkForUpdatedInterviewEvents() {
         for interview in loadedBasic.interviews {
-            let interview = interview as JobInterview
+            let interview = interview as! JobInterview
             EventManager.sharedInstance.syncInterviewWithCalendarEvent(interview: interview)
         }
     }
@@ -311,14 +311,14 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             return getCompanyWithAddressCell(detailsString)
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyCell") as! ShowResultCell
         cell.mainLabel.text = company
         cell.secondaryLabel!.text = detailsString
         return cell
     }
     
     private func getCompanyWithAddressCell(secondaryText: String) -> ShowResultWithAddressCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyWithAddressCell") as ShowResultWithAddressCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showCompanyWithAddressCell") as! ShowResultWithAddressCell
         cell.owner = loadedBasic
         cell.delegate = self
         
@@ -335,32 +335,32 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }*/
     
     private func getCompanyWebsiteCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showWebsiteCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showWebsiteCell") as! ShowResultCell
         cell.mainLabel.text = "Company Website"
         cell.secondaryLabel!.text = loadedBasic.details.website
         return cell
     }
     
     private func getJobListingCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showWebsiteCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showWebsiteCell") as! ShowResultCell
         cell.mainLabel.text = "Job Listing"
         cell.secondaryLabel!.text = loadedBasic.details.jobListing
         return cell
     }
     
     private func getGlassdoorCell() -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showGlassdoorCell") as UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showGlassdoorCell") as! UITableViewCell
         return cell
     }
     
     private func getNotesCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showNotesCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showNotesCell") as! ShowResultCell
         cell.secondaryLabel!.text = loadedBasic.details.notes
         return cell
     }
     
     private func getContactsCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showContactsCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showContactsCell") as! ShowResultCell
         
         let numberOfContacts = loadedBasic.contacts.count
         if numberOfContacts == 0 {
@@ -372,13 +372,13 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     private func getAddApplicationCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as! ShowResultCell
         cell.mainLabel.text = "Add Application"
         return cell
     }
     
     private func getViewApplicationCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as! ShowResultCell
         
         let dateSent = loadedBasic.application!.dateSent
         let dateSentString = Common.standardDateFormatter.stringFromDate(dateSent)
@@ -393,8 +393,8 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         let detailsString = join("\n", detailsArray)
         
-        let firstLineLength = countElements(firstLine)
-        let entireLength = countElements(detailsString)
+        let firstLineLength = count(firstLine)
+        let entireLength = count(detailsString)
         let attributedString = NSMutableAttributedString(string: detailsString)
         attributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16), range: NSMakeRange(0, entireLength))
         attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: NSMakeRange(0, firstLineLength))
@@ -406,7 +406,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     private func getAddInterviewCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as! ShowResultCell
         cell.mainLabel.text = "Add Interview"
         return cell
     }
@@ -416,7 +416,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             return getViewInterviewWithAddressCell(interview)
         }
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as! ShowResultCell
         
         let startsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.starts)
         let endsString = Common.standardDateAndTimeFormatter.stringFromDate(interview.ends)
@@ -436,7 +436,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     private func getViewInterviewWithAddressCell(interview: JobInterview) -> ShowResultWithAddressCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showInterviewWithAddressCell") as ShowResultWithAddressCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showInterviewWithAddressCell") as! ShowResultWithAddressCell
         cell.owner = interview
         cell.delegate = self
         
@@ -458,13 +458,13 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     private func getAddOfferCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showAddStageCell") as! ShowResultCell
         cell.mainLabel.text = "Add Offer"
         return cell
     }
     
     private func getViewOfferCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as! ShowResultCell
         
         let dateReceived = loadedBasic.offer!.dateReceived
         let dateReceivedString = Common.standardDateFormatter.stringFromDate(dateReceived)
@@ -491,7 +491,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     private func getViewRejectedCell() -> ShowResultCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as ShowResultCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showStageCell") as! ShowResultCell
         
         let dateRejected = loadedBasic.rejected!.dateRejected
         let dateRejectedString = Common.standardDateFormatter.stringFromDate(dateRejected)

@@ -76,7 +76,7 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.destinationViewController is ShowDetailViewController {
-            let destination = segue.destinationViewController as ShowDetailViewController
+            let destination = segue.destinationViewController as! ShowDetailViewController
             destination.loadedBasic = loadedBasic
         }
     }
@@ -112,7 +112,7 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
         let decimalSeparator = Common.standardCurrencyFormatter.decimalSeparator!
         let expression = "^\\d*\\\(decimalSeparator)?\\d{0,2}$"
         let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
-        let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, countElements(newSalary)))
+        let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, count(newSalary)))
         if numberOfMatches == 0 {
             return false
         }
@@ -170,7 +170,7 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
         if loadedBasic.offer != nil {
             offer = loadedBasic.offer!
         } else {
-            offer = NSEntityDescription.insertNewObjectForEntityForName("JobOffer", inManagedObjectContext: managedContext) as JobOffer
+            offer = NSEntityDescription.insertNewObjectForEntityForName("JobOffer", inManagedObjectContext: managedContext) as! JobOffer
             managedContext.insertObject(offer)
             loadedBasic.offer = offer
             offer.basic = loadedBasic

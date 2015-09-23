@@ -11,7 +11,7 @@ import CoreData
 
 struct Common {
     
-    static var managedContext: NSManagedObjectContext = (UIApplication.sharedApplication().delegate as AppDelegate).managedObjectContext!
+    static var managedContext: NSManagedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext!
     
     static var standardCurrencyFormatter: NSNumberFormatter {
         let formatter = NSNumberFormatter()
