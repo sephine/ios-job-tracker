@@ -45,12 +45,12 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
     //MARK:- UISearchBarDelegate
     
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        if searchBar.text.isEmpty {
+        if searchBar.text!.isEmpty {
             companies = nil
             connectionError = false
             tableView.reloadData()
         } else {
-            GlassdoorCompanySearch().queryGlassdoor(company: searchBar.text, callbackFunction: updateWithCompanyResults)
+            GlassdoorCompanySearch().queryGlassdoor(company: searchBar.text!, callbackFunction: updateWithCompanyResults)
         }
     }
     
@@ -69,7 +69,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if search.text.isEmpty {
+        if search.text!.isEmpty {
             return nil
         }
         
@@ -81,7 +81,7 @@ class CompanyTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            if search.text.isEmpty {
+            if search.text!.isEmpty {
                 return 0
             }
             return 1

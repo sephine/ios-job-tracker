@@ -10,7 +10,7 @@ import Foundation
 
 class GlassdoorCompanySearch {
     
-    func queryGlassdoor(#company: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
+    func queryGlassdoor(company company: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
         let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
         allowedCharacters.removeCharactersInString("&=?")
         
@@ -23,7 +23,7 @@ class GlassdoorCompanySearch {
         let queue = NSOperationQueue()
         
         NetworkActivityIndicator.startActivity()
-        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler: { (response: NSURLResponse!, data: NSData!, error: NSError!) in
+        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler: { (response: NSURLResponse?, data: NSData?, error: NSError?) in
             if error != nil {
                 //TODO: what to do if the data can't be retrieved. Should state a problem with the internet connection for example.
                 NSOperationQueue.mainQueue().addOperationWithBlock({
@@ -33,21 +33,21 @@ class GlassdoorCompanySearch {
             } else {
                 NSOperationQueue.mainQueue().addOperationWithBlock({
                     NetworkActivityIndicator.stopActivity()
-                    self.fetchedData(data, callbackFunction: callbackFunction)
+                    self.fetchedData(data!, callbackFunction: callbackFunction)
                 })
             }
         })
     }
     
     func fetchedData(responseData: NSData, callbackFunction: (Bool, [AnyObject]?) -> Void) {
-        var error: NSError?
-        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as! NSDictionary
-        if (json["success"] as! Bool) != true {
+        let json = try? NSJSONSerialization.JSONObjectWithData(responseData, options: []) as! NSDictionary
+        if json == nil || (json!["success"] as! Bool) != true {
             callbackFunction(false, nil)
+        } else {
+            let response = json!["response"] as! NSDictionary
+            let companies = response["employers"] as! [AnyObject]
+            callbackFunction(true, companies)
         }
-        let response = json["response"] as! NSDictionary
-        let companies = response["employers"] as! [AnyObject]
-        callbackFunction(true, companies)
     }
 
     //TODO: make keys secret, move them into seperate file?

@@ -108,11 +108,11 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
     
     //only called by salary text field
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
-        let newSalary = (textField.text as NSString).stringByReplacingCharactersInRange(range, withString: string)
+        let newSalary = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
         let decimalSeparator = Common.standardCurrencyFormatter.decimalSeparator!
         let expression = "^\\d*\\\(decimalSeparator)?\\d{0,2}$"
-        let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
-        let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, count(newSalary)))
+        let regex = try! NSRegularExpression(pattern: expression, options: [])
+        let numberOfMatches = regex.numberOfMatchesInString(newSalary, options: [], range: NSMakeRange(0, newSalary.characters.count))
         if numberOfMatches == 0 {
             return false
         }
@@ -137,7 +137,7 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
             salary = nil
             return
         }
-        salary = Common.standardDecimalFormatter.numberFromString(textField.text)
+        salary = Common.standardDecimalFormatter.numberFromString(textField.text!)
         salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
     }
     
@@ -180,9 +180,10 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
         offer.dateReceived = Common.standardDateFormatter.dateFromString(dateReceivedBox.text!)!
         offer.salary = salary
         
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
     
@@ -190,9 +191,10 @@ class EditOfferViewController: UITableViewController, UITextFieldDelegate {
         if let offer = loadedBasic.offer {
             loadedBasic.offer = nil
             
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
+            do {
+                try Common.managedContext.save()
+            } catch {
+                print("Could not save.")
             }
             navigationController?.popViewControllerAnimated(true)
         }

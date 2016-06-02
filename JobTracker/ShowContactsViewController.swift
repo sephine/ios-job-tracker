@@ -27,7 +27,7 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         
         //set the contacts array initially up with nil for person, the correct data will be filled-in in updateContactsAndCheckIfTheyShouldBeEnabled
         for contact in loadedBasic!.orderedContacts {
-            contacts.append(contact: contact, person: nil, doubleHeight: false)
+            contacts.append((contact: contact, person: nil, doubleHeight: false))
         }
         updateContactIDsAndCheckIfTheyShouldBeEnabled()
     }
@@ -174,7 +174,7 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         }
     }
 
-    private func mainTextForCell(#contact: JobContact, person: ABRecord?) -> String {
+    private func mainTextForCell(contact contact: JobContact, person: ABRecord?) -> String {
         if person != nil {
             return ABRecordCopyCompositeName(person).takeRetainedValue() as String
         } else {
@@ -189,11 +189,11 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
                 textArray.append(contact.company)
             }
             textArray.append("- not found")
-            return join(" ", textArray)
+            return textArray.joinWithSeparator(" ")
         }
     }
     
-    private func secondaryTextForCell(#contact: JobContact, person: ABRecord?) -> String {
+    private func secondaryTextForCell(contact contact: JobContact, person: ABRecord?) -> String {
         if person == nil {
             return ""
         }
@@ -212,10 +212,10 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
         if company != nil {
             textArray.append(company!)
         }
-        return join(" - ", textArray)
+        return textArray.joinWithSeparator(" - ")
     }
     
-    private func doesPersonRequireDoubleHeightCell(#person: ABRecord?) -> Bool {
+    private func doesPersonRequireDoubleHeightCell(person person: ABRecord?) -> Bool {
         if person == nil {
             return false
         }
@@ -379,9 +379,10 @@ class ShowContactsViewController: UITableViewController, ContactDelegate {
     //MARK:- Core Data Changers
     
     private func saveData() {
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try Common.managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
 }

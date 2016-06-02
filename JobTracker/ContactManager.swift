@@ -59,7 +59,7 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
     //MARK:- Check Stored Data Against Address Book
     
     //during the gap since the app was last used, records in the address book may have changed IDs or been deleted all together, if the stored id no longer seems correct we will search by name or company.
-    func findAddressBookPersonMatchingNameOrCompanyAndUpdateID(#contact: JobContact) -> ABRecord? {
+    func findAddressBookPersonMatchingNameOrCompanyAndUpdateID(contact contact: JobContact) -> ABRecord? {
         //get record from address book that matches our stored ID. Check the name or company if there is no name is correct.
         let person: ABRecord? = ABAddressBookGetPersonWithRecordID(addressBook, contact.contactID.intValue).takeUnretainedValue()
         let first = ABRecordCopyValue(person, kABPersonFirstNameProperty)?.takeRetainedValue() as? String
@@ -94,9 +94,10 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
             }
             
             //save changes
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
+            do {
+                try Common.managedContext.save()
+            } catch {
+                print("Could not save.")
             }
             return matchingPerson
         }
@@ -125,9 +126,10 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
             }
             
             //save changes
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
+            do {
+                try Common.managedContext.save()
+            } catch {
+                print("Could not save.")
             }
             return matchingPerson
         }
@@ -137,7 +139,7 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
     }
     
     //When a user edits the address book within the app our stored data may become incorrect and will need to be updated.
-    func findAddressBookPersonMatchingIDAndUpdateName(#contact: JobContact) -> ABRecord? {
+    func findAddressBookPersonMatchingIDAndUpdateName(contact contact: JobContact) -> ABRecord? {
         let person: ABRecord? = ABAddressBookGetPersonWithRecordID(addressBook, contact.contactID.intValue).takeUnretainedValue()
         
         if person == nil {
@@ -151,9 +153,10 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
         //if the user has deleted all the above fields, it is not longer a viable contact for our app and must be changed to not found.
         if first == nil && last == nil && company == nil {
             contact.contactID = -1
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
+            do {
+                try Common.managedContext.save()
+            } catch {
+                print("Could not save.")
             }
             return nil
         }
@@ -174,9 +177,10 @@ class ContactManager: NSObject, ABPersonViewControllerDelegate, ABPeoplePickerNa
             contact.company = ""
         }
         
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try Common.managedContext.save()
+        } catch {
+            print("Could not save.")
         }
 
         return person

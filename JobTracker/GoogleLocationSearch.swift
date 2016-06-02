@@ -10,7 +10,7 @@ import Foundation
 
 class GoogleLocationSearch {
     
-    func queryGoogle(#address: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
+    func queryGoogle(address address: String, callbackFunction: (Bool, [AnyObject]?) -> Void) {
         let allowedCharacters = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
         allowedCharacters.removeCharactersInString("&=?")
         
@@ -23,7 +23,7 @@ class GoogleLocationSearch {
         let queue = NSOperationQueue()
         
         NetworkActivityIndicator.startActivity()
-        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler: { (response: NSURLResponse!, data: NSData!, error: NSError!) in
+        NSURLConnection.sendAsynchronousRequest(request, queue: queue, completionHandler: { (response: NSURLResponse?, data: NSData?, error: NSError?) in
             if error != nil {
                 //TODO what to do if the data can't be retrieved.
                 NSOperationQueue.mainQueue().addOperationWithBlock({
@@ -33,15 +33,14 @@ class GoogleLocationSearch {
             } else {
                 NSOperationQueue.mainQueue().addOperationWithBlock({
                     NetworkActivityIndicator.stopActivity()
-                    self.fetchedData(data, callbackFunction: callbackFunction)
+                    self.fetchedData(data!, callbackFunction: callbackFunction)
                 })
             }
         })
     }
     
     func fetchedData(responseData: NSData, callbackFunction: (Bool, [AnyObject]?) -> Void) {
-        var error: NSError?
-        let json = NSJSONSerialization.JSONObjectWithData(responseData, options: nil, error: &error) as! NSDictionary
+        let json = try! NSJSONSerialization.JSONObjectWithData(responseData, options: []) as! NSDictionary
         let status = json["status"] as! String
         if status != "OK" && status != "ZERO_RESULTS" {
             callbackFunction(false, nil)

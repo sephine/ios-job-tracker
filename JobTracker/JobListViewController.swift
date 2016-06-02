@@ -92,9 +92,10 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         stageFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: "stage", cacheName: "company")
         stageFRC.delegate = self
         
-        var error: NSError?
-        if !stageFRC.performFetch(&error) {
-            NSLog("Could not fetch results \(error), \(error?.userInfo)")
+        do {
+            try self.stageFRC.performFetch()
+        } catch {
+            NSLog("Could not fetch results.")
         }
     }
     
@@ -109,9 +110,10 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         dateFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: "inFuture", cacheName: "inFuture")
         dateFRC.delegate = self
         
-        var error: NSError?
-        if !dateFRC.performFetch(&error) {
-            NSLog("Could not fetch results \(error), \(error?.userInfo)")
+        do {
+            try self.dateFRC.performFetch()
+        } catch {
+            NSLog("Could not fetch results.")
         }
     }
     
@@ -124,9 +126,10 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         searchFRC = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: Common.managedContext, sectionNameKeyPath: nil, cacheName: nil)
         searchFRC.delegate = self
         
-        var error: NSError?
-        if !searchFRC.performFetch(&error) {
-            NSLog("Could not fetch results \(error), \(error?.userInfo)")
+        do {
+            try self.searchFRC.performFetch()
+        } catch {
+            NSLog("Could not fetch results.")
         }
     }
     
@@ -210,9 +213,10 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     private func filterResultsForSearchText(searchText: String) {
         searchFRC.fetchRequest.predicate = NSPredicate(format: "company BEGINSWITH[cd] %@", searchText)
         
-        var error: NSError?
-        if !searchFRC.performFetch(&error) {
-            NSLog("Could not fetch results \(error), \(error?.userInfo)")
+        do {
+            try self.searchFRC.performFetch()
+        } catch {
+            NSLog("Could not fetch results.")
         }
     }
     
@@ -303,7 +307,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         }
     }
     
-    private func isDateWithinAWeekOfToday(#date: NSDate) -> Bool {
+    private func isDateWithinAWeekOfToday(date date: NSDate) -> Bool {
         let today = NSDate()
         let calendar = NSCalendar.currentCalendar()
         
@@ -311,7 +315,7 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
         let startOfDate = calendar.startOfDayForDate(date)
         let startOfToday = calendar.startOfDayForDate(today)
         
-        let components = calendar.components(.CalendarUnitDay, fromDate: startOfToday, toDate: startOfDate, options: nil)
+        let components = calendar.components(NSCalendarUnit.Day, fromDate: startOfToday, toDate: startOfDate, options: [])
         let daysDifference = components.day
         
         if daysDifference < 7 && date.timeIntervalSinceNow > 0.0 {
@@ -362,14 +366,14 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     //MARK:-
     
-    private func getHeaderTitle(#currentFRC: NSFetchedResultsController, section: Int) -> String {
-        let sectionInfo = currentFRC.sections![section] as! NSFetchedResultsSectionInfo
+    private func getHeaderTitle(currentFRC currentFRC: NSFetchedResultsController, section: Int) -> String {
+        let sectionInfo = currentFRC.sections![section] 
         if currentFRC == stageFRC {
-            let sectionNumber = sectionInfo.name!.toInt()!
+            let sectionNumber = Int(sectionInfo.name)!
             let stage = Stage(rawValue: sectionNumber)!
             return stage.title
         } else if currentFRC == dateFRC {
-            let sectionNumber = sectionInfo.name!.toInt()!
+            let sectionNumber = Int(sectionInfo.name)!
             if sectionNumber == 0 {
                 return "Past"
             }
@@ -443,12 +447,11 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     private func checkForPassedInterviewsAndUpdateStages() {
         let sections = stageFRC.sections!
         for section in sections {
-            let section = section as! NSFetchedResultsSectionInfo
-            let stageNumber = section.name!.toInt()!
+            let stageNumber = Int(section.name)!
             let stage = Stage(rawValue: stageNumber)!
             
             if stage == .PreInterview || stage == .PostInterview {
-                for basic in section.objects {
+                for basic in section.objects! {
                     let basic = basic as! JobBasic
                     for interview in basic.interviews {
                         let interview = interview as! JobInterview
@@ -461,9 +464,10 @@ class JobListViewController: UITableViewController, NSFetchedResultsControllerDe
     
     private func deleteJob(job: JobBasic) {
         Common.managedContext.deleteObject(job)
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try Common.managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
 }

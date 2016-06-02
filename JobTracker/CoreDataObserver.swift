@@ -91,7 +91,7 @@ class CoreDataObserver: NSObject {
             //set the date stored for dueDate as the end of the day, as we want it to show up as not passed until the whole day is passed. If there is no due date set it as far in the future.
             let calendar = NSCalendar.currentCalendar()
             if let dueDate = jobBasic.details.dueDate {
-                newDate = calendar.dateBySettingHour(23, minute: 59, second: 59, ofDate: dueDate, options: nil)!
+                newDate = calendar.dateBySettingHour(23, minute: 59, second: 59, ofDate: dueDate, options: [])!
             } else {
                 newDate = NSDate.distantFuture() as! NSDate
             }

@@ -110,16 +110,17 @@ class MapViewController: UIViewController {
     
     //MARK:- Core Data Changers
     
-    func fetchedPlacemark(#address: String, placemark: CLPlacemark?) {
+    func fetchedPlacemark(address address: String, placemark: CLPlacemark?) {
         if placemark == nil {
             let alert = UIAlertView(title: "Cannot find location", message: nil, delegate: nil, cancelButtonTitle: "OK")
             alert.show()
         } else {
-            location.latitude = placemark!.location.coordinate.latitude
-            location.longitude = placemark!.location.coordinate.longitude
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
+            location.latitude = placemark!.location!.coordinate.latitude
+            location.longitude = placemark!.location!.coordinate.longitude
+            do {
+                try Common.managedContext.save()
+            } catch {
+                print("Could not save.")
             }
             loadLocation()
         }

@@ -86,9 +86,10 @@ class EditRejectViewController: UITableViewController {
         
         rejected.notes = notesView.text
         
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
 }

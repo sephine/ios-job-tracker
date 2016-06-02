@@ -11,7 +11,7 @@ import UIKit
 
 protocol LocationSelectionDelegate: class {
     func locationSelected(address: String)
-    func coordinatesCalculated(#address: String, coordinates: CLLocationCoordinate2D)
+    func coordinatesCalculated(address address: String, coordinates: CLLocationCoordinate2D)
 }
 
 class LocationTableViewController: UITableViewController, UISearchBarDelegate {
@@ -46,12 +46,12 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     //MARK:- UISearchBarDelegate
     
     func searchBarSearchButtonClicked(searchBar: UISearchBar) {
-        if searchBar.text.isEmpty {
+        if searchBar.text!.isEmpty {
             locations = nil
             connectionError = false
             tableView.reloadData()
         } else {
-            GoogleLocationSearch().queryGoogle(address: searchBar.text, callbackFunction: updateWithLocationResults)
+            GoogleLocationSearch().queryGoogle(address: searchBar.text!, callbackFunction: updateWithLocationResults)
         }
     }
     
@@ -70,7 +70,7 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if search.text.isEmpty {
+        if search.text!.isEmpty {
             return nil
         }
         
@@ -83,7 +83,7 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            if search.text.isEmpty {
+            if search.text!.isEmpty {
                 return 0
             }
             return 1
@@ -144,9 +144,9 @@ class LocationTableViewController: UITableViewController, UISearchBarDelegate {
     
     //MARK:-
     
-    func fetchedPlacemark(#address: String, placemark: CLPlacemark?) {
+    func fetchedPlacemark(address address: String, placemark: CLPlacemark?) {
         if placemark != nil {
-            delegate.coordinatesCalculated(address: address, coordinates: placemark!.location.coordinate)
+            delegate.coordinatesCalculated(address: address, coordinates: placemark!.location!.coordinate)
         }
     }
     

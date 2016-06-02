@@ -112,13 +112,13 @@ class WebViewController: UIViewController, UIWebViewDelegate {
         }
     }
     
-    func webView(webView: UIWebView, didFailLoadWithError error: NSError) {
+    func webView(webView: UIWebView, didFailLoadWithError error: NSError?) {
         NetworkActivityIndicator.stopActivity()
-        if error.code == NSURLErrorCancelled {
+        if error!.code == NSURLErrorCancelled {
             return
         }
         
-        if error.code == NSURLErrorCannotFindHost {
+        if error!.code == NSURLErrorCannotFindHost {
             let googleSearchString = "http://google.com/search?q=\(website)"
             let url = NSURL(string: googleSearchString)
             let request = NSURLRequest(URL: url!)

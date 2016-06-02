@@ -158,7 +158,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     
     private func reloadCellTypeArray() {
         cellTypeArray = []
-        cellTypeArray.append(type: .Company, interview: nil, website: nil)
+        cellTypeArray.append((type: .Company, interview: nil, website: nil))
         
         /*let address = loadedBasic.location.address
         if !address.isEmpty {
@@ -167,22 +167,22 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         
         let website: String? = loadedBasic.details.website
         if !website!.isEmpty {
-            cellTypeArray.append(type: .CompanyWebsite, interview: nil, website: website)
+            cellTypeArray.append((type: .CompanyWebsite, interview: nil, website: website))
         }
         
         let listing: String? = loadedBasic.details.jobListing
         if !listing!.isEmpty {
-            cellTypeArray.append(type: .JobListing, interview: nil, website: listing)
+            cellTypeArray.append((type: .JobListing, interview: nil, website: listing))
         }
         
         let glassdoor: String? = loadedBasic.details.glassdoorLink
         if !glassdoor!.isEmpty {
-            cellTypeArray.append(type: .GlassdoorLink, interview: nil, website: glassdoor)
+            cellTypeArray.append((type: .GlassdoorLink, interview: nil, website: glassdoor))
         }
-        cellTypeArray.append(type: .Contacts, interview: nil, website: nil)
+        cellTypeArray.append((type: .Contacts, interview: nil, website: nil))
         let notes = loadedBasic.details.notes
         if !notes.isEmpty {
-            cellTypeArray.append(type: .Notes, interview: nil, website: nil)
+            cellTypeArray.append((type: .Notes, interview: nil, website: nil))
         }
     }
     
@@ -305,7 +305,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         }
         detailsArray.append(stage.title)
         
-        let detailsString = join("\n", detailsArray)
+        let detailsString = detailsArray.joinWithSeparator("\n")
         
         if !loadedBasic.location.address.isEmpty {
             return getCompanyWithAddressCell(detailsString)
@@ -349,7 +349,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     private func getGlassdoorCell() -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier("showGlassdoorCell") as! UITableViewCell
+        let cell = tableView.dequeueReusableCellWithIdentifier("showGlassdoorCell")!
         return cell
     }
     
@@ -391,10 +391,10 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             detailsArray.append(notes)
         }
         
-        let detailsString = join("\n", detailsArray)
+        let detailsString = detailsArray.joinWithSeparator("\n")
         
-        let firstLineLength = count(firstLine)
-        let entireLength = count(detailsString)
+        let firstLineLength = firstLine.characters.count
+        let entireLength = detailsString.characters.count
         let attributedString = NSMutableAttributedString(string: detailsString)
         attributedString.addAttribute(NSFontAttributeName, value: UIFont.systemFontOfSize(16), range: NSMakeRange(0, entireLength))
         attributedString.addAttribute(NSForegroundColorAttributeName, value: UIColor.blackColor(), range: NSMakeRange(0, firstLineLength))
@@ -430,7 +430,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             detailsArray.append(interview.notes)
         }
         
-        let detailsString = join("\n", detailsArray)
+        let detailsString = detailsArray.joinWithSeparator("\n")
         cell.mainLabel.text = detailsString
         return cell
     }
@@ -449,7 +449,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
         if !interview.notes.isEmpty {
             detailsArray.append(interview.notes)
         }
-        let detailsString = join("\n", detailsArray)
+        let detailsString = detailsArray.joinWithSeparator("\n")
         
         cell.titleLabel.text = interview.title
         cell.addressButton.setTitle(interview.location.address, forState: UIControlState.Normal)
@@ -485,7 +485,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             detailsArray.append("\(notes)")
         }
         
-        let detailsString = join("\n", detailsArray)
+        let detailsString = detailsArray.joinWithSeparator("\n")
         cell.mainLabel.text = detailsString
         return cell
     }
@@ -503,7 +503,7 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
             detailsArray.append("\(notes)")
         }
         
-        let detailsString = join("\n", detailsArray)
+        let detailsString = detailsArray.joinWithSeparator("\n")
         cell.mainLabel.text = detailsString
         return cell
     }
@@ -570,9 +570,10 @@ class ShowDetailViewController: UIViewController, UITableViewDelegate, UITableVi
     private func restoreJob() {
         loadedBasic.rejected = nil
         
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try Common.managedContext.save()
+        } catch {
+            print("Could not save.")
         }
         
         reloadSectionTypeArray()

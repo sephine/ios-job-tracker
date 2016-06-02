@@ -10,7 +10,7 @@ import Foundation
 
 extension NSDateFormatter {
     
-    func stringFromDifferenceInDateToToday(#date: NSDate) -> String {
+    func stringFromDifferenceInDateToToday(date date: NSDate) -> String {
         let today = NSDate()
         let calendar = NSCalendar.currentCalendar()
         
@@ -18,7 +18,7 @@ extension NSDateFormatter {
         let startOfDate = calendar.startOfDayForDate(date)
         let startOfToday = calendar.startOfDayForDate(today)
         
-        let components = calendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay, fromDate: startOfToday, toDate: startOfDate, options: nil)
+        let components = calendar.components([NSCalendarUnit.Year, NSCalendarUnit.Month, NSCalendarUnit.Day], fromDate: startOfToday, toDate: startOfDate, options: [])
         let year = components.year
         let month = components.month
         let day = components.day

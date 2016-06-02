@@ -165,7 +165,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     
     func textField(textField: UITextField, shouldChangeCharactersInRange range: NSRange, replacementString string: String) -> Bool {
         if textField.tag == salaryBoxTag {
-            let newSalary = (textField.text as NSString).stringByReplacingCharactersInRange(range, withString: string)
+            let newSalary = (textField.text! as NSString).stringByReplacingCharactersInRange(range, withString: string)
             let decimalSeparator = Common.standardCurrencyFormatter.decimalSeparator!
             let decimalPlaces = Common.standardCurrencyFormatter.maximumFractionDigits
             var expression: String
@@ -174,8 +174,8 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
             } else {
                 expression = "^\\d*$"
             }
-            let regex = NSRegularExpression(pattern: expression, options: nil, error: nil)
-            let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: nil, range: NSMakeRange(0, count(newSalary)))
+            let regex = try? NSRegularExpression(pattern: expression, options: [])
+            let numberOfMatches = regex?.numberOfMatchesInString(newSalary, options: [], range: NSMakeRange(0, newSalary.characters.count))
             if numberOfMatches == 0 {
                 return false
             }
@@ -201,7 +201,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
                 salary = nil
                 return
             }
-            salary = Common.standardDecimalFormatter.numberFromString(textField.text)
+            salary = Common.standardDecimalFormatter.numberFromString(textField.text!)
             salaryBox.text = Common.standardCurrencyFormatter.stringFromNumber(salary!)
         }
     }
@@ -223,7 +223,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         locationLongitude = nil
     }
     
-    func coordinatesCalculated(#address: String, coordinates: CLLocationCoordinate2D) {
+    func coordinatesCalculated(address address: String, coordinates: CLLocationCoordinate2D) {
         if address == locationBox.text {
             locationLatitude = coordinates.latitude
             locationLongitude = coordinates.longitude
@@ -242,7 +242,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
     }
     
     @IBAction func saveClicked(sender: UIBarButtonItem) {
-        if companyBox.text.isEmpty {
+        if companyBox.text!.isEmpty {
             let alert = UIAlertView(title: "Save Failed", message: "Please specify a company.", delegate: nil, cancelButtonTitle: "OK")
             alert.show()
         } else {
@@ -284,7 +284,7 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         
         details.website = websiteBox.text!
         details.salary = salary
-        details.jobListing = listingBox.text
+        details.jobListing = listingBox.text!
         details.glassdoorLink = glassdoorLink
         details.notes = notesView.text
         
@@ -302,9 +302,10 @@ class EditDetailViewController: UITableViewController, UITextFieldDelegate, Comp
         
         loadedBasic = basic
         
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
 }

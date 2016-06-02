@@ -101,7 +101,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         //get today's date and the last complete hour.
         let today = NSDate()
         let calendar = NSCalendar.currentCalendar()
-        let dateComponents = calendar.components(.CalendarUnitYear | .CalendarUnitMonth | .CalendarUnitDay | .CalendarUnitHour, fromDate: today)
+        let dateComponents = calendar.components([NSCalendarUnit.Year, NSCalendarUnit.Month, NSCalendarUnit.Day, NSCalendarUnit.Hour], fromDate: today)
         let initialStarts = calendar.dateFromComponents(dateComponents)!
         dateComponents.hour += 1
         let initialEnds = calendar.dateFromComponents(dateComponents)!
@@ -206,10 +206,10 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         let store = EventManager.sharedInstance.store
         let event = EKEvent(eventStore: store)
         event.calendar = store.defaultCalendarForNewEvents
-        event.title = titleBox.text
+        event.title = titleBox.text!
         event.location = locationBox.text!
-        event.startDate = Common.standardDateAndTimeFormatter.dateFromString(startsBox.text)!
-        event.endDate = Common.standardDateAndTimeFormatter.dateFromString(endsBox.text)!
+        event.startDate = Common.standardDateAndTimeFormatter.dateFromString(startsBox.text!)!
+        event.endDate = Common.standardDateAndTimeFormatter.dateFromString(endsBox.text!)!
         event.notes = notesView.text
         
         EventManager.sharedInstance.creationDelegate = self
@@ -243,7 +243,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         locationLongitude = nil
     }
     
-    func coordinatesCalculated(#address: String, coordinates: CLLocationCoordinate2D) {
+    func coordinatesCalculated(address address: String, coordinates: CLLocationCoordinate2D) {
         if address == locationBox.text {
             locationLatitude = coordinates.latitude
             locationLongitude = coordinates.longitude
@@ -252,7 +252,7 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
     
     //MARK:- EventCreationDelegate
     
-    func eventCreated(#event: EKEvent, wasSaved: Bool) {
+    func eventCreated(event event: EKEvent, wasSaved: Bool) {
         if wasSaved {
             saveDetailsFollowingCreationOfEvent(event)
         }
@@ -288,15 +288,16 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         interview.title = event.title
         interview.starts = event.startDate
         interview.ends = event.endDate
-        interview.notes = event.notes
+        interview.notes = event.notes!
         
-        interview.location.address = event.location
+        interview.location.address = event.location!
         interview.location.latitude = nil
         interview.location.longitude = nil
         
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try managedContext.save()
+        } catch {
+            print("Could not save.")
         }
         
         navigationController?.popViewControllerAnimated(true)
@@ -307,18 +308,19 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
         let interview = createOrLoadInterview()
         
         interview.eventID = ""
-        interview.title = titleBox.text
-        interview.starts = Common.standardDateAndTimeFormatter.dateFromString(startsBox.text)!
-        interview.ends = Common.standardDateAndTimeFormatter.dateFromString(endsBox.text)!
+        interview.title = titleBox.text!
+        interview.starts = Common.standardDateAndTimeFormatter.dateFromString(startsBox.text!)!
+        interview.ends = Common.standardDateAndTimeFormatter.dateFromString(endsBox.text!)!
         interview.notes = notesView.text
         
         interview.location.address = locationBox.text!
         interview.location.latitude = locationLatitude
         interview.location.longitude = locationLongitude
         
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try managedContext.save()
+        } catch {
+            print("Could not save.")
         }
         
         navigationController?.popViewControllerAnimated(true)
@@ -330,9 +332,10 @@ class EditInterviewViewController: UITableViewController, UITextFieldDelegate, L
             mutableInterviews.removeObject(loadedInterview!)
             loadedBasic.interviews = mutableInterviews
             
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
+            do {
+                try Common.managedContext.save()
+            } catch {
+                print("Could not save.")
             }
             navigationController?.popViewControllerAnimated(true)
         }

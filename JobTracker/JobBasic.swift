@@ -34,7 +34,7 @@ class JobBasic: NSManagedObject {
     }
     
     var orderedContacts: [JobContact] {
-        let sortedArray = contacts.allObjects.sorted({ (one, two) -> Bool in
+        let sortedArray = contacts.allObjects.sort({ (one, two) -> Bool in
             let one = one as! JobContact
             let two = two as! JobContact
             

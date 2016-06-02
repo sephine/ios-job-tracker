@@ -132,9 +132,10 @@ class EditApplicationViewController: UITableViewController {
         application.notes = notesView.text
         application.dateSent = Common.standardDateFormatter.dateFromString(dateSentBox.text!)!
         
-        var error: NSError?
-        if !managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
     
@@ -142,9 +143,10 @@ class EditApplicationViewController: UITableViewController {
         if let application = loadedBasic.application {
             loadedBasic.application = nil
             
-            var error: NSError?
-            if !Common.managedContext.save(&error) {
-                println("Could not save \(error), \(error?.userInfo)")
+            do {
+                try Common.managedContext.save()
+            } catch {
+                print("Could not save.")
             }
             navigationController?.popViewControllerAnimated(true)
         }

@@ -10,11 +10,11 @@ import Foundation
 import EventKitUI
 
 protocol EventCreationDelegate: class {
-    func eventCreated(#event: EKEvent, wasSaved: Bool)
+    func eventCreated(event event: EKEvent, wasSaved: Bool)
 }
 
 protocol EventLoadingDelegate: class {
-    func eventLoaded(#wasDeleted: Bool)
+    func eventLoaded(wasDeleted wasDeleted: Bool)
 }
 
 class EventManager: NSObject, EKEventEditViewDelegate {
@@ -46,8 +46,8 @@ class EventManager: NSObject, EKEventEditViewDelegate {
     //MARK:- Calendar Access
     
     func askForCalendarAccessWithCompletion(completion: () -> Void) {
-        if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.NotDetermined {
-            store.requestAccessToEntityType(EKEntityTypeEvent, completion: { (granted, error) in
+        if EKEventStore.authorizationStatusForEntityType(EKEntityType.Event) == EKAuthorizationStatus.NotDetermined {
+            store.requestAccessToEntityType(EKEntityType.Event, completion: { (granted, error) in
                 NSOperationQueue.mainQueue().addOperationWithBlock({
                     self.setAccessToCalendar()
                     completion()
@@ -57,7 +57,7 @@ class EventManager: NSObject, EKEventEditViewDelegate {
     }
     
     private func setAccessToCalendar() {
-        if EKEventStore.authorizationStatusForEntityType(EKEntityTypeEvent) == EKAuthorizationStatus.Authorized {
+        if EKEventStore.authorizationStatusForEntityType(EKEntityType.Event) == EKAuthorizationStatus.Authorized {
             accessToCalendarGranted = true
         } else {
             accessToCalendarGranted = false
@@ -66,24 +66,25 @@ class EventManager: NSObject, EKEventEditViewDelegate {
     
     //MARK:- Create/Update/Load Calendar Events
     
-    func syncInterviewWithCalendarEvent(#interview: JobInterview) {
+    func syncInterviewWithCalendarEvent(interview interview: JobInterview) {
         if accessToCalendarGranted && !interview.eventID.isEmpty {
             let event = store.eventWithIdentifier(interview.eventID)
             if event != nil {
-                updateInterviewToMatchEvent(event, interview: interview)
+                updateInterviewToMatchEvent(event!, interview: interview)
             } else {
                 findNewEventIDForInterview(interview)
             }
         }
         
         //the act of saving automatically ensures that the stage is correct in the case where the event could not be updated above.
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try Common.managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
 
-    func loadEventInEventEditVC(#interviewToUpdate: JobInterview, viewController: UIViewController) {
+    func loadEventInEventEditVC(interviewToUpdate interviewToUpdate: JobInterview, viewController: UIViewController) {
 
         assert(!interviewToUpdate.eventID.isEmpty, "loadEventInEventEditVC should not be called with an interview that has no eventID")
         
@@ -143,9 +144,10 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         }
         
         interview.eventID = correctEventID
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try Common.managedContext.save()
+        } catch {
+            print("Could not save.")
         }
         
         if interview.eventID.isEmpty {
@@ -155,7 +157,7 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         } else {
             let event = store.eventWithIdentifier(interview.eventID)
             if event != nil {
-                updateInterviewToMatchEvent(event, interview: interview)
+                updateInterviewToMatchEvent(event!, interview: interview)
             }
         }
     }
@@ -167,23 +169,22 @@ class EventManager: NSObject, EKEventEditViewDelegate {
         interview.ends = event.endDate
         
         //if we already have a correct lat and long, don't delete them
-        let i = interview.location.address
-        let j = event.location
-        if interview.location.address != event.location {
-            interview.location.address = event.location
+        if interview.location.address != event.location! {
+            interview.location.address = event.location!
             interview.location.latitude = nil
             interview.location.longitude = nil
         }
         
         if event.hasNotes {
-            interview.notes = event.notes
+            interview.notes = event.notes!
         } else {
             interview.notes = ""
         }
         
-        var error: NSError?
-        if !Common.managedContext.save(&error) {
-            println("Could not save \(error), \(error?.userInfo)")
+        do {
+            try Common.managedContext.save()
+        } catch {
+            print("Could not save.")
         }
     }
 
@@ -192,18 +193,19 @@ class EventManager: NSObject, EKEventEditViewDelegate {
     func eventEditViewController(controller: EKEventEditViewController!, didCompleteWithAction action: EKEventEditViewAction) {
         viewController.dismissViewControllerAnimated(true, completion: nil)
         if creatingEvent {
-            if action.value == EKEventEditViewActionSaved.value {
+            if action == EKEventEditViewAction.Saved {
                 creationDelegate?.eventCreated(event: event, wasSaved: true)
             } else {
                 creationDelegate?.eventCreated(event: event, wasSaved: false)
             }
         } else {
             if accessToCalendarGranted {
-                if action.value == EKEventEditViewActionDeleted.value {
+                if action == EKEventEditViewAction.Deleted {
                     interviewToUpdate.eventID = ""
-                    var error: NSError?
-                    if !Common.managedContext.save(&error) {
-                        println("Could not save \(error), \(error?.userInfo)")
+                    do {
+                        try Common.managedContext.save()
+                    } catch {
+                        print("Could not save.")
                     }
                     
                     loadingDelegate?.eventLoaded(wasDeleted: true)
